@@ -1,7 +1,7 @@
 {
   "name": "criador-de-temas-virais",
   "version": "2.0.0",
-  "description": "Criador de Temas Virais — powered by Groq + Vercel",
+  "type": "module",
   "engines": {
     "node": ">=18"
   }
