@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Autenticando...</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#060608;color:#f0ede8;font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.spin{width:32px;height:32px;border:3px solid rgba(184,240,80,.15);border-top-color:#b8f050;border-radius:50%;animation:rot .7s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg);}}
+p{font-size:14px;color:rgba(240,237,232,.5);}
+</style>
+</head>
+<body>
+<div class="spin"></div>
+<p>Autenticando com Google...</p>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://ezrhzvrgndvnnslrfxge.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='/login.html';return;}
+  const user=session.user;
+  // Upsert perfil — se for novo usuário Google, cria como inativo
+  const {data:existing}=await sb.from('profiles').select('id,ativo').eq('id',user.id).single();
+  if(!existing){
+    await sb.from('profiles').insert({
+      id:user.id,
+      email:user.email,
+      full_name:user.user_metadata?.full_name||user.email,
+      ativo:false
+    });
+    await sb.auth.signOut();
+    window.location.href='/login.html?novo=1';
+    return;
+  }
+  if(existing.ativo){
+    window.location.href='/';
+  } else {
+    await sb.auth.signOut();
+    window.location.href='/login.html?pendente=1';
+  }
+})();
+</script>
+</body>
+</html>
