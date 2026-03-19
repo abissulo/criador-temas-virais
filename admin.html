@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Criador de Temas Virais</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#060608;--bg2:rgba(255,255,255,.03);--bg3:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.08);--border-h:rgba(255,255,255,.15);
+  --text:#f0ede8;--muted:rgba(240,237,232,.45);--dim:rgba(240,237,232,.22);
+  --g1:#b8f050;--r:12px;--f:'Plus Jakarta Sans',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--f);min-height:100vh;padding:32px 24px;}
+.wrap{max-width:900px;margin:0 auto;}
+
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;}
+.header h1{font-size:24px;font-weight:800;letter-spacing:-.02em;}
+.header h1 span{
+  background:linear-gradient(90deg,var(--g1),#50d4f5);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.btn-logout{font-family:var(--f);font-size:12px;font-weight:700;background:var(--bg2);color:var(--muted);border:1px solid var(--border);border-radius:var(--r);padding:8px 16px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{color:var(--text);border-color:var(--border-h);}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.stat-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.stat-val{font-size:26px;font-weight:800;color:var(--text);}
+.stat-val.green{color:var(--g1);}
+.stat-val.red{color:#f06060;}
+
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.filter-btn{font-family:var(--f);font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;background:var(--bg2);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;}
+.filter-btn:hover{color:var(--text);border-color:var(--border-h);}
+.filter-btn.active{background:rgba(184,240,80,.1);border-color:rgba(184,240,80,.3);color:var(--g1);}
+
+.search-wrap{margin-bottom:16px;}
+.search-wrap input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 16px;font-family:var(--f);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;}
+.search-wrap input:focus{border-color:rgba(184,240,80,.35);}
+.search-wrap input::placeholder{color:var(--dim);}
+
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);}
+th{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:10px 12px;text-align:left;}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+tbody tr:hover{background:var(--bg2);}
+td{padding:12px 12px;font-size:13px;color:var(--text);vertical-align:middle;}
+.td-email{font-size:13px;color:var(--muted);}
+.td-date{font-size:12px;color:var(--dim);}
+
+.badge-ativo{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:rgba(184,240,80,.1);color:var(--g1);border:1px solid rgba(184,240,80,.2);}
+.badge-ativo::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--g1);}
+.badge-inativo{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:rgba(240,96,96,.1);color:#f06060;border:1px solid rgba(240,96,96,.2);}
+.badge-inativo::before{content:'';width:5px;height:5px;border-radius:50%;background:#f06060;}
+.badge-pendente{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:rgba(240,180,50,.1);color:#f0b432;border:1px solid rgba(240,180,50,.2);}
+.badge-pendente::before{content:'';width:5px;height:5px;border-radius:50%;background:#f0b432;}
+
+.btn-toggle{
+  font-family:var(--f);font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;
+  cursor:pointer;border:none;transition:all .2s;white-space:nowrap;
+}
+.btn-ativar{background:rgba(184,240,80,.12);color:var(--g1);}
+.btn-ativar:hover{background:rgba(184,240,80,.22);}
+.btn-desativar{background:rgba(240,96,96,.12);color:#f06060;}
+.btn-desativar:hover{background:rgba(240,96,96,.22);}
+
+.empty{text-align:center;padding:48px;color:var(--dim);font-size:14px;}
+.loading-row{text-align:center;padding:32px;color:var(--muted);font-size:14px;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--g1);color:#060608;font-family:var(--f);font-size:12px;font-weight:700;letter-spacing:.04em;padding:10px 20px;border-radius:100px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:99;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* LOGIN ADMIN */
+.login-wrap{max-width:360px;margin:10vh auto;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;}
+.login-wrap h2{font-size:20px;font-weight:800;margin-bottom:4px;}
+.login-wrap p{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.login-wrap input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-family:var(--f);font-size:14px;color:var(--text);outline:none;margin-bottom:12px;}
+.login-wrap input:focus{border-color:rgba(184,240,80,.35);}
+.login-wrap .btn-submit{position:relative;overflow:hidden;width:100%;font-family:var(--f);font-size:14px;font-weight:700;background:var(--g1);color:#060608;border:none;border-radius:var(--r);padding:13px;cursor:pointer;transition:transform .15s;}
+.login-wrap .btn-submit:hover{transform:translateY(-1px);}
+.err-msg{font-size:13px;color:#f08080;margin-bottom:12px;display:none;}
+.err-msg.show{display:block;}
+
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr;}.filters{flex-wrap:wrap;}th:nth-child(3),td:nth-child(3){display:none;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN ADMIN -->
+<div id="admin-login" class="login-wrap" style="display:none;">
+  <h2>Painel Admin</h2>
+  <p>Acesso restrito ao administrador.</p>
+  <div class="err-msg" id="admin-err">E-mail ou senha incorretos.</div>
+  <input type="email" id="admin-email" placeholder="seu@email.com"/>
+  <input type="password" id="admin-pass" placeholder="Senha" onkeydown="if(event.key==='Enter')adminLogin()"/>
+  <button class="btn-submit" onclick="adminLogin()">Entrar →</button>
+</div>
+
+<!-- PAINEL PRINCIPAL -->
+<div class="wrap" id="admin-panel" style="display:none;">
+  <div class="header">
+    <h1>Painel <span>Admin</span></h1>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total de usuários</div><div class="stat-val" id="stat-total">—</div></div>
+    <div class="stat"><div class="stat-label">Ativos (pagando)</div><div class="stat-val green" id="stat-ativos">—</div></div>
+    <div class="stat"><div class="stat-label">Aguardando</div><div class="stat-val red" id="stat-inativos">—</div></div>
+  </div>
+
+  <div class="search-wrap">
+    <input type="text" id="search-input" placeholder="Buscar por nome ou e-mail..." oninput="filterUsers()"/>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('todos',this)">Todos</button>
+    <button class="filter-btn" onclick="setFilter('ativos',this)">Ativos</button>
+    <button class="filter-btn" onclick="setFilter('inativos',this)">Aguardando pagamento</button>
+  </div>
+
+  <table>
+    <thead><tr>
+      <th>Nome</th>
+      <th>E-mail</th>
+      <th>Cadastro</th>
+      <th>Status</th>
+      <th>Ação</th>
+    </tr></thead>
+    <tbody id="users-tbody"><tr><td colspan="5" class="loading-row">Carregando...</td></tr></tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://ezrhzvrgndvnnslrfxge.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
+const ADMIN_EMAIL   = 'alexabissulo@gmail.com';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+let allUsers=[], currentFilter='todos';
+
+async function adminLogin(){
+  const email=document.getElementById('admin-email').value.trim();
+  const pass=document.getElementById('admin-pass').value;
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error||data.user.email!==ADMIN_EMAIL){
+    await sb.auth.signOut();
+    document.getElementById('admin-err').classList.add('show');
+    return;
+  }
+  showPanel();
+}
+
+async function doLogout(){await sb.auth.signOut();location.reload();}
+
+async function showPanel(){
+  document.getElementById('admin-login').style.display='none';
+  document.getElementById('admin-panel').style.display='block';
+  await loadUsers();
+}
+
+async function loadUsers(){
+  const {data,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  if(error){document.getElementById('users-tbody').innerHTML='<tr><td colspan="5" class="loading-row">Erro ao carregar.</td></tr>';return;}
+  allUsers=data||[];
+  updateStats();
+  renderUsers();
+}
+
+function updateStats(){
+  const ativos=allUsers.filter(u=>u.ativo).length;
+  document.getElementById('stat-total').textContent=allUsers.length;
+  document.getElementById('stat-ativos').textContent=ativos;
+  document.getElementById('stat-inativos').textContent=allUsers.length-ativos;
+}
+
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderUsers();
+}
+
+function filterUsers(){renderUsers();}
+
+function renderUsers(){
+  const search=document.getElementById('search-input').value.toLowerCase();
+  let users=allUsers;
+  if(currentFilter==='ativos')users=users.filter(u=>u.ativo);
+  if(currentFilter==='inativos')users=users.filter(u=>!u.ativo);
+  if(search)users=users.filter(u=>(u.full_name||'').toLowerCase().includes(search)||(u.email||'').toLowerCase().includes(search));
+
+  const tbody=document.getElementById('users-tbody');
+  if(!users.length){tbody.innerHTML='<tr><td colspan="5" class="empty">Nenhum usuário encontrado.</td></tr>';return;}
+
+  tbody.innerHTML=users.map(u=>{
+    const date=u.created_at?new Date(u.created_at).toLocaleDateString('pt-BR'):'—';
+    const badge=u.ativo
+      ?'<span class="badge-ativo">Ativo</span>'
+      :'<span class="badge-inativo">Aguardando</span>';
+    const btn=u.ativo
+      ?`<button class="btn-toggle btn-desativar" onclick="toggleUser('${u.id}',false)">Desativar</button>`
+      :`<button class="btn-toggle btn-ativar"    onclick="toggleUser('${u.id}',true)">Ativar acesso</button>`;
+    return `<tr>
+      <td><strong>${u.full_name||'—'}</strong></td>
+      <td class="td-email">${u.email||'—'}</td>
+      <td class="td-date">${date}</td>
+      <td>${badge}</td>
+      <td>${btn}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function toggleUser(id,ativo){
+  const {error}=await sb.from('profiles').update({ativo}).eq('id',id);
+  if(error){showToast('Erro ao atualizar.');return;}
+  const u=allUsers.find(u=>u.id===id);
+  if(u){u.ativo=ativo;}
+  updateStats();renderUsers();
+  showToast(ativo?'✓ Acesso ativado!':'Acesso desativado.');
+}
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
+
+// Init
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user?.email===ADMIN_EMAIL){showPanel();}
+  else{document.getElementById('admin-login').style.display='block';}
+})();
+</script>
+</body>
+</html>

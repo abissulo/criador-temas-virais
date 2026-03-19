@@ -47,7 +47,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);min-height:100v
 .orb3{width:350px;height:350px;background:radial-gradient(circle,rgba(240,80,164,0.05),transparent 70%);bottom:10%;left:20%;}
 
 /* ── WRAP ── */
-.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:56px 24px 120px;}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:88px 24px 120px;}
 
 /* ── HEADER ── */
 .header{text-align:center;margin-bottom:52px;animation:fadeUp .7s ease both;}
@@ -421,6 +421,15 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 <body>
 
 <!-- BG -->
+
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(6,6,8,0.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);">
+  <div style="font-size:12px;font-weight:700;letter-spacing:.05em;background:linear-gradient(90deg,#b8f050,#50d4f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Criador de Temas Virais</div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <span id="user-name" style="font-size:13px;color:rgba(240,237,232,0.5);"></span>
+    <button onclick="doLogout()" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,0.04);color:rgba(240,237,232,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;cursor:pointer;transition:color .15s;">Sair</button>
+  </div>
+</div>
+
 <canvas id="bg-canvas"></canvas>
 <div class="grid-overlay"></div>
 <div class="orb orb1"></div>
@@ -504,6 +513,27 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 
 </div>
 <div class="toast" id="toast"></div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://ezrhzvrgndvnnslrfxge.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// Verifica autenticação e plano ativo
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='/login.html';return;}
+  const {data}=await sb.from('profiles').select('ativo,full_name').eq('id',session.user.id).single();
+  if(!data?.ativo){await sb.auth.signOut();window.location.href='/login.html?pendente=1';return;}
+  // Exibe nome do usuário
+  const nameEl=document.getElementById('user-name');
+  if(nameEl)nameEl.textContent=data.full_name||session.user.email;
+})();
+
+async function doLogout(){await sb.auth.signOut();window.location.href='/login.html';}
+</script>
 
 <script>
 /* ── PARTICLES ── */
