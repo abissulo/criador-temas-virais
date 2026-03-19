@@ -268,7 +268,10 @@ input:focus{border-color:rgba(184,240,80,.33);box-shadow:0 0 0 3px rgba(184,240,
       <div class="s2-info">Nicho: <strong id="s2-nicho-label"></strong></div>
       <div class="s2-hint">Selecione até 3 temas e o framework de escrita</div>
     </div>
-    <button class="btn-ghost" onclick="voltarStep1()">← Trocar nicho</button>
+    <div style="display:flex;gap:9px;">
+      <button class="btn-ghost" id="btn-refresh" onclick="refreshTemas()">↺ Novos temas</button>
+      <button class="btn-ghost" onclick="voltarStep1()">← Trocar nicho</button>
+    </div>
   </div>
   <span class="lbl">Escolha os temas (até 3)</span>
   <div class="temas-grid" id="temas-grid"></div>
@@ -426,51 +429,27 @@ async function gerarConteudo(){
   startLoad('load-2',MSGS2);
 
   const tStr=escolhidos.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
-  const prompt=`Você é especialista em criação de conteúdo viral para Instagram e TikTok.
+  const schemaConteudo = `{
+    "titulo":"titulo chamativo 6-10 palavras",
+    "fw_steps":[{"label":"etapa","texto":"conteudo 1-2 frases"}],
+    "reels":{"hook":"frase abertura 3 segundos","cenas":[{"num":1,"texto":"cena 1"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"chamada acao final","legenda":"legenda com emojis 3-4 frases","hashtags":"5 hashtags"},
+    "carrossel":{"capa":"texto capa max 8 palavras","slides":["slide2","slide3","slide4","slide5"],"legenda":"legenda com emojis","hashtags":"5 hashtags"},
+    "post":{"imagem":"texto imagem max 10 palavras","subtexto":"subtitulo max 6 palavras","legenda":"legenda com emojis e CTA","hashtags":"5 hashtags"}
+  }`;
+  const prompt=`Você é especialista em criação de conteúdo viral para Instagram e TikTok. Responda APENAS com JSON válido.
 Nicho: "${nicho}"
 Temas: ${tStr}
-Framework: ${fw.nome} — etapas: ${fw.steps.join(' → ')}
+Framework: ${fw.nome} (${fw.steps.join(' -> ')})
 
-Para cada tema, crie 3 conteúdos (Erros Comuns, Processos & Bastidores, Análises & Estratégia).
-Para cada conteúdo, gere os 3 formatos abaixo.
+Gere EXATAMENTE ${escolhidos.length} tema(s) com 3 conteúdos cada (erros, proc, anal), cada um com os 3 formatos (reels, carrossel, post).
 
-Responda APENAS JSON válido sem markdown:
-{
-  "temas":[{
-    "nome":"nome do tema",
-    "erros":${fmtSchema(fw)},
-    "proc":${fmtSchema(fw)},
-    "anal":${fmtSchema(fw)}
-  }]
-}
+Formato JSON obrigatório:
+{"temas":[{"nome":"nome tema","erros":${schemaConteudo},"proc":${schemaConteudo},"anal":${schemaConteudo}}]}
 
-Regras do schema de cada conteúdo:
-{
-  "titulo":"título chamativo (6-10 palavras)",
-  "fw_steps":[{"label":"etapa do framework","texto":"conteúdo real desta etapa (1-2 frases)"}],
-  "reels":{
-    "hook":"frase de abertura impactante para os primeiros 3 segundos (1 frase direta e provocativa)",
-    "cenas":[{"num":1,"texto":"narração desta cena/bloco (1-2 frases)"},{"num":2,"texto":"..."},{"num":3,"texto":"..."},{"num":4,"texto":"..."}],
-    "cta":"chamada para ação final do vídeo (1 frase)",
-    "legenda":"legenda completa do post com emojis e storytelling (3-4 frases)",
-    "hashtags":"5 hashtags relevantes separadas por espaço"
-  },
-  "carrossel":{
-    "capa":"texto impactante do slide de capa (max 8 palavras)",
-    "slides":["texto do slide 2","texto do slide 3","texto do slide 4","texto do slide 5"],
-    "legenda":"legenda completa com emojis (3-4 frases)",
-    "hashtags":"5 hashtags relevantes separadas por espaço"
-  },
-  "post":{
-    "imagem":"texto principal da imagem (max 10 palavras, impactante)",
-    "subtexto":"subtítulo da imagem (max 6 palavras)",
-    "legenda":"legenda completa com emojis e CTA (4-5 frases)",
-    "hashtags":"5 hashtags relevantes separadas por espaço"
-  }
-}`;
+Gere EXATAMENTE ${escolhidos.length} objeto(s) no array temas. Preencha TODOS os campos. Para fw_steps use exatamente ${fw.steps.length} etapas: ${fw.steps.join(', ')}.`;
 
   try{
-    const d=await callAPI(prompt,3500);
+    const d=await callAPI(prompt, escolhidos.length === 1 ? 2000 : escolhidos.length === 2 ? 3500 : 5000);
     resultado={nicho,fw,temas:d.temas,originais:escolhidos};
     renderResultado(resultado);
     stopLoad('load-2');
@@ -610,13 +589,15 @@ async function trocarFW(id){
   document.querySelectorAll('.fw-pill').forEach(p=>p.classList.toggle('active',p.textContent===fw.nome));
   document.getElementById('res-fw-label').textContent=`${fw.nome} — gerando...`;
   const tStr=resultado.originais.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
-  const prompt=`Você é especialista em conteúdo viral para Instagram e TikTok.
-Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} — etapas: ${fw.steps.join(' → ')}
-Para cada tema, crie 3 conteúdos (Erros Comuns, Processos & Bastidores, Análises & Estratégia) com os 3 formatos (reels, carrossel, post).
-Responda APENAS JSON sem markdown com a mesma estrutura anterior completa incluindo fw_steps, reels (hook,cenas,cta,legenda,hashtags), carrossel (capa,slides,legenda,hashtags), post (imagem,subtexto,legenda,hashtags).
-{"temas":[{"nome":"...","erros":{...},"proc":{...},"anal":{...}}]}`;
+  const n=resultado.originais.length;
+  const sc=`{"titulo":"titulo","fw_steps":[{"label":"etapa","texto":"texto"}],"reels":{"hook":"hook","cenas":[{"num":1,"texto":"c1"},{"num":2,"texto":"c2"},{"num":3,"texto":"c3"},{"num":4,"texto":"c4"}],"cta":"cta","legenda":"legenda","hashtags":"hashtags"},"carrossel":{"capa":"capa","slides":["s2","s3","s4","s5"],"legenda":"legenda","hashtags":"hashtags"},"post":{"imagem":"imagem","subtexto":"sub","legenda":"legenda","hashtags":"hashtags"}}`;
+  const prompt=`Especialista em conteúdo viral. Responda APENAS JSON válido.
+Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} (${fw.steps.join(' -> ')})
+Gere EXATAMENTE ${n} tema(s), cada um com erros/proc/anal, cada categoria com reels/carrossel/post.
+Para fw_steps use ${fw.steps.length} etapas: ${fw.steps.join(', ')}.
+{"temas":[{"nome":"nome","erros":${sc},"proc":${sc},"anal":${sc}}]}`;
   try{
-    const d=await callAPI(prompt,3500);
+    const d=await callAPI(prompt, n===1?2000:n===2?3500:5000);
     resultado={nicho,fw,temas:d.temas,originais:resultado.originais};
     renderResultado(resultado);
   }catch(e){alert('Erro ao trocar framework.');document.getElementById('res-fw-label').textContent=`${resultado.fw.nome} — ${resultado.fw.foco}`;}
@@ -644,6 +625,19 @@ function copyText(btn,txt){
 
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 function shake(id){const el=document.getElementById(id);el.style.borderColor='rgba(240,96,96,.5)';el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:280});setTimeout(()=>el.style.borderColor='',1200);}
+async function refreshTemas(){
+  const btn=document.getElementById('btn-refresh');
+  btn.disabled=true; btn.textContent='↺ Buscando...';
+  try{
+    const d=await callAPI(`Para o nicho "${nicho}", identifique 6 NOVOS temas com alto potencial viral para redes sociais. Sejam diferentes dos anteriores.
+Responda APENAS JSON sem markdown:
+{"temas":[{"nome":"Nome (3-5 palavras)","potencial":"Por que é viral agora (max 10 palavras)"}]}
+Gere exatamente 6 temas variados e diferentes.`,700);
+    temasDisp=d.temas; temasSel=[];
+    renderStep2();
+  }catch(e){showToast('Erro ao buscar novos temas');}
+  btn.disabled=false; btn.textContent='↺ Novos temas';
+}
 function voltarStep1(limpar){if(limpar){document.getElementById('inp-nicho').value='';temasDisp=[];temasSel=[];resultado=null;}setStep(1);}
 function voltarStep2(){setStep(2);}
 
