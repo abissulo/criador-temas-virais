@@ -8,237 +8,431 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#0b0b0f;--bg2:#111116;--bg3:#18181f;--bg4:#1f1f28;
-  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
-  --text:#eeeaf4;--muted:rgba(238,234,244,0.42);--dim:rgba(238,234,244,0.2);
-  --g1:#b8f050;--g2:#50d4f5;--g3:#f050a4;--g4:#f0a050;
-  --r:13px;--f:'Plus Jakarta Sans',sans-serif;
+  --bg:#060608;
+  --bg2:rgba(255,255,255,0.03);
+  --bg3:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.04);
+  --glass-border:rgba(255,255,255,0.08);
+  --glass-border-h:rgba(255,255,255,0.16);
+  --text:#f0ede8;
+  --muted:rgba(240,237,232,0.45);
+  --dim:rgba(240,237,232,0.22);
+  --g1:#b8f050;
+  --g2:#50d4f5;
+  --g3:#f050a4;
+  --g4:#f0a050;
+  --r:14px;
+  --f:'Plus Jakarta Sans',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--f);min-height:100vh;}
-body::before{content:'';position:fixed;inset:0;
-  background-image:linear-gradient(rgba(255,255,255,0.014) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.014) 1px,transparent 1px);
-  background-size:52px 52px;pointer-events:none;z-index:0;}
-.wrap{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:52px 24px 100px;}
 
-/* HEADER */
-.header{margin-bottom:44px;animation:up .5s ease both;}
-.badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--g1);border:1px solid rgba(184,240,80,.2);background:rgba(184,240,80,.05);padding:5px 13px;border-radius:100px;margin-bottom:18px;}
+body{background:var(--bg);color:var(--text);font-family:var(--f);min-height:100vh;overflow-x:hidden;}
+
+/* ── CANVAS BG ── */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* ── GRID ── */
+.grid-overlay{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(184,240,80,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(184,240,80,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);
+}
+
+/* ── GLOW ORBS ── */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(184,240,80,0.08),transparent 70%);top:-100px;left:-100px;}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(80,212,245,0.06),transparent 70%);top:30%;right:-80px;}
+.orb3{width:350px;height:350px;background:radial-gradient(circle,rgba(240,80,164,0.05),transparent 70%);bottom:10%;left:20%;}
+
+/* ── WRAP ── */
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:56px 24px 120px;}
+
+/* ── HEADER ── */
+.header{text-align:center;margin-bottom:52px;animation:fadeUp .7s ease both;}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--g1);border:1px solid rgba(184,240,80,.2);
+  background:rgba(184,240,80,.06);padding:5px 14px;border-radius:100px;
+  margin-bottom:24px;backdrop-filter:blur(8px);
+}
 .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--g1);animation:blink 2s ease infinite;display:inline-block;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-h1{font-size:clamp(32px,5vw,54px);font-weight:800;line-height:1.07;letter-spacing:-.03em;margin-bottom:10px;}
-h1 em{font-style:normal;color:var(--g1);}
-.sub{font-size:14px;color:var(--muted);line-height:1.7;max-width:500px;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 6px var(--g1)}50%{opacity:.3;box-shadow:none}}
 
-/* STEPS */
-.steps{display:flex;align-items:center;margin-bottom:36px;animation:up .5s .05s ease both;}
-.step{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--dim);}
+h1{
+  font-size:clamp(38px,6vw,68px);font-weight:800;line-height:1.05;letter-spacing:-.03em;
+  margin-bottom:16px;
+  background:linear-gradient(135deg,#f0ede8 0%,#b8f050 40%,#50d4f5 70%,#f0ede8 100%);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradShift 6s ease infinite;
+}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.sub{font-size:16px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto;}
+
+/* ── STEPS ── */
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:44px;gap:0;animation:fadeUp .6s .1s ease both;}
+.step{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--dim);transition:color .3s;}
 .step.active{color:var(--text);}
 .step.done{color:var(--g1);}
-.step-num{width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;transition:all .3s;}
-.step.active .step-num{background:var(--g1);color:#0b0b0f;border-color:var(--g1);}
-.step.done .step-num{background:rgba(184,240,80,.12);color:var(--g1);border-color:rgba(184,240,80,.28);}
-.step-line{width:28px;height:1px;background:var(--border);margin:0 6px;flex-shrink:0;}
+.step-num{
+  width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+  flex-shrink:0;transition:all .3s;backdrop-filter:blur(4px);
+}
+.step.active .step-num{background:var(--g1);color:#060608;border-color:var(--g1);box-shadow:0 0 16px rgba(184,240,80,.4);}
+.step.done .step-num{background:rgba(184,240,80,.15);color:var(--g1);border-color:rgba(184,240,80,.3);}
+.step-line{width:36px;height:1px;background:rgba(255,255,255,.08);margin:0 4px;flex-shrink:0;}
 
-/* PANELS */
+/* ── PANELS ── */
 .panel{display:none;}
-.panel.active{display:block;animation:up .4s ease both;}
+.panel.active{display:block;animation:fadeUp .45s ease both;}
 
-/* INPUTS */
-.lbl{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;display:block;}
+/* ── GLASS CARD ── */
+.glass-card{
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:var(--r);backdrop-filter:blur(16px);
+  transition:border-color .3s,box-shadow .3s;
+}
+.glass-card:hover{border-color:var(--glass-border-h);}
+
+/* ── INPUT ── */
+.lbl{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block;}
 .inp-row{display:flex;gap:10px;}
-input[type=text]{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-family:var(--f);font-size:15px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;}
-input::placeholder{color:rgba(238,234,244,.16);}
-input:focus{border-color:rgba(184,240,80,.33);box-shadow:0 0 0 3px rgba(184,240,80,.055);}
+input[type=text]{
+  flex:1;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);
+  border-radius:var(--r);padding:15px 18px;font-family:var(--f);font-size:15px;
+  color:var(--text);outline:none;backdrop-filter:blur(8px);
+  transition:border-color .2s,box-shadow .2s;
+}
+input::placeholder{color:rgba(240,237,232,.18);}
+input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,80,.07),0 0 20px rgba(184,240,80,.05);}
 
-/* BUTTONS */
-.btn-primary{font-family:var(--f);font-size:13px;font-weight:700;letter-spacing:.04em;background:var(--g1);color:#0b0b0f;border:none;border-radius:var(--r);padding:13px 22px;cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s,opacity .15s;}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(184,240,80,.18);}
+/* ── SHIMMER BUTTON ── */
+.btn-primary{
+  position:relative;overflow:hidden;
+  font-family:var(--f);font-size:13px;font-weight:700;letter-spacing:.04em;
+  background:var(--g1);color:#060608;border:none;border-radius:var(--r);
+  padding:15px 26px;cursor:pointer;white-space:nowrap;
+  transition:transform .15s,box-shadow .2s;
+}
+.btn-primary::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.4) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform .5s;
+}
+.btn-primary:hover::after{transform:translateX(100%);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(184,240,80,.3),0 0 40px rgba(184,240,80,.1);}
 .btn-primary:active{transform:none;}
 .btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none;}
-.btn-ghost{font-family:var(--f);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;}
-.btn-ghost:hover{color:var(--text);border-color:var(--border-h);background:var(--bg3);}
-.btn-pdf{font-family:var(--f);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--g1);border:1px solid rgba(184,240,80,.28);border-radius:var(--r);padding:10px 16px;cursor:pointer;transition:all .15s;}
-.btn-pdf:hover{background:rgba(184,240,80,.07);border-color:rgba(184,240,80,.45);}
+.btn-primary:disabled::after{display:none;}
 
-/* LOADING */
-.loading{display:none;align-items:center;gap:11px;color:var(--muted);font-size:13px;padding:16px 0;}
+.btn-ghost{
+  position:relative;overflow:hidden;
+  font-family:var(--f);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  background:var(--glass);color:var(--muted);border:1px solid var(--glass-border);
+  border-radius:var(--r);padding:11px 17px;cursor:pointer;backdrop-filter:blur(8px);
+  transition:color .15s,border-color .2s,background .15s;
+}
+.btn-ghost:hover{color:var(--text);border-color:var(--glass-border-h);background:rgba(255,255,255,.07);}
+
+/* ── LOADING ── */
+.loading{display:none;align-items:center;gap:12px;color:var(--muted);font-size:14px;padding:18px 0;}
 .loading.on{display:flex;}
-.spin{width:17px;height:17px;border:2px solid rgba(184,240,80,.1);border-top-color:var(--g1);border-radius:50%;animation:rot .7s linear infinite;flex-shrink:0;}
+.spin{
+  width:18px;height:18px;border:2px solid rgba(184,240,80,.1);
+  border-top-color:var(--g1);border-radius:50%;animation:rot .7s linear infinite;flex-shrink:0;
+}
 @keyframes rot{to{transform:rotate(360deg);}}
 
 /* ── STEP 2 ── */
-.s2-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap;}
-.s2-info{font-size:14px;color:var(--muted);margin-bottom:2px;}
-.s2-info strong{color:var(--text);}
-.s2-hint{font-size:12px;color:var(--dim);}
+.s2-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+.s2-nicho{font-size:22px;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(90deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.s2-hint{font-size:13px;color:var(--dim);margin-top:3px;}
+.s2-btns{display:flex;gap:8px;flex-wrap:wrap;}
 
-.temas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:26px;}
-.tema-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 14px;cursor:pointer;transition:all .2s;position:relative;user-select:none;}
-.tema-card:hover{border-color:var(--border-h);transform:translateY(-1px);}
-.tema-card.selected{border-color:var(--g1);background:rgba(184,240,80,.04);}
-.tc-check{position:absolute;top:11px;right:11px;width:17px;height:17px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.tema-card.selected .tc-check{background:var(--g1);border-color:var(--g1);}
+.temas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
+
+.tema-card{
+  background:var(--glass);border:1.5px solid var(--glass-border);border-radius:var(--r);
+  padding:18px 16px;cursor:pointer;backdrop-filter:blur(12px);
+  transition:all .25s;position:relative;overflow:hidden;user-select:none;
+}
+.tema-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(184,240,80,.06),transparent);
+  opacity:0;transition:opacity .25s;
+}
+.tema-card:hover{border-color:rgba(184,240,80,.25);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.tema-card:hover::before{opacity:1;}
+.tema-card.selected{border-color:var(--g1);background:rgba(184,240,80,.06);box-shadow:0 0 20px rgba(184,240,80,.1);}
+.tema-card.selected::before{opacity:1;}
+.tc-check{
+  position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;
+  border:1.5px solid var(--glass-border);display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.tema-card.selected .tc-check{background:var(--g1);border-color:var(--g1);box-shadow:0 0 8px rgba(184,240,80,.5);}
 .tc-check svg{opacity:0;transition:opacity .2s;}
 .tema-card.selected .tc-check svg{opacity:1;}
-.tc-viral{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g1);background:rgba(184,240,80,.09);border:1px solid rgba(184,240,80,.16);padding:3px 8px;border-radius:100px;margin-bottom:9px;display:inline-block;}
-.tc-nome{font-size:13px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:5px;padding-right:20px;}
-.tc-why{font-size:11px;color:var(--muted);line-height:1.55;}
+.tc-viral{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--g1);background:rgba(184,240,80,.1);border:1px solid rgba(184,240,80,.18);
+  padding:3px 8px;border-radius:100px;margin-bottom:10px;display:inline-block;
+}
+.tc-nome{font-size:14px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:5px;padding-right:22px;}
+.tc-why{font-size:12px;color:var(--muted);line-height:1.55;}
 
-/* FRAMEWORK GRID */
-.fw-section{margin-bottom:24px;}
-.sec-title{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
-.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+/* ── FRAMEWORK GRID ── */
+.sec-title{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06);}
 .fw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
-.fw-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:12px 13px;cursor:pointer;transition:all .2s;}
-.fw-card:hover{border-color:var(--border-h);}
-.fw-card.selected{border-color:var(--g2);background:rgba(80,212,245,.04);}
+.fw-card{
+  background:var(--glass);border:1.5px solid var(--glass-border);border-radius:var(--r);
+  padding:13px 14px;cursor:pointer;backdrop-filter:blur(8px);transition:all .2s;
+}
+.fw-card:hover{border-color:var(--glass-border-h);}
+.fw-card.selected{border-color:var(--g2);background:rgba(80,212,245,.06);box-shadow:0 0 16px rgba(80,212,245,.08);}
 .fw-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;transition:color .2s;}
 .fw-card.selected .fw-tag{color:var(--g2);}
 .fw-nome{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
-.fw-desc{font-size:11px;color:var(--muted);line-height:1.45;}
+.fw-desc{font-size:11px;color:var(--muted);line-height:1.5;}
 
-.s2-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.s2-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:20px;}
 .sel-count{font-size:13px;color:var(--muted);}
 .sel-count span{color:var(--g1);font-weight:700;}
 
-/* ── STEP 3 ── */
-.res-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px;}
-.res-meta .res-nicho{font-size:21px;font-weight:800;letter-spacing:-.02em;}
-.res-fw{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g2);background:rgba(80,212,245,.07);border:1px solid rgba(80,212,245,.16);padding:4px 10px;border-radius:100px;display:inline-block;margin-top:5px;}
+/* ── STEP 3: RESULTADO ── */
+.res-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:32px;flex-wrap:wrap;gap:16px;
+}
+.res-meta .res-nicho{
+  font-size:24px;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(90deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.res-fw{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--g2);background:rgba(80,212,245,.08);border:1px solid rgba(80,212,245,.18);
+  padding:4px 11px;border-radius:100px;display:inline-block;margin-top:6px;
+}
 .res-actions{display:flex;gap:9px;flex-wrap:wrap;}
 
-/* FW CHANGE BAR */
-.fw-change-bar{display:flex;align-items:center;gap:10px;margin-bottom:28px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);flex-wrap:wrap;}
+/* ── FW PILLS ── */
+.fw-change-bar{
+  display:flex;align-items:center;gap:10px;margin-bottom:32px;
+  padding:12px 16px;background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:var(--r);flex-wrap:wrap;backdrop-filter:blur(12px);
+}
 .fw-change-label{font-size:11px;font-weight:700;color:var(--dim);white-space:nowrap;letter-spacing:.05em;text-transform:uppercase;}
 .fw-pills{display:flex;gap:6px;flex-wrap:wrap;}
-.fw-pill{font-family:var(--f);font-size:11px;font-weight:700;padding:5px 11px;border-radius:100px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;}
-.fw-pill:hover{border-color:var(--border-h);color:var(--text);}
-.fw-pill.active{background:rgba(80,212,245,.09);border-color:rgba(80,212,245,.28);color:var(--g2);}
+.fw-pill{
+  font-family:var(--f);font-size:11px;font-weight:700;padding:5px 12px;border-radius:100px;
+  background:rgba(255,255,255,.04);border:1px solid var(--glass-border);
+  color:var(--muted);cursor:pointer;transition:all .2s;backdrop-filter:blur(4px);
+}
+.fw-pill:hover{border-color:var(--glass-border-h);color:var(--text);}
+.fw-pill.active{background:rgba(80,212,245,.1);border-color:rgba(80,212,245,.3);color:var(--g2);}
 
-/* TEMA BLOCK */
-.tema-block{margin-bottom:44px;}
-.tema-block-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:13px;border-bottom:1px solid var(--border);}
-.tb-num{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:100px;flex-shrink:0;}
-.tb-t1 .tb-num{color:#0b0b0f;background:var(--g1);}
-.tb-t2 .tb-num{color:#0b0b0f;background:var(--g2);}
-.tb-t3 .tb-num{color:#0b0b0f;background:var(--g3);}
-.tb-nome{font-size:19px;font-weight:800;letter-spacing:-.02em;}
+/* ── TEMA BLOCK ── */
+.tema-block{margin-bottom:48px;animation:fadeUp .5s ease both;}
+.tema-block-header{
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;
+  padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.tb-num{
+  font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 12px;border-radius:100px;flex-shrink:0;
+}
+.tb-t1 .tb-num{color:#060608;background:var(--g1);box-shadow:0 0 12px rgba(184,240,80,.3);}
+.tb-t2 .tb-num{color:#060608;background:var(--g2);box-shadow:0 0 12px rgba(80,212,245,.3);}
+.tb-t3 .tb-num{color:#060608;background:var(--g3);box-shadow:0 0 12px rgba(240,80,164,.3);}
+.tb-nome{font-size:20px;font-weight:800;letter-spacing:-.02em;}
 .tb-why{font-size:12px;color:var(--muted);margin-top:2px;font-style:italic;}
 
-/* CONTENT CARDS */
-.content-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+/* ── CONTENT CARDS ── */
+.content-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 
-.cc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .2s,transform .2s;}
-.cc:hover{border-color:var(--border-h);transform:translateY(-2px);}
-.cc-top{height:3px;}
-.cc-erros .cc-top{background:#f06060;}
-.cc-proc  .cc-top{background:var(--g2);}
-.cc-anal  .cc-top{background:var(--g3);}
-.cc-body{padding:16px 15px;}
+.cc{
+  background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r);
+  overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s;
+  backdrop-filter:blur(12px);
+}
+.cc:hover{border-color:var(--glass-border-h);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.3);}
+.cc-top{height:2px;}
+.cc-erros .cc-top{background:linear-gradient(90deg,#f06060,#f09060);}
+.cc-proc  .cc-top{background:linear-gradient(90deg,var(--g2),#50f5d4);}
+.cc-anal  .cc-top{background:linear-gradient(90deg,var(--g3),#a050f5);}
+.cc-body{padding:18px 16px;}
 
-.cc-tag{display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;padding:3px 8px;border-radius:100px;margin-bottom:9px;}
-.cc-erros .cc-tag{color:#f06060;background:rgba(240,96,96,.09);border:1px solid rgba(240,96,96,.18);}
-.cc-proc  .cc-tag{color:var(--g2);background:rgba(80,212,245,.07);border:1px solid rgba(80,212,245,.16);}
-.cc-anal  .cc-tag{color:var(--g3);background:rgba(240,80,164,.07);border:1px solid rgba(240,80,164,.16);}
+.cc-tag{
+  display:inline-flex;align-items:center;font-size:9px;font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase;padding:3px 9px;
+  border-radius:100px;margin-bottom:10px;
+}
+.cc-erros .cc-tag{color:#f06060;background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.2);}
+.cc-proc  .cc-tag{color:var(--g2);background:rgba(80,212,245,.08);border:1px solid rgba(80,212,245,.18);}
+.cc-anal  .cc-tag{color:var(--g3);background:rgba(240,80,164,.08);border:1px solid rgba(240,80,164,.18);}
 
-.cc-titulo{font-size:13px;font-weight:700;line-height:1.35;color:var(--text);margin-bottom:11px;}
+.cc-titulo{font-size:14px;font-weight:700;line-height:1.35;color:var(--text);margin-bottom:12px;}
 
-/* FORMAT TOGGLE */
-.fmt-toggle{display:flex;gap:4px;margin-bottom:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;}
-.fmt-btn{flex:1;font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:transparent;border:none;color:var(--dim);padding:5px 4px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.fmt-btn.active{background:var(--bg4);color:var(--text);border:1px solid var(--border-h);}
-.fmt-btn:hover:not(.active){color:var(--muted);}
-
-/* FORMAT CONTENT */
-.fmt-content{display:none;}
-.fmt-content.active{display:block;animation:fadeIn .25s ease both;}
-
-/* REELS */
-.reels-section{margin-bottom:9px;}
-.rs-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
-.rs-label::after{content:'';flex:1;height:1px;background:var(--border);}
-.rs-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--muted);line-height:1.65;}
-.rs-hook{border-left:2px solid var(--g1);padding-left:9px;font-weight:500;color:var(--text);font-size:12.5px;}
-.rs-cena{border-left:2px solid var(--border-h);padding-left:9px;margin-bottom:5px;}
-.rs-cena:last-child{margin-bottom:0;}
-.rs-cena-num{font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
-.rs-cta{border-left:2px solid var(--g3);padding-left:9px;font-weight:500;color:var(--text);}
-.rs-legenda{font-size:11.5px;color:var(--muted);line-height:1.7;}
-.rs-hashtags{font-size:11px;color:var(--g2);margin-top:4px;line-height:1.8;}
-
-/* CARROSSEL */
-.slides-wrap{display:flex;flex-direction:column;gap:6px;}
-.slide{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 11px;display:flex;gap:9px;align-items:flex-start;}
-.slide-num{font-size:9px;font-weight:800;color:var(--dim);min-width:18px;margin-top:1px;}
-.slide-capa .slide-num{color:var(--g1);}
-.slide-txt{font-size:12px;color:var(--muted);line-height:1.6;}
-.slide-capa .slide-txt{font-weight:600;color:var(--text);}
-
-/* POST */
-.post-img-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:7px;}
-.post-img-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;}
-.post-img-txt{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;text-align:center;padding:8px 0;}
-.post-leg{font-size:12px;color:var(--muted);line-height:1.7;}
-.post-hash{font-size:11px;color:var(--g2);margin-top:5px;line-height:1.8;}
-
-/* COPY BTN */
-.copy-btn{display:flex;align-items:center;gap:5px;margin-top:9px;font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);background:none;border:none;cursor:pointer;padding:0;transition:color .15s;}
-.copy-btn:hover{color:var(--muted);}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--g1);color:#0b0b0f;font-family:var(--f);font-size:12px;font-weight:700;letter-spacing:.05em;padding:10px 20px;border-radius:100px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:99;}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* PRINT */
-@media print{
-  body{background:#fff!important;color:#111!important;}
-  body::before,.steps,.header,.fw-change-bar,.res-actions,.fmt-toggle,.copy-btn{display:none!important;}
-  .wrap{padding:16px!important;}
-  .res-nicho{color:#111!important;font-size:18px!important;}
-  .res-fw{color:#006!important;background:#eef!important;border-color:#99c!important;}
-  .tema-block{break-inside:avoid;}
-  .tb-nome{color:#111!important;}
-  .tb-why{color:#555!important;}
-  .cc{background:#f8f8f8!important;border:1px solid #ddd!important;break-inside:avoid;}
-  .cc-top{display:block!important;height:3px!important;}
-  .cc-erros .cc-top{background:#e04444!important;}
-  .cc-proc  .cc-top{background:#008ab0!important;}
-  .cc-anal  .cc-top{background:#b0006a!important;}
-  .cc-body{padding:12px!important;}
-  .cc-titulo{color:#111!important;}
-  .fmt-content{display:block!important;}
-  .fmt-content:not(.active){display:none!important;}
-  .rs-box,.slide,.post-img-box{background:#f0f0f0!important;border:1px solid #ddd!important;}
-  .rs-hook,.rs-cta,.slide-capa .slide-txt,.post-img-txt{color:#111!important;}
-  .rs-legenda,.rs-cena,.slide-txt,.post-leg{color:#444!important;}
-  .rs-hashtags,.post-hash{color:#0050aa!important;}
-  .rs-cena-num,.post-img-label,.slide-num{color:#888!important;}
-  .cc-tag{display:inline-flex!important;}
-  .cc-erros .cc-tag{color:#c00!important;background:#fff0f0!important;}
-  .cc-proc  .cc-tag{color:#006!important;background:#f0f8ff!important;}
-  .cc-anal  .cc-tag{color:#800060!important;background:#fff0f8!important;}
-  .content-cards{grid-template-columns:repeat(3,1fr)!important;}
+/* ── FW STEPS (resumo) ── */
+.fw-steps-mini{margin-bottom:14px;}
+.fw-step-item{
+  font-size:11.5px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.05);
+  padding:4px 0;line-height:1.55;
+}
+.fw-step-item:last-child{border-bottom:none;}
+.fw-step-item strong{color:var(--text);font-weight:600;}
+.fw-steps-label{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:6px;
 }
 
-@keyframes up{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+/* ── FORMAT BUTTONS (gerar por demanda) ── */
+.fmt-demand{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.fmt-demand-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:2px;}
+.fmt-btns-row{display:flex;gap:6px;}
 
+.btn-fmt{
+  position:relative;overflow:hidden;flex:1;
+  font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  background:rgba(255,255,255,.04);border:1px solid var(--glass-border);
+  color:var(--muted);border-radius:8px;padding:8px 4px;cursor:pointer;
+  transition:all .2s;backdrop-filter:blur(4px);text-align:center;
+}
+.btn-fmt::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.25) 50%,transparent 65%);
+  transform:translateX(-100%);transition:transform .4s;
+}
+.btn-fmt:hover::after{transform:translateX(100%);}
+.btn-fmt:hover{border-color:var(--glass-border-h);color:var(--text);}
+.btn-fmt.reels-btn:hover,.btn-fmt.reels-btn.done{border-color:rgba(240,160,80,.4);color:#f0a050;}
+.btn-fmt.carr-btn:hover,.btn-fmt.carr-btn.done{border-color:rgba(80,212,245,.4);color:var(--g2);}
+.btn-fmt.post-btn:hover,.btn-fmt.post-btn.done{border-color:rgba(184,240,80,.4);color:var(--g1);}
+.btn-fmt.done{opacity:.7;}
+.btn-fmt:disabled{opacity:.4;cursor:not-allowed;}
+.btn-fmt:disabled::after{display:none;}
+
+/* ── GERADO: conteúdo expandido ── */
+.fmt-output{margin-top:10px;animation:fadeUp .3s ease both;}
+.fmt-tabs{display:flex;gap:4px;margin-bottom:10px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:9px;padding:3px;}
+.fmt-tab{
+  flex:1;font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  background:transparent;border:none;color:var(--dim);padding:5px 4px;
+  border-radius:7px;cursor:pointer;transition:all .2s;
+}
+.fmt-tab.active{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--glass-border);}
+
+.fmt-pane{display:none;}
+.fmt-pane.active{display:block;animation:fadeIn .2s ease both;}
+
+/* ── REELS LAYOUT ── */
+.rs-section{margin-bottom:8px;}
+.rs-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.rs-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05);}
+.rs-box{background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--muted);line-height:1.65;}
+.rs-hook{border-left:2px solid var(--g1);font-weight:600;color:var(--text);font-size:12.5px;}
+.rs-cena{border-left:2px solid rgba(255,255,255,.1);padding-left:9px;margin-bottom:5px;}
+.rs-cena:last-child{margin-bottom:0;}
+.rs-cena-num{font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+.rs-cta{border-left:2px solid var(--g3);font-weight:600;color:var(--text);}
+.rs-legenda{font-size:11.5px;color:var(--muted);line-height:1.7;}
+.rs-hash{font-size:11px;color:var(--g2);margin-top:4px;line-height:1.8;}
+
+/* ── CARROSSEL ── */
+.slides-wrap{display:flex;flex-direction:column;gap:5px;}
+.slide{background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:7px;padding:7px 10px;display:flex;gap:8px;align-items:flex-start;}
+.slide-num{font-size:9px;font-weight:800;color:var(--dim);min-width:16px;margin-top:1px;}
+.slide-capa .slide-num{color:var(--g1);}
+.slide-txt{font-size:12px;color:var(--muted);line-height:1.6;}
+.slide-capa .slide-txt{font-weight:700;color:var(--text);}
+.leg-box{background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:9px 11px;margin-top:7px;}
+.leg-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.leg-txt{font-size:12px;color:var(--muted);line-height:1.7;}
+.leg-hash{font-size:11px;color:var(--g2);margin-top:4px;line-height:1.8;}
+
+/* ── POST ── */
+.post-img{background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:14px;margin-bottom:7px;text-align:center;}
+.post-img-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.post-img-txt{font-size:14px;font-weight:800;color:var(--text);line-height:1.3;}
+.post-img-sub{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
+
+/* ── COPY BTN ── */
+.copy-btn{
+  display:flex;align-items:center;gap:5px;margin-top:8px;
+  font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--dim);background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
+}
+.copy-btn:hover{color:var(--muted);}
+
+/* ── GENERATING SKELETON ── */
+.gen-loading{
+  display:flex;align-items:center;gap:8px;padding:12px 0;
+  font-size:12px;color:var(--dim);
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(8px);
+  background:var(--g1);color:#060608;font-family:var(--f);font-size:12px;font-weight:700;
+  letter-spacing:.05em;padding:11px 22px;border-radius:100px;
+  opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:99;
+  box-shadow:0 4px 24px rgba(184,240,80,.3);
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── PRINT ── */
+@media print{
+  #bg-canvas,.grid-overlay,.orb,.steps,.fw-change-bar,.res-actions,.btn-ghost,.btn-fmt,.fmt-tabs,canvas{display:none!important;}
+  body{background:#fff!important;color:#111!important;}
+  .wrap{padding:16px!important;}
+  .tb-nome,.cc-titulo,.post-img-txt{color:#111!important;}
+  .cc{background:#f8f8f8!important;border:1px solid #ddd!important;}
+  .rs-box,.slide,.leg-box,.post-img{background:#f0f0f0!important;border:1px solid #ddd!important;}
+  .fmt-pane{display:block!important;}
+  .rs-legenda,.slide-txt,.leg-txt,.post-img-sub{color:#444!important;}
+  .rs-hook,.rs-cta,.slide-capa .slide-txt,.post-img-txt,.rs-hash,.leg-hash{color:#111!important;}
+  h1{background:none!important;-webkit-text-fill-color:#111!important;}
+  .res-nicho,.s2-nicho{background:none!important;-webkit-text-fill-color:#111!important;}
+}
+
+/* ── RESPONSIVE ── */
 @media(max-width:650px){
   .temas-grid,.content-cards,.fw-grid{grid-template-columns:1fr 1fr!important;}
   .inp-row{flex-direction:column;}
+  .fmt-btns-row{flex-direction:column;}
 }
 @media(max-width:420px){
   .temas-grid,.content-cards,.fw-grid{grid-template-columns:1fr!important;}
+  h1{font-size:34px;}
 }
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
+
+<!-- BG -->
+<canvas id="bg-canvas"></canvas>
+<div class="grid-overlay"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
 <div class="wrap">
 
 <!-- HEADER -->
 <div class="header">
   <div class="badge"><span class="badge-dot"></span> Método de Conteúdo</div>
-  <h1>Criador de<br><em>Temas Virais</em></h1>
+  <h1>Criador de Temas Virais</h1>
   <p class="sub">Nicho → Temas → Framework → Roteiro ou Post prontos para publicar.</p>
 </div>
 
@@ -253,37 +447,39 @@ input:focus{border-color:rgba(184,240,80,.33);box-shadow:0 0 0 3px rgba(184,240,
 
 <!-- PANEL 1 -->
 <div class="panel active" id="panel-1">
-  <span class="lbl">Qual é o seu nicho?</span>
-  <div class="inp-row">
-    <input type="text" id="inp-nicho" placeholder="Ex: personal trainer, finanças pessoais, culinária vegana..." />
-    <button class="btn-primary" id="btn-analisar" onclick="analisarNicho()">Analisar nicho →</button>
+  <div class="glass-card" style="padding:32px;">
+    <span class="lbl">Qual é o seu nicho?</span>
+    <div class="inp-row">
+      <input type="text" id="inp-nicho" placeholder="Ex: personal trainer, finanças pessoais, culinária vegana..."/>
+      <button class="btn-primary" id="btn-analisar" onclick="analisarNicho()">Analisar nicho →</button>
+    </div>
+    <div class="loading" id="load-1"><div class="spin"></div><span id="load-1-txt">Analisando...</span></div>
   </div>
-  <div class="loading" id="load-1"><div class="spin"></div><span id="load-1-txt">Analisando o nicho...</span></div>
 </div>
 
 <!-- PANEL 2 -->
 <div class="panel" id="panel-2">
   <div class="s2-top">
     <div>
-      <div class="s2-info">Nicho: <strong id="s2-nicho-label"></strong></div>
+      <div class="s2-nicho" id="s2-nicho-label"></div>
       <div class="s2-hint">Selecione até 3 temas e o framework de escrita</div>
     </div>
-    <div style="display:flex;gap:9px;">
+    <div class="s2-btns">
       <button class="btn-ghost" id="btn-refresh" onclick="refreshTemas()">↺ Novos temas</button>
       <button class="btn-ghost" onclick="voltarStep1()">← Trocar nicho</button>
     </div>
   </div>
   <span class="lbl">Escolha os temas (até 3)</span>
   <div class="temas-grid" id="temas-grid"></div>
-  <div class="fw-section">
+  <div style="margin-bottom:20px;">
     <div class="sec-title">Lógica do Conteúdo</div>
     <div class="fw-grid" id="fw-grid"></div>
   </div>
   <div class="s2-bar">
     <div class="sel-count">Temas: <span id="sel-count">0</span>/3</div>
-    <button class="btn-primary" id="btn-gerar" onclick="gerarConteudo()" disabled>Criar conteúdo →</button>
+    <button class="btn-primary" id="btn-gerar" onclick="gerarEstrutura()" disabled>Criar estrutura →</button>
   </div>
-  <div class="loading" id="load-2" style="margin-top:14px;"><div class="spin"></div><span id="load-2-txt">Gerando conteúdo...</span></div>
+  <div class="loading" id="load-2" style="margin-top:14px;"><div class="spin"></div><span id="load-2-txt">Gerando estrutura...</span></div>
 </div>
 
 <!-- PANEL 3 -->
@@ -296,7 +492,7 @@ input:focus{border-color:rgba(184,240,80,.33);box-shadow:0 0 0 3px rgba(184,240,
     <div class="res-actions">
       <button class="btn-ghost" onclick="voltarStep2()">← Voltar</button>
       <button class="btn-ghost" onclick="voltarStep1(true)">↺ Novo nicho</button>
-      <button class="btn-pdf" onclick="window.print()">↓ Exportar PDF</button>
+      <button class="btn-ghost" onclick="window.print()">↓ PDF</button>
     </div>
   </div>
   <div class="fw-change-bar">
@@ -310,44 +506,59 @@ input:focus{border-color:rgba(184,240,80,.33);box-shadow:0 0 0 3px rgba(184,240,
 <div class="toast" id="toast"></div>
 
 <script>
-/* ── FRAMEWORKS ── */
-const FWS = [
-  {id:'aida',tag:'Copywriting',foco:'Conversão',nome:'AIDA',desc:'Atenção, Interesse, Desejo, Ação',
-   steps:['Atenção','Interesse','Desejo','Ação']},
-  {id:'pas',tag:'Copywriting',foco:'Dor & Solução',nome:'PAS',desc:'Problema, Agitação, Solução',
-   steps:['Problema','Agitação','Solução']},
-  {id:'bab',tag:'Copywriting',foco:'Transformação',nome:'BAB',desc:'Before, After, Bridge',
-   steps:['Before','After','Bridge']},
-  {id:'silo',tag:'Retórica',foco:'Autoridade',nome:'Silogismo',desc:'Premissa A + Premissa B = Conclusão',
-   steps:['Premissa A','Premissa B','Conclusão']},
-  {id:'enti',tag:'Retórica',foco:'Persuasão Sutil',nome:'Entimema',desc:'Silogismo com premissa implícita',
-   steps:['Premissa explícita','Premissa implícita','Conclusão da audiência']},
-  {id:'story',tag:'Narrativa',foco:'Conexão',nome:'Storytelling',desc:'Jornada do Herói',
-   steps:['Mundo comum','Chamado/Problema','Provação','Transformação']}
+/* ── PARTICLES ── */
+(function(){
+  const c=document.getElementById('bg-canvas');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  function mkPt(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,a:Math.random()};}
+  for(let i=0;i<60;i++)pts.push(mkPt());
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(184,240,80,${p.a*0.35})`;ctx.fill();
+    });
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<120){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(184,240,80,${(1-d/120)*.06})`;ctx.lineWidth=.5;ctx.stroke();}
+    }));
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── DATA ── */
+const FWS=[
+  {id:'aida',tag:'Copywriting',foco:'Conversão',nome:'AIDA',desc:'Atenção, Interesse, Desejo, Ação',steps:['Atenção','Interesse','Desejo','Ação']},
+  {id:'pas',tag:'Copywriting',foco:'Dor & Solução',nome:'PAS',desc:'Problema, Agitação, Solução',steps:['Problema','Agitação','Solução']},
+  {id:'bab',tag:'Copywriting',foco:'Transformação',nome:'BAB',desc:'Before, After, Bridge',steps:['Before','After','Bridge']},
+  {id:'silo',tag:'Retórica',foco:'Autoridade',nome:'Silogismo',desc:'Premissa A + Premissa B = Conclusão',steps:['Premissa A','Premissa B','Conclusão']},
+  {id:'enti',tag:'Retórica',foco:'Persuasão Sutil',nome:'Entimema',desc:'Silogismo com premissa implícita',steps:['Premissa explícita','Premissa implícita','Conclusão da audiência']},
+  {id:'story',tag:'Narrativa',foco:'Conexão',nome:'Storytelling',desc:'Jornada do Herói',steps:['Mundo comum','Chamado/Problema','Provação','Transformação']}
 ];
-
-const CATS = [
-  {key:'erros',tag:'Erros Comuns',   cls:'cc-erros'},
-  {key:'proc', tag:'Processos & Bastidores',cls:'cc-proc'},
-  {key:'anal', tag:'Análises & Estratégia', cls:'cc-anal'}
+const CATS=[
+  {key:'erros',tag:'Erros Comuns',cls:'cc-erros'},
+  {key:'proc',tag:'Processos & Bastidores',cls:'cc-proc'},
+  {key:'anal',tag:'Análises & Estratégia',cls:'cc-anal'}
 ];
-const TCLS = ['tb-t1','tb-t2','tb-t3'];
-const FMTS = ['reels','carrossel','post'];
-const FMTS_LABEL = {'reels':'Reels','carrossel':'Carrossel','post':'Post'};
+const TCLS=['tb-t1','tb-t2','tb-t3'];
+const MSGS1=['Analisando o nicho...','Identificando tendências...','Mapeando temas virais...','Quase pronto...'];
+const MSGS2=['Estruturando os temas...','Aplicando o framework...','Gerando os cards...','Finalizando...'];
 
-/* ── STATE ── */
-let nicho='', temasDisp=[], temasSel=[], fwSel='aida', resultado=null;
-// formato ativo por card: key = "t{ti}_c{ci}"
-const fmtState = {};
-
-/* ── LOADING ── */
-const MSGS1=['Analisando o nicho...','Identificando tendências virais...','Mapeando temas com potencial...','Quase pronto...'];
-const MSGS2=['Estruturando o conteúdo...','Aplicando o framework...','Gerando roteiros e posts...','Finalizando...'];
+let nicho='',temasDisp=[],temasSel=[],fwSel='aida',resultado=null;
+const fmtGerado={};
 let msgTimer;
+
 function startLoad(id,msgs){let i=0;document.getElementById(id+'-txt').textContent=msgs[0];msgTimer=setInterval(()=>{i=(i+1)%msgs.length;document.getElementById(id+'-txt').textContent=msgs[i];},1700);}
 function stopLoad(id){clearInterval(msgTimer);document.getElementById(id).classList.remove('on');}
 
-/* ── STEPS ── */
 function setStep(n){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+n).classList.add('active');
@@ -367,12 +578,9 @@ async function analisarNicho(){
   document.getElementById('load-1').classList.add('on');
   startLoad('load-1',MSGS1);
   try{
-    const d=await callAPI(`Para o nicho "${nicho}", identifique 6 temas com alto potencial viral para redes sociais.
-Responda APENAS JSON sem markdown:
-{"temas":[{"nome":"Nome (3-5 palavras)","potencial":"Por que é viral agora (max 10 palavras)"}]}
-Gere exatamente 6 temas variados.`,700);
-    temasDisp=d.temas; temasSel=[];
-    renderStep2(); stopLoad('load-1');
+    const d=await callAPI(`Para o nicho "${nicho}", identifique 6 temas com alto potencial viral para redes sociais. Responda APENAS JSON sem markdown: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral agora max 10 palavras"}]} Gere exatamente 6 temas variados.`,800);
+    temasDisp=d.temas;temasSel=[];
+    renderStep2();stopLoad('load-1');
     document.getElementById('btn-analisar').disabled=false;
     setStep(2);
   }catch(e){stopLoad('load-1');document.getElementById('btn-analisar').disabled=false;alert('Erro. Tente novamente.');}
@@ -381,18 +589,16 @@ Gere exatamente 6 temas variados.`,700);
 /* ── STEP 2 ── */
 function renderStep2(){
   document.getElementById('s2-nicho-label').textContent=nicho;
-  const tg=document.getElementById('temas-grid');
-  tg.innerHTML='';
+  const tg=document.getElementById('temas-grid');tg.innerHTML='';
   temasDisp.forEach((t,i)=>{
     tg.innerHTML+=`<div class="tema-card" id="tc-${i}" onclick="toggleTema(${i})">
-      <div class="tc-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#0b0b0f" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div class="tc-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#060608" stroke-width="1.8" stroke-linecap="round"/></svg></div>
       <div class="tc-viral">viral</div>
       <div class="tc-nome">${t.nome}</div>
       <div class="tc-why">${t.potencial}</div>
     </div>`;
   });
-  const fg=document.getElementById('fw-grid');
-  fg.innerHTML='';
+  const fg=document.getElementById('fw-grid');fg.innerHTML='';
   FWS.forEach(fw=>{
     fg.innerHTML+=`<div class="fw-card${fw.id===fwSel?' selected':''}" id="fw-${fw.id}" onclick="selectFW('${fw.id}')">
       <div class="fw-tag">${fw.tag} · ${fw.foco}</div>
@@ -419,8 +625,18 @@ function updateCount(){
   document.getElementById('btn-gerar').disabled=temasSel.length===0;
 }
 
-/* ── STEP 3: GERAR ── */
-async function gerarConteudo(){
+async function refreshTemas(){
+  const btn=document.getElementById('btn-refresh');
+  btn.disabled=true;btn.textContent='↺ Buscando...';
+  try{
+    const d=await callAPI(`Para o nicho "${nicho}", identifique 6 NOVOS temas virais para redes sociais, diferentes dos anteriores. Responda APENAS JSON: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral max 10 palavras"}]} Exatamente 6 temas.`,800);
+    temasDisp=d.temas;temasSel=[];renderStep2();
+  }catch(e){showToast('Erro ao buscar novos temas');}
+  btn.disabled=false;btn.textContent='↺ Novos temas';
+}
+
+/* ── STEP 3: gera só estrutura (fw_steps + titulo) ── */
+async function gerarEstrutura(){
   if(!temasSel.length)return;
   const fw=FWS.find(f=>f.id===fwSel);
   const escolhidos=temasSel.map(i=>temasDisp[i]);
@@ -429,31 +645,23 @@ async function gerarConteudo(){
   startLoad('load-2',MSGS2);
 
   const tStr=escolhidos.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
-  const schemaConteudo = `{
-    "titulo":"titulo chamativo 6-10 palavras",
-    "fw_steps":[{"label":"etapa","texto":"conteudo 1-2 frases"}],
-    "reels":{"hook":"frase abertura 3 segundos","cenas":[{"num":1,"texto":"cena 1"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"chamada acao final","legenda":"legenda com emojis 3-4 frases","hashtags":"5 hashtags"},
-    "carrossel":{"capa":"texto capa max 8 palavras","slides":["slide2","slide3","slide4","slide5"],"legenda":"legenda com emojis","hashtags":"5 hashtags"},
-    "post":{"imagem":"texto imagem max 10 palavras","subtexto":"subtitulo max 6 palavras","legenda":"legenda com emojis e CTA","hashtags":"5 hashtags"}
-  }`;
-  const prompt=`Você é especialista em criação de conteúdo viral para Instagram e TikTok. Responda APENAS com JSON válido.
-Nicho: "${nicho}"
-Temas: ${tStr}
-Framework: ${fw.nome} (${fw.steps.join(' -> ')})
+  const prompt=`Especialista em conteúdo viral. Responda APENAS JSON válido.
+Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} (${fw.steps.join(' -> ')})
 
-Gere EXATAMENTE ${escolhidos.length} tema(s) com 3 conteúdos cada (erros, proc, anal), cada um com os 3 formatos (reels, carrossel, post).
+Para cada tema gere 3 conteúdos (erros, proc, anal) com:
+- titulo: título chamativo 6-10 palavras
+- fw_steps: array com ${fw.steps.length} objetos {"label":"etapa","texto":"conteúdo real 1-2 frases"}
 
-Formato JSON obrigatório:
-{"temas":[{"nome":"nome tema","erros":${schemaConteudo},"proc":${schemaConteudo},"anal":${schemaConteudo}}]}
-
-Gere EXATAMENTE ${escolhidos.length} objeto(s) no array temas. Preencha TODOS os campos. Para fw_steps use exatamente ${fw.steps.length} etapas: ${fw.steps.join(', ')}.`;
+JSON: {"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}
+Gere EXATAMENTE ${escolhidos.length} tema(s).`;
 
   try{
-    const d=await callAPI(prompt, escolhidos.length === 1 ? 2000 : escolhidos.length === 2 ? 3500 : 5000);
+    const d=await callAPI(prompt,escolhidos.length===1?1200:escolhidos.length===2?2000:2800);
     resultado={nicho,fw,temas:d.temas,originais:escolhidos};
+    Object.keys(fmtGerado).forEach(k=>delete fmtGerado[k]);
     renderResultado(resultado);
     stopLoad('load-2');
-    document.getElementById('btn-gerar').disabled=temasSel.length===0;
+    document.getElementById('btn-gerar').disabled=false;
     setStep(3);
   }catch(e){
     stopLoad('load-2');document.getElementById('btn-gerar').disabled=false;
@@ -461,33 +669,44 @@ Gere EXATAMENTE ${escolhidos.length} objeto(s) no array temas. Preencha TODOS os
   }
 }
 
-function fmtSchema(fw){return '"..."';}  // placeholder — prompt tem schema completo inline
-
 /* ── RENDER RESULTADO ── */
 function renderResultado(data){
   document.getElementById('res-nicho-label').textContent=data.nicho;
   document.getElementById('res-fw-label').textContent=`${data.fw.nome} — ${data.fw.foco}`;
-
-  const pills=document.getElementById('fw-pills');
-  pills.innerHTML='';
+  const pills=document.getElementById('fw-pills');pills.innerHTML='';
   FWS.forEach(fw=>{
     pills.innerHTML+=`<button class="fw-pill${fw.id===data.fw.id?' active':''}" onclick="trocarFW('${fw.id}')">${fw.nome}</button>`;
   });
-
-  const out=document.getElementById('resultado-out');
-  out.innerHTML='';
-
+  const out=document.getElementById('resultado-out');out.innerHTML='';
   data.temas.forEach((t,ti)=>{
     const orig=data.originais[ti];
     let cardsHtml='';
     CATS.forEach((cat,ci)=>{
       const cd=t[cat.key];
       const cardKey=`t${ti}_c${ci}`;
-      if(!fmtState[cardKey]) fmtState[cardKey]='reels';
-      cardsHtml+=buildCard(cd,cat,cardKey,data.fw);
+      const stepsHtml=(cd.fw_steps||[]).map(s=>`<div class="fw-step-item"><strong>${s.label}:</strong> ${s.texto}</div>`).join('');
+      cardsHtml+=`<div class="cc ${cat.cls}" id="card-${cardKey}">
+        <div class="cc-top"></div>
+        <div class="cc-body">
+          <div class="cc-tag">${cat.tag}</div>
+          <div class="cc-titulo">${cd.titulo||''}</div>
+          <div class="fw-steps-mini">
+            <div class="fw-steps-label">${data.fw.nome}</div>
+            ${stepsHtml}
+          </div>
+          <div class="fmt-demand">
+            <div class="fmt-demand-title">Gerar formato</div>
+            <div class="fmt-btns-row">
+              <button class="btn-fmt reels-btn" id="btn-reels-${cardKey}" onclick="gerarFormato('${cardKey}','reels',${ti},${ci})">▶ Reels</button>
+              <button class="btn-fmt carr-btn"  id="btn-carr-${cardKey}"  onclick="gerarFormato('${cardKey}','carrossel',${ti},${ci})">☰ Carrossel</button>
+              <button class="btn-fmt post-btn"  id="btn-post-${cardKey}"  onclick="gerarFormato('${cardKey}','post',${ti},${ci})">◻ Post</button>
+            </div>
+          </div>
+          <div id="output-${cardKey}"></div>
+        </div>
+      </div>`;
     });
-    out.innerHTML+=`
-    <div class="tema-block ${TCLS[ti]}">
+    out.innerHTML+=`<div class="tema-block ${TCLS[ti]}" style="animation-delay:${ti*.1}s">
       <div class="tema-block-header">
         <span class="tb-num">Tema ${ti+1}</span>
         <div><div class="tb-nome">${orig?orig.nome:t.nome}</div><div class="tb-why">${orig?orig.potencial:''}</div></div>
@@ -497,88 +716,112 @@ function renderResultado(data){
   });
 }
 
-function buildCard(cd,cat,cardKey,fw){
-  const activeFmt=fmtState[cardKey]||'reels';
-  const fmtBtns=FMTS.map(f=>`<button class="fmt-btn${f===activeFmt?' active':''}" onclick="switchFmt('${cardKey}',this,'${f}')">${FMTS_LABEL[f]}</button>`).join('');
+/* ── GERAR FORMATO SOB DEMANDA ── */
+async function gerarFormato(cardKey, fmt, ti, ci){
+  const btn=document.getElementById(`btn-${fmt==='carrossel'?'carr':fmt}-${cardKey}`);
+  const outEl=document.getElementById(`output-${cardKey}`);
+  if(!btn||!outEl)return;
 
-  // FW steps
-  let fwHtml='';
-  if(cd.fw_steps&&cd.fw_steps.length){
-    fwHtml=`<div style="margin-bottom:9px;">
-      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;">${fw.nome}</div>
-      ${cd.fw_steps.map(s=>`<div style="font-size:11.5px;color:var(--muted);border-bottom:1px solid var(--border);padding:3px 0;line-height:1.55;"><span style="color:var(--text);font-weight:600;">${s.label}:</span> ${s.texto}</div>`).join('')}
-    </div>`;
+  btn.disabled=true;
+  btn.textContent='...';
+
+  const t=resultado.temas[ti];
+  const cat=CATS[ci];
+  const cd=t[cat.key];
+  const fw=resultado.fw;
+  const orig=resultado.originais[ti];
+
+  outEl.innerHTML=`<div class="gen-loading"><div class="spin"></div><span>Gerando ${fmt}...</span></div>`;
+
+  let prompt='';
+  if(fmt==='reels'){
+    prompt=`Crie um roteiro de Reels/TikTok completo em português. Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome}
+Conteúdo base: "${cd.titulo}"
+
+JSON: {"hook":"frase abertura impactante 3 segundos muito direta e provocativa","cenas":[{"num":1,"texto":"narração cena 1 detalhada"},{"num":2,"texto":"narração cena 2"},{"num":3,"texto":"narração cena 3"},{"num":4,"texto":"narração cena 4"}],"cta":"chamada para ação final do vídeo","legenda":"legenda completa instagram com emojis 3-4 frases engajamento","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+  } else if(fmt==='carrossel'){
+    prompt=`Crie um carrossel do Instagram completo em português. Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome}
+Conteúdo base: "${cd.titulo}"
+
+JSON: {"capa":"texto impactante slide capa max 8 palavras","slides":["texto slide 2 informativo","texto slide 3","texto slide 4","texto slide 5 conclusão"],"legenda":"legenda completa com emojis 3-4 frases","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+  } else {
+    prompt=`Crie um post de imagem Instagram completo em português. Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome}
+Conteúdo base: "${cd.titulo}"
+
+JSON: {"imagem":"texto principal imagem max 10 palavras impactante","subtexto":"subtítulo max 6 palavras","legenda":"legenda completa com emojis e CTA 4-5 frases","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
   }
 
-  return `<div class="cc ${cat.cls}">
-    <div class="cc-top"></div>
-    <div class="cc-body">
-      <div class="cc-tag">${cat.tag}</div>
-      <div class="cc-titulo">${cd.titulo||''}</div>
-      ${fwHtml}
-      <div class="fmt-toggle">${fmtBtns}</div>
-      ${buildReels(cd.reels,cardKey)}
-      ${buildCarrossel(cd.carrossel,cardKey)}
-      ${buildPost(cd.post,cardKey)}
-    </div>
+  try{
+    const d=await callAPI(prompt,1000);
+    if(!fmtGerado[cardKey])fmtGerado[cardKey]={};
+    fmtGerado[cardKey][fmt]=d;
+    renderFmtOutput(cardKey,fmt,outEl);
+    btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
+    btn.classList.add('done');
+  }catch(e){
+    outEl.innerHTML='';
+    btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
+    showToast('Erro ao gerar. Tente novamente.');
+  }
+  btn.disabled=false;
+}
+
+/* ── RENDER OUTPUT ── */
+function renderFmtOutput(cardKey,fmt,outEl){
+  const gerado=fmtGerado[cardKey]||{};
+  const fmts=Object.keys(gerado);
+  if(!fmts.length){outEl.innerHTML='';return;}
+
+  const labels={'reels':'▶ Reels','carrossel':'☰ Carrossel','post':'◻ Post'};
+  const tabs=fmts.map(f=>`<button class="fmt-tab${f===fmt?' active':''}" onclick="switchTab('${cardKey}','${f}')">${labels[f]}</button>`).join('');
+
+  let panesHtml='';
+  fmts.forEach(f=>{
+    const d=gerado[f];
+    let inner='';
+    if(f==='reels'){
+      const cenas=(d.cenas||[]).map(c=>`<div class="rs-cena"><div class="rs-cena-num">Cena ${c.num}</div>${c.texto}</div>`).join('');
+      const copyTxt=`REELS\nHook: ${d.hook}\n${(d.cenas||[]).map(c=>`Cena ${c.num}: ${c.texto}`).join('\n')}\nCTA: ${d.cta}\nLegenda: ${d.legenda}\n${d.hashtags}`;
+      inner=`
+        <div class="rs-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">${d.hook||''}</div></div>
+        <div class="rs-section"><div class="rs-label">Cenas</div><div class="rs-box">${cenas}</div></div>
+        <div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">${d.cta||''}</div></div>
+        <div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box"><div class="rs-legenda">${d.legenda||''}</div><div class="rs-hash">${d.hashtags||''}</div></div></div>
+        <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar roteiro</button>`;
+    } else if(f==='carrossel'){
+      const slides=[`<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">${d.capa||''}</div></div>`];
+      (d.slides||[]).forEach((s,i)=>slides.push(`<div class="slide"><span class="slide-num">${i+2}</span><div class="slide-txt">${s}</div></div>`));
+      const copyTxt=`CARROSSEL\nCapa: ${d.capa}\n${(d.slides||[]).map((s,i)=>`Slide ${i+2}: ${s}`).join('\n')}\nLegenda: ${d.legenda}\n${d.hashtags}`;
+      inner=`
+        <div class="slides-wrap">${slides.join('')}</div>
+        <div class="leg-box"><div class="leg-lbl">Legenda</div><div class="leg-txt">${d.legenda||''}</div><div class="leg-hash">${d.hashtags||''}</div></div>
+        <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar carrossel</button>`;
+    } else {
+      const copyTxt=`POST\nImagem: ${d.imagem}\nSubtítulo: ${d.subtexto}\nLegenda: ${d.legenda}\n${d.hashtags}`;
+      inner=`
+        <div class="post-img"><div class="post-img-lbl">Texto da imagem</div><div class="post-img-txt">${d.imagem||''}</div><div class="post-img-sub">${d.subtexto||''}</div></div>
+        <div class="leg-box"><div class="leg-lbl">Legenda</div><div class="leg-txt">${d.legenda||''}</div><div class="leg-hash">${d.hashtags||''}</div></div>
+        <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar post</button>`;
+    }
+    panesHtml+=`<div class="fmt-pane${f===fmt?' active':''}" id="pane-${cardKey}-${f}">${inner}</div>`;
+  });
+
+  outEl.innerHTML=`<div class="fmt-output">
+    ${fmts.length>1?`<div class="fmt-tabs">${tabs}</div>`:''}
+    ${panesHtml}
   </div>`;
 }
 
-function buildReels(r,key){
-  if(!r)return`<div class="fmt-content${fmtState[key]==='reels'?' active':''}" data-fmt="reels" data-key="${key}"><div style="font-size:12px;color:var(--dim);padding:8px 0;">Sem dados de Reels.</div></div>`;
-  const cenas=(r.cenas||[]).map(c=>`<div class="rs-cena"><div class="rs-cena-num">Cena ${c.num}</div>${c.texto}</div>`).join('');
-  const copyTxt=`REELS — ${r.hook||''}\n\n${(r.cenas||[]).map(c=>`Cena ${c.num}: ${c.texto}`).join('\n')}\n\nCTA: ${r.cta||''}\n\nLegenda: ${r.legenda||''}\n\n${r.hashtags||''}`;
-  return `<div class="fmt-content${fmtState[key]==='reels'?' active':''}" data-fmt="reels" data-key="${key}">
-    <div class="reels-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">${r.hook||''}</div></div>
-    <div class="reels-section"><div class="rs-label">Cenas</div><div class="rs-box">${cenas}</div></div>
-    <div class="reels-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">${r.cta||''}</div></div>
-    <div class="reels-section"><div class="rs-label">Legenda</div><div class="rs-box"><div class="rs-legenda">${r.legenda||''}</div><div class="rs-hashtags">${r.hashtags||''}</div></div></div>
-    <button class="copy-btn" onclick="copyText(this,'${escQ(copyTxt)}')">⎘ Copiar roteiro</button>
-  </div>`;
-}
-
-function buildCarrossel(c,key){
-  if(!c)return`<div class="fmt-content${fmtState[key]==='carrossel'?' active':''}" data-fmt="carrossel" data-key="${key}"><div style="font-size:12px;color:var(--dim);padding:8px 0;">Sem dados de Carrossel.</div></div>`;
-  const slides=[`<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">${c.capa||''}</div></div>`];
-  (c.slides||[]).forEach((s,i)=>slides.push(`<div class="slide"><span class="slide-num">${i+2}</span><div class="slide-txt">${s}</div></div>`));
-  const copyTxt=`CARROSSEL\nCapa: ${c.capa||''}\n${(c.slides||[]).map((s,i)=>`Slide ${i+2}: ${s}`).join('\n')}\n\nLegenda: ${c.legenda||''}\n\n${c.hashtags||''}`;
-  return `<div class="fmt-content${fmtState[key]==='carrossel'?' active':''}" data-fmt="carrossel" data-key="${key}">
-    <div class="slides-wrap">${slides.join('')}</div>
-    <div style="margin-top:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 11px;">
-      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;">Legenda</div>
-      <div class="post-leg">${c.legenda||''}</div>
-      <div class="post-hash">${c.hashtags||''}</div>
-    </div>
-    <button class="copy-btn" onclick="copyText(this,'${escQ(copyTxt)}')">⎘ Copiar carrossel</button>
-  </div>`;
-}
-
-function buildPost(p,key){
-  if(!p)return`<div class="fmt-content${fmtState[key]==='post'?' active':''}" data-fmt="post" data-key="${key}"><div style="font-size:12px;color:var(--dim);padding:8px 0;">Sem dados de Post.</div></div>`;
-  const copyTxt=`POST\nImagem: ${p.imagem||''}\nSubtítulo: ${p.subtexto||''}\n\nLegenda: ${p.legenda||''}\n\n${p.hashtags||''}`;
-  return `<div class="fmt-content${fmtState[key]==='post'?' active':''}" data-fmt="post" data-key="${key}">
-    <div class="post-img-box">
-      <div class="post-img-label">Texto da imagem</div>
-      <div class="post-img-txt">${p.imagem||''}</div>
-      <div style="font-size:11px;color:var(--muted);text-align:center;font-style:italic;">${p.subtexto||''}</div>
-    </div>
-    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 11px;">
-      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;">Legenda</div>
-      <div class="post-leg">${p.legenda||''}</div>
-      <div class="post-hash">${p.hashtags||''}</div>
-    </div>
-    <button class="copy-btn" onclick="copyText(this,'${escQ(copyTxt)}')">⎘ Copiar post</button>
-  </div>`;
-}
-
-/* ── FORMAT SWITCH ── */
-function switchFmt(cardKey,btn,fmt){
-  fmtState[cardKey]=fmt;
-  const parent=btn.closest('.cc-body');
-  parent.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  parent.querySelectorAll('.fmt-content').forEach(fc=>{
-    fc.classList.toggle('active', fc.dataset.fmt===fmt);
+function switchTab(cardKey,fmt){
+  const outEl=document.getElementById(`output-${cardKey}`);
+  if(!outEl)return;
+  outEl.querySelectorAll('.fmt-tab').forEach(t=>t.classList.toggle('active',t.textContent.includes(fmt==='reels'?'Reels':fmt==='carrossel'?'Carrossel':'Post')));
+  outEl.querySelectorAll('.fmt-pane').forEach(p=>{
+    const id=p.id;
+    p.classList.toggle('active',id===`pane-${cardKey}-${fmt}`);
   });
 }
 
@@ -590,54 +833,32 @@ async function trocarFW(id){
   document.getElementById('res-fw-label').textContent=`${fw.nome} — gerando...`;
   const tStr=resultado.originais.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
   const n=resultado.originais.length;
-  const sc=`{"titulo":"titulo","fw_steps":[{"label":"etapa","texto":"texto"}],"reels":{"hook":"hook","cenas":[{"num":1,"texto":"c1"},{"num":2,"texto":"c2"},{"num":3,"texto":"c3"},{"num":4,"texto":"c4"}],"cta":"cta","legenda":"legenda","hashtags":"hashtags"},"carrossel":{"capa":"capa","slides":["s2","s3","s4","s5"],"legenda":"legenda","hashtags":"hashtags"},"post":{"imagem":"imagem","subtexto":"sub","legenda":"legenda","hashtags":"hashtags"}}`;
   const prompt=`Especialista em conteúdo viral. Responda APENAS JSON válido.
 Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} (${fw.steps.join(' -> ')})
-Gere EXATAMENTE ${n} tema(s), cada um com erros/proc/anal, cada categoria com reels/carrossel/post.
-Para fw_steps use ${fw.steps.length} etapas: ${fw.steps.join(', ')}.
-{"temas":[{"nome":"nome","erros":${sc},"proc":${sc},"anal":${sc}}]}`;
+Para cada tema gere erros/proc/anal com titulo (6-10 palavras) e fw_steps (${fw.steps.length} objetos {"label":"etapa","texto":"conteúdo 1-2 frases"} usando as etapas: ${fw.steps.join(', ')}).
+{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}
+Gere EXATAMENTE ${n} tema(s).`;
   try{
-    const d=await callAPI(prompt, n===1?2000:n===2?3500:5000);
+    const d=await callAPI(prompt,n===1?1200:n===2?2000:2800);
     resultado={nicho,fw,temas:d.temas,originais:resultado.originais};
+    Object.keys(fmtGerado).forEach(k=>delete fmtGerado[k]);
     renderResultado(resultado);
   }catch(e){alert('Erro ao trocar framework.');document.getElementById('res-fw-label').textContent=`${resultado.fw.nome} — ${resultado.fw.foco}`;}
 }
 
 /* ── UTILS ── */
-async function callAPI(prompt, maxTokens) {
-  const r = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, max_tokens: maxTokens })
-  });
-  const d = await r.json();
-  if (d.error) throw new Error(d.message);
-  const clean = d.text.replace(/```json|```/g, '').trim();
+async function callAPI(prompt,maxTokens){
+  const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:maxTokens})});
+  const d=await r.json();
+  if(d.error)throw new Error(d.message);
+  const clean=d.text.replace(/```json|```/g,'').trim();
   return JSON.parse(clean);
 }
 
-function escQ(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/"/g,'&quot;');}
-
-function copyText(btn,txt){
-  const real=txt.replace(/\\n/g,'\n').replace(/&quot;/g,'"');
-  navigator.clipboard.writeText(real).then(()=>showToast('Copiado!'));
-}
-
+function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/"/g,'&quot;');}
+function copyText(txt){navigator.clipboard.writeText(txt.replace(/\\n/g,'\n').replace(/&quot;/g,'"')).then(()=>showToast('Copiado!'));}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 function shake(id){const el=document.getElementById(id);el.style.borderColor='rgba(240,96,96,.5)';el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:280});setTimeout(()=>el.style.borderColor='',1200);}
-async function refreshTemas(){
-  const btn=document.getElementById('btn-refresh');
-  btn.disabled=true; btn.textContent='↺ Buscando...';
-  try{
-    const d=await callAPI(`Para o nicho "${nicho}", identifique 6 NOVOS temas com alto potencial viral para redes sociais. Sejam diferentes dos anteriores.
-Responda APENAS JSON sem markdown:
-{"temas":[{"nome":"Nome (3-5 palavras)","potencial":"Por que é viral agora (max 10 palavras)"}]}
-Gere exatamente 6 temas variados e diferentes.`,700);
-    temasDisp=d.temas; temasSel=[];
-    renderStep2();
-  }catch(e){showToast('Erro ao buscar novos temas');}
-  btn.disabled=false; btn.textContent='↺ Novos temas';
-}
 function voltarStep1(limpar){if(limpar){document.getElementById('inp-nicho').value='';temasDisp=[];temasSel=[];resultado=null;}setStep(1);}
 function voltarStep2(){setStep(2);}
 
