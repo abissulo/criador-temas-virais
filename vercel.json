@@ -1,11 +1,5 @@
 {
-  "functions": {
-    "api/chat.cjs": {
-      "memory": 512
-    }
-  },
   "rewrites": [
-    { "source": "/api/chat", "destination": "/api/chat.cjs" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
