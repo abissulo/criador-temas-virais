@@ -126,6 +126,11 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.5);}
 .spin{width:18px;height:18px;border:2px solid rgba(80,212,245,.1);border-top-color:var(--g2);border-radius:50%;animation:rot .7s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg);}}
 
+/* FILTER PILLS */
+.filter-pill{font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 13px;border-radius:100px;background:var(--glass);border:1px solid var(--glass-border);color:var(--muted);cursor:pointer;transition:all .2s;}
+.filter-pill:hover{color:var(--text);border-color:var(--glass-border-h);}
+.filter-pill.active{background:rgba(80,212,245,.09);border-color:rgba(80,212,245,.28);color:var(--g2);}
+
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--g2);color:#060608;font-family:var(--f);font-size:12px;font-weight:700;letter-spacing:.05em;padding:10px 20px;border-radius:100px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:200;}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
