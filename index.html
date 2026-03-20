@@ -578,6 +578,10 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 <!-- PANEL 1 -->
 <div class="panel active" id="panel-1">
   <div class="glass-card" style="padding:32px;">
+    <div style="margin-bottom:18px;">
+      <span class="lbl" style="display:block;margin-bottom:8px;">Para qual cliente? <span style="font-size:10px;font-weight:400;opacity:.5;text-transform:none;letter-spacing:0;">(opcional)</span></span>
+      <input type="text" id="inp-cliente" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--r);padding:13px 16px;font-family:var(--f);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;" placeholder="Ex: Russo Locações — deixe vazio se for para você mesmo" maxlength="80"/>
+    </div>
     <span class="lbl">Qual é o seu nicho?</span>
     <div class="inp-row">
       <input type="text" id="inp-nicho" placeholder="Ex: personal trainer, finanças pessoais, culinária vegana..."/>
@@ -676,8 +680,12 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
     </div>
 
     <div class="bfield">
-      <div class="bfield-label">Principal dor do cliente <span>(problema que você resolve)</span></div>
+      <div class="bfield-label" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+        <span>Principal dor do cliente <span style="font-weight:400;opacity:.5;font-size:10px;text-transform:none;letter-spacing:0;">(problema que você resolve)</span></span>
+        <button id="btn-sugerir-dor" onclick="sugerirDor()" style="font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.05em;background:rgba(80,212,245,.08);color:var(--g2);border:1px solid rgba(80,212,245,.2);border-radius:6px;padding:4px 10px;cursor:pointer;">&#128161; Sugerir</button>
+      </div>
       <input class="binput" id="b-dor" type="text" placeholder="Ex: Atraso na obra por falta de descarte correto" maxlength="150"/>
+      <div id="dor-sugestoes" style="display:none;flex-direction:column;gap:6px;margin-top:8px;"></div>
     </div>
 
     <div class="bfield">
@@ -777,7 +785,7 @@ var MSGS1=['Analisando o nicho...','Identificando tendências...','Mapeando tema
 var MSGS2=['Estruturando os temas...','Aplicando o framework...','Gerando os cards...','Finalizando...'];
 
 var nicho='',temasDisp=[],temasSel=[],fwSel='aida',tomSel='educativo',resultado=null;
-var briefing={publico:'',produto:'',dor:'',objetivo:'',tom:''};
+var briefing={publico:'',produto:'',dor:'',objetivo:[],tom:'',cliente:''};
 var fmtGerado={};
 var msgTimer;
 
@@ -834,9 +842,9 @@ function abrirBriefing(){
   if(briefing.publico) document.getElementById('b-publico').value=briefing.publico;
   if(briefing.produto) document.getElementById('b-produto').value=briefing.produto;
   if(briefing.dor) document.getElementById('b-dor').value=briefing.dor;
-  if(briefing.objetivo){
+  if(briefing.objetivo&&briefing.objetivo.length){
     document.querySelectorAll('.bobj-btn[data-obj]').forEach(function(b){
-      b.classList.toggle('active', b.getAttribute('data-obj')===briefing.objetivo);
+      b.classList.toggle('active', briefing.objetivo.indexOf(b.getAttribute('data-obj'))>-1);
     });
   }
   if(briefing.tom){
@@ -846,14 +854,39 @@ function abrirBriefing(){
   }
 }
 
+async function sugerirDor(){
+  var btn=document.getElementById('btn-sugerir-dor');
+  var sugsEl=document.getElementById('dor-sugestoes');
+  var nicho2=document.getElementById('inp-nicho').value.trim()||nicho;
+  var pub=document.getElementById('b-publico').value.trim();
+  var prod=document.getElementById('b-produto').value.trim();
+  if(!nicho2&&!prod){showToast('Preencha o nicho ou produto antes.');return;}
+  btn.textContent='Gerando...';btn.disabled=true;
+  sugsEl.style.display='none';
+  var prompt='Para o nicho "'+nicho2+'"'+(pub?' publico "'+pub+'"':'')+(prod?' produto "'+prod+'"':'')+', liste as 3 principais dores dos clientes. Responda APENAS JSON: {"dores":["dor 1 max 12 palavras","dor 2","dor 3"]}';
+  try{
+    var d=await callAPI(prompt,300);
+    var dores=d.dores||[];
+    sugsEl.innerHTML=dores.map(function(dor){
+      return '<button onclick="selecionarDor(this)" style="font-family:var(--f);font-size:12px;text-align:left;background:rgba(80,212,245,.06);border:1px solid rgba(80,212,245,.18);border-radius:8px;padding:8px 12px;color:var(--text);cursor:pointer;width:100%;">+  '+dor+'</button>';
+    }).join('');
+    sugsEl.style.display='flex';
+  }catch(e){showToast('Erro ao sugerir.');}
+  btn.textContent='Sugerir';btn.disabled=false;
+}
+
+function selecionarDor(btn){
+  document.getElementById('b-dor').value=btn.textContent.replace('+  ','').trim();
+  document.getElementById('dor-sugestoes').style.display='none';
+}
+
 function fecharBriefing(){
   var m=document.getElementById('bmodal');
   if(m) m.style.display='none';
 }
 
 function selectObj(btn){
-  document.querySelectorAll('.bobj-btn[data-obj]').forEach(function(b){b.classList.remove('active');});
-  btn.classList.toggle('active', true);
+  btn.classList.toggle('active');
 }
 
 function selectTomB(btn){
@@ -865,8 +898,8 @@ function salvarBriefing(){
   briefing.publico = document.getElementById('b-publico').value.trim();
   briefing.produto = document.getElementById('b-produto').value.trim();
   briefing.dor = document.getElementById('b-dor').value.trim();
-  var objBtn = document.querySelector('.bobj-btn[data-obj].active');
-  briefing.objetivo = objBtn ? objBtn.getAttribute('data-obj') : '';
+  var objBtns=document.querySelectorAll('.bobj-btn[data-obj].active');
+  briefing.objetivo=Array.from(objBtns).map(function(b){return b.getAttribute('data-obj');});
   var tomBtn = document.querySelector('.bobj-btn[data-tom].active');
   briefing.tom = tomBtn ? tomBtn.getAttribute('data-tom') : '';
 
@@ -879,7 +912,7 @@ function salvarBriefing(){
   }
 
   // Update button and summary
-  var hasCtx = briefing.publico||briefing.produto||briefing.dor||briefing.objetivo||briefing.tom;
+  var hasCtx=briefing.publico||briefing.produto||briefing.dor||(briefing.objetivo&&briefing.objetivo.length)||briefing.tom||briefing.cliente;
   var btn=document.getElementById('btn-ctx');
   var resumo=document.getElementById('ctx-resumo');
   if(hasCtx){
@@ -889,8 +922,9 @@ function salvarBriefing(){
     if(briefing.publico) parts.push('<strong>Público:</strong> '+briefing.publico);
     if(briefing.produto) parts.push('<strong>Produto:</strong> '+briefing.produto);
     if(briefing.dor) parts.push('<strong>Dor:</strong> '+briefing.dor);
-    if(briefing.objetivo) parts.push('<strong>Objetivo:</strong> '+{educar:'Educar',engajar:'Engajar',leads:'Captar leads',vender:'Vender'}[briefing.objetivo]);
+    if(briefing.objetivo&&briefing.objetivo.length){var om={educar:'Educar',engajar:'Engajar',leads:'Captar leads',vender:'Vender'};parts.push('<strong>Objetivo:</strong> '+briefing.objetivo.map(function(o){return om[o]||o;}).join(' + '));}
     if(briefing.tom) parts.push('<strong>Tom:</strong> '+TONS[briefing.tom].nome);
+    if(briefing.cliente) parts.push('<strong>Cliente:</strong> '+briefing.cliente);
     resumo.innerHTML=parts.join(' · ');
     resumo.style.display='block';
   } else {
@@ -907,10 +941,7 @@ function getBriefingPrompt(){
   if(briefing.publico) parts.push('Público-alvo: '+briefing.publico);
   if(briefing.produto) parts.push('Produto/serviço: '+briefing.produto);
   if(briefing.dor) parts.push('Principal dor: '+briefing.dor);
-  if(briefing.objetivo){
-    var objMap={educar:'Objetivo: educar e informar',engajar:'Objetivo: gerar engajamento e interação',leads:'Objetivo: captar leads e contatos',vender:'Objetivo: vender e converter'};
-    parts.push(objMap[briefing.objetivo]||'');
-  }
+  if(briefing.objetivo&&briefing.objetivo.length){var om2={educar:'educar',engajar:'engajar',leads:'captar leads',vender:'vender'};parts.push('Objetivos: '+briefing.objetivo.map(function(o){return om2[o]||o;}).join(' e '));}
   return parts.length ? 'Contexto importante: '+parts.join('. ')+'.' : '';
 }
 
@@ -936,6 +967,8 @@ function setStep(n){
 /* ── STEP 1 ── */
 async function analisarNicho(){
   nicho=document.getElementById('inp-nicho').value.trim();
+  var inpCli=document.getElementById('inp-cliente');
+  if(inpCli&&inpCli.value.trim()) briefing.cliente=inpCli.value.trim();
   if(!nicho){ shake('inp-nicho'); return; }
   document.getElementById('btn-analisar').disabled=true;
   document.getElementById('load-1').classList.add('on');
@@ -1195,6 +1228,23 @@ async function regenField(btn,cardKey,fmt,fieldKey){
   renderFmtOutput(cardKey,fmt,outEl);
 }
 
+
+function buildSaveRow(cardKey,p){
+  var autoC=briefing&&briefing.cliente?briefing.cliente:(document.getElementById('inp-cliente')?document.getElementById('inp-cliente').value.trim():'');
+  var html='<div class="save-row">';
+  html+='<button class="btn-save-hist" id="savehist-'+cardKey+'" ';
+  html+='data-cardkey="'+cardKey+'" data-ti="'+(p[0]||0)+'" data-ci="'+(p[1]||0)+'" ';
+  html+='onclick="salvarHistoricoAtivo(this)">&#10022; Salvar no hist&#243;rico</button>';
+  html+='<div class="client-wrap" id="cliwrap-'+cardKey+'">';
+  html+='<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:8px 0 5px;">Cliente / Projeto ';
+  html+='<span style="font-weight:400;opacity:.5;">(opcional)</span></div>';
+  html+='<input class="client-input" id="cliinput-'+cardKey+'" ';
+  html+='type="text" value="'+(autoC||'')+'" ';
+  html+='placeholder="Ex: Russo Locações..." maxlength="80" />';
+  html+='</div></div>';
+  return html;
+}
+
 /* ── RENDER OUTPUT ── */
 function renderFmtOutput(cardKey,fmt,outEl){
   var gerado=fmtGerado[cardKey]||{};
@@ -1241,7 +1291,7 @@ function renderFmtOutput(cardKey,fmt,outEl){
   });
   // Single save button - ti,ci extracted from cardKey "t{ti}_c{ci}"
   var _p=cardKey.replace('t','').split('_c');
-  var saveRow='<div class="save-row"><button class="btn-save-hist" id="savehist-'+cardKey+'" data-cardkey="'+cardKey+'" data-ti="'+(_p[0]||0)+'" data-ci="'+(_p[1]||0)+'" onclick="salvarHistoricoAtivo(this)">✦ Salvar no hist\u00f3rico</button></div>';
+  var saveRow=buildSaveRow(cardKey,_p);
   outEl.innerHTML='<div class="fmt-output">'
     +(fmts.length>1?'<div class="fmt-tabs">'+tabs+'</div>':'')
     +panesHtml
@@ -1250,6 +1300,15 @@ function renderFmtOutput(cardKey,fmt,outEl){
 }
 
 function switchTab(cardKey,fmt){
+  // Show client field on first click
+  var cliwrap=document.getElementById('cliwrap-'+cardKey);
+  if(cliwrap&&!cliwrap.classList.contains('show')){
+    cliwrap.classList.add('show');
+    btn.textContent='Confirmar e salvar';
+    var inp=document.getElementById('cliinput-'+cardKey);
+    if(inp) inp.focus();
+    return;
+  }
   var outEl=document.getElementById('output-'+cardKey);
   if(!outEl) return;
   outEl.querySelectorAll('.fmt-tab').forEach(function(t){
@@ -1341,6 +1400,15 @@ async function salvarHistoricoAtivo(btn){
   var ti=parseInt(btn.getAttribute('data-ti'));
   var ci=parseInt(btn.getAttribute('data-ci'));
   // Find which format tab is currently active
+  // Show client field on first click
+  var cliwrap=document.getElementById('cliwrap-'+cardKey);
+  if(cliwrap&&!cliwrap.classList.contains('show')){
+    cliwrap.classList.add('show');
+    btn.textContent='Confirmar e salvar';
+    var inp=document.getElementById('cliinput-'+cardKey);
+    if(inp) inp.focus();
+    return;
+  }
   var outEl=document.getElementById('output-'+cardKey);
   if(!outEl) return;
   var activePane=outEl.querySelector('.fmt-pane.active');
@@ -1355,6 +1423,9 @@ async function salvarHistoricoAtivo(btn){
 async function salvarHistorico(cardKey,fmt,ti,ci){
   var btn=document.getElementById('save-btn-'+cardKey+'-'+fmt);
   if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+  var cliinput=document.getElementById('cliinput-'+cardKey);
+  var autoC=briefing&&briefing.cliente?briefing.cliente:(document.getElementById('inp-cliente')?document.getElementById('inp-cliente').value.trim():'');
+  var cliente=(cliinput&&cliinput.value.trim())||autoC||'';
   var session=(await sb.auth.getSession()).data.session;
   if(!session){showToast('Faça login para salvar.');return;}
   var t=resultado.temas[ti];
