@@ -3,6 +3,7 @@
     { "source": "/login",         "destination": "/login.html"               },
     { "source": "/admin",         "destination": "/admin.html"               },
     { "source": "/historico",     "destination": "/historico.html"           },
+    { "source": "/calendario",    "destination": "/calendario.html"          },
     { "source": "/auth/callback", "destination": "/auth/callback/index.html" },
     { "source": "/(.*)",          "destination": "/index.html"               }
   ]
