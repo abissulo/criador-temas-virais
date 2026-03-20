@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exportar PDF — Criador de Temas Virais</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── SCREEN STYLES ── */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#060608;--glass:rgba(255,255,255,.04);--glass-border:rgba(255,255,255,.08);
+  --glass-border-h:rgba(255,255,255,.15);--text:#f0ede8;--muted:rgba(240,237,232,.45);
+  --dim:rgba(240,237,232,.22);--g1:#b8f050;--g2:#50d4f5;--g3:#f050a4;--g4:#f0a050;
+  --r:13px;--f:'Plus Jakarta Sans',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--f);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(184,240,80,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(184,240,80,.015) 1px,transparent 1px);background-size:52px 52px;pointer-events:none;z-index:0;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(6,6,8,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--glass-border);}
+.topbar-logo{font-size:13px;font-weight:800;background:linear-gradient(90deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.topbar-right{display:flex;align-items:center;gap:9px;}
+.tl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--glass-border);border-radius:8px;transition:all .2s;}
+.tl:hover{color:var(--text);border-color:var(--glass-border-h);}
+.tl.hist{color:rgba(184,240,80,.7);border-color:rgba(184,240,80,.2);background:rgba(184,240,80,.04);}
+.tl.cal{color:rgba(80,212,245,.7);border-color:rgba(80,212,245,.2);background:rgba(80,212,245,.04);}
+.btn-logout{font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,.04);color:rgba(240,237,232,.4);border:1px solid var(--glass-border);border-radius:8px;padding:6px 12px;cursor:pointer;}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:88px 24px 80px;}
+.page-header{margin-bottom:32px;}
+.page-header h1{font-size:clamp(24px,4vw,38px);font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
+.page-header h1 em{font-style:normal;color:var(--g1);}
+.page-header p{font-size:14px;color:var(--muted);}
+
+/* CONFIG CARD */
+.config-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:24px;margin-bottom:20px;backdrop-filter:blur(8px);}
+.config-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.config-title::after{content:'';flex:1;height:1px;background:var(--glass-border);}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.opt-btn{
+  font-family:var(--f);font-size:13px;font-weight:600;padding:12px 16px;
+  background:rgba(255,255,255,.03);border:1.5px solid var(--glass-border);
+  border-radius:var(--r);color:var(--muted);cursor:pointer;transition:all .2s;text-align:left;
+  display:flex;align-items:center;gap:10px;
+}
+.opt-btn:hover{border-color:var(--glass-border-h);color:var(--text);}
+.opt-btn.active{border-color:var(--g1);background:rgba(184,240,80,.06);color:var(--text);}
+.opt-btn.active-blue{border-color:var(--g2);background:rgba(80,212,245,.06);color:var(--text);}
+.opt-icon{font-size:18px;width:28px;text-align:center;}
+
+/* CONTENT SELECTOR */
+.content-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;margin-top:4px;}
+.content-item{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;
+  background:rgba(255,255,255,.03);border:1px solid var(--glass-border);
+  border-radius:10px;cursor:pointer;transition:all .2s;
+}
+.content-item:hover{border-color:var(--glass-border-h);}
+.content-item.selected{border-color:rgba(184,240,80,.35);background:rgba(184,240,80,.04);}
+.ci-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--glass-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:11px;}
+.content-item.selected .ci-check{background:var(--g1);border-color:var(--g1);color:#060608;}
+.ci-fmt{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;flex-shrink:0;}
+.fmt-reels .ci-fmt{color:#f0a050;}
+.fmt-carrossel .ci-fmt{color:var(--g2);}
+.fmt-post .ci-fmt{color:var(--g1);}
+.ci-tema{font-size:13px;font-weight:600;color:var(--text);}
+.ci-meta{font-size:11px;color:var(--muted);}
+.select-all-btn{font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:none;border:none;color:var(--g1);cursor:pointer;padding:4px 0;margin-bottom:8px;}
+
+/* EXPORT BTN */
+.btn-export{
+  position:relative;overflow:hidden;width:100%;
+  font-family:var(--f);font-size:15px;font-weight:800;letter-spacing:.03em;
+  background:var(--g1);color:#060608;border:none;border-radius:var(--r);
+  padding:16px;cursor:pointer;margin-top:20px;
+  transition:transform .15s,box-shadow .2s;
+}
+.btn-export::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.4) 50%,transparent 60%);transform:translateX(-100%);transition:transform .5s;}
+.btn-export:hover::after{transform:translateX(100%);}
+.btn-export:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(184,240,80,.3);}
+.btn-export:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.loading-state{text-align:center;padding:32px;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.spin{width:18px;height:18px;border:2px solid rgba(184,240,80,.1);border-top-color:var(--g1);border-radius:50%;animation:rot .7s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg);}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--g1);color:#060608;font-family:var(--f);font-size:12px;font-weight:700;padding:10px 20px;border-radius:100px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:200;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── PDF PRINT STYLES ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: white !important; }
+  body::before, .topbar, .wrap > *:not(#pdf-preview) { display: none !important; }
+  #pdf-preview { display: block !important; }
+
+  /* DARK THEME */
+  .pdf-dark { background: #060608 !important; color: #f0ede8 !important; }
+  .pdf-dark .pdf-cover { background: linear-gradient(135deg,#0f0f18,#060608) !important; }
+  .pdf-dark .pdf-section { background: #111116 !important; border: 1px solid rgba(255,255,255,.08) !important; }
+  .pdf-dark .pdf-card { background: #1a1a22 !important; border: 1px solid rgba(255,255,255,.1) !important; }
+  .pdf-dark .pdf-text { color: rgba(240,237,232,.65) !important; }
+
+  /* LIGHT THEME */
+  .pdf-light { background: #ffffff !important; color: #1a1a1a !important; }
+  .pdf-light .pdf-cover { background: linear-gradient(135deg,#f8fffe,#f0f9ff) !important; }
+  .pdf-light .pdf-section { background: #f8f8f8 !important; border: 1px solid #e5e5e5 !important; }
+  .pdf-light .pdf-card { background: #ffffff !important; border: 1px solid #e0e0e0 !important; }
+  .pdf-light .pdf-text { color: #555 !important; }
+  .pdf-light .pdf-cover-title { -webkit-text-fill-color: #1a1a1a !important; }
+  .pdf-light .pdf-cover-subtitle { color: #555 !important; }
+  .pdf-light .pdf-toc-item { color: #333 !important; }
+  .pdf-light .pdf-tema-title { color: #1a1a1a !important; }
+  .pdf-light .pdf-card-title { color: #1a1a1a !important; }
+  .pdf-light .pdf-step-label { color: #1a1a1a !important; }
+
+  .pdf-page { page-break-after: always; padding: 48px 56px; min-height: 100vh; }
+  .pdf-page:last-child { page-break-after: avoid; }
+}
+
+/* ── PDF PREVIEW (visible on screen) ── */
+#pdf-preview { display: none; }
+#pdf-preview.visible { display: block; }
+
+.pdf-page {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 48px 56px;
+  min-height: 297mm;
+  position: relative;
+}
+
+/* COVER */
+.pdf-cover {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  text-align: center; min-height: 100vh; padding: 60px 48px;
+}
+.pdf-cover-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: #b8f050; border: 1px solid rgba(184,240,80,.3); background: rgba(184,240,80,.08);
+  padding: 6px 16px; border-radius: 100px; margin-bottom: 32px; display: inline-block;
+}
+.pdf-cover-title {
+  font-size: 48px; font-weight: 800; line-height: 1.05; letter-spacing: -.03em;
+  background: linear-gradient(135deg, #f0ede8, #b8f050, #50d4f5);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 16px;
+}
+.pdf-cover-nicho {
+  font-size: 22px; font-weight: 800; color: #b8f050; margin-bottom: 12px;
+}
+.pdf-cover-subtitle { font-size: 15px; color: rgba(240,237,232,.5); margin-bottom: 48px; line-height: 1.6; }
+.pdf-cover-meta {
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+}
+.pdf-cover-meta-item {
+  text-align: center;
+}
+.pdf-cover-meta-val { font-size: 28px; font-weight: 800; color: #b8f050; }
+.pdf-cover-meta-label { font-size: 11px; color: rgba(240,237,232,.45); text-transform: uppercase; letter-spacing: .1em; }
+.pdf-cover-date { font-size: 12px; color: rgba(240,237,232,.3); margin-top: 48px; }
+
+/* TOC */
+.pdf-toc-title { font-size: 24px; font-weight: 800; margin-bottom: 28px; color: #f0ede8; }
+.pdf-toc-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  color: rgba(240,237,232,.7); font-size: 14px;
+}
+.pdf-toc-num { font-weight: 800; color: #b8f050; min-width: 28px; }
+.pdf-toc-fmt { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .6; margin-left: auto; }
+
+/* CONTENT SECTION */
+.pdf-section {
+  border-radius: 14px; padding: 24px; margin-bottom: 20px; break-inside: avoid;
+}
+.pdf-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.pdf-cat-tag {
+  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px;
+}
+.cat-erros .pdf-cat-tag { color: #f06060; background: rgba(240,96,96,.12); border: 1px solid rgba(240,96,96,.2); }
+.cat-proc  .pdf-cat-tag { color: #50d4f5; background: rgba(80,212,245,.1); border: 1px solid rgba(80,212,245,.2); }
+.cat-anal  .pdf-cat-tag { color: #f050a4; background: rgba(240,80,164,.1); border: 1px solid rgba(240,80,164,.2); }
+.pdf-tema-title { font-size: 17px; font-weight: 800; color: #f0ede8; }
+
+.pdf-card {
+  border-radius: 10px; padding: 16px; margin-bottom: 12px; break-inside: avoid;
+}
+.pdf-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.pdf-fmt-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 100px;
+}
+.fmt-reels .pdf-fmt-badge { color: #f0a050; background: rgba(240,160,80,.12); border: 1px solid rgba(240,160,80,.22); }
+.fmt-carrossel .pdf-fmt-badge { color: #50d4f5; background: rgba(80,212,245,.1); border: 1px solid rgba(80,212,245,.2); }
+.fmt-post .pdf-fmt-badge { color: #b8f050; background: rgba(184,240,80,.1); border: 1px solid rgba(184,240,80,.2); }
+.pdf-card-title { font-size: 14px; font-weight: 700; color: #f0ede8; }
+
+.pdf-field-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(240,237,232,.35); margin-bottom: 4px; margin-top: 10px; }
+.pdf-hook { font-size: 13px; font-weight: 600; color: #f0ede8; border-left: 2px solid #b8f050; padding-left: 10px; line-height: 1.5; }
+.pdf-text { font-size: 12px; color: rgba(240,237,232,.65); line-height: 1.65; }
+.pdf-cena { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 12px; color: rgba(240,237,232,.6); }
+.pdf-cena:last-child { border-bottom: none; }
+.pdf-cena-num { font-size: 9px; font-weight: 700; color: rgba(240,237,232,.3); text-transform: uppercase; margin-bottom: 2px; }
+.pdf-cta { font-size: 13px; font-weight: 600; color: #f0ede8; border-left: 2px solid #f050a4; padding-left: 10px; }
+.pdf-hash { font-size: 11px; color: #50d4f5; margin-top: 4px; }
+.pdf-step-label { font-size: 12px; font-weight: 700; color: #f0ede8; }
+.pdf-step-text { font-size: 12px; color: rgba(240,237,232,.6); }
+.pdf-slide-num { font-size: 9px; font-weight: 700; color: rgba(240,237,232,.35); min-width: 40px; }
+.pdf-slide-row { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 12px; }
+.pdf-slide-row:last-child { border-bottom: none; }
+
+.pdf-footer {
+  margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.08);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: rgba(240,237,232,.25);
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="topbar-logo">Criador de Temas Virais</a>
+  <div class="topbar-right">
+    <span id="user-name" style="font-size:13px;color:var(--muted);"></span>
+    <a href="/" class="tl">← Criar</a>
+    <a href="/historico" class="tl hist">Histórico</a>
+    <a href="/calendario" class="tl cal">Calendário</a>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="page-header">
+    <h1>Exportar <em>PDF</em></h1>
+    <p>Escolha o conteúdo, o tema visual e gere seu relatório editorial.</p>
+  </div>
+
+  <!-- SOURCE -->
+  <div class="config-card">
+    <div class="config-title">Fonte do conteúdo</div>
+    <div class="options-grid">
+      <button class="opt-btn active" id="src-current" onclick="setSource('current')">
+        <span class="opt-icon">🖥</span>
+        <div><div style="font-weight:700;color:var(--text);">Conteúdo atual</div><div style="font-size:11px;color:var(--muted);">O que está na tela agora</div></div>
+      </button>
+      <button class="opt-btn" id="src-historico" onclick="setSource('historico')">
+        <span class="opt-icon">📂</span>
+        <div><div style="font-weight:700;color:var(--text);">Do histórico</div><div style="font-size:11px;color:var(--muted);">Selecione conteúdos salvos</div></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- HISTORICO SELECTOR (hidden by default) -->
+  <div class="config-card" id="hist-selector" style="display:none;">
+    <div class="config-title">Selecione os conteúdos</div>
+    <button class="select-all-btn" onclick="toggleAll()">Selecionar todos</button>
+    <div class="content-list" id="content-list">
+      <div class="loading-state"><div class="spin"></div><span>Carregando...</span></div>
+    </div>
+  </div>
+
+  <!-- THEME -->
+  <div class="config-card">
+    <div class="config-title">Tema visual</div>
+    <div class="options-grid">
+      <button class="opt-btn active" id="theme-dark" onclick="setTheme('dark')">
+        <span class="opt-icon">🌙</span>
+        <div><div style="font-weight:700;color:var(--text);">Dark</div><div style="font-size:11px;color:var(--muted);">Fundo escuro, igual ao site</div></div>
+      </button>
+      <button class="opt-btn" id="theme-light" onclick="setTheme('light')">
+        <span class="opt-icon">☀️</span>
+        <div><div style="font-weight:700;color:var(--text);">Light</div><div style="font-size:11px;color:var(--muted);">Branco, ideal para imprimir</div></div>
+      </button>
+    </div>
+  </div>
+
+  <button class="btn-export" id="btn-export" onclick="exportPDF()">↓ Gerar e Exportar PDF</button>
+</div>
+
+<!-- PDF PREVIEW (rendered offscreen, printed) -->
+<div id="pdf-preview"></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var SUPABASE_URL='https://ezrhzvrgndvnnslrfxge.supabase.co';
+var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+
+var source='current', theme='dark', selectedIds=[], histItems=[], userId=null;
+
+// ── AUTH ──
+(async function(){
+  var session=(await sb.auth.getSession()).data.session;
+  if(!session){window.location.href='/login.html';return;}
+  var prof=(await sb.from('profiles').select('ativo,full_name').eq('id',session.user.id).single()).data;
+  if(!prof||!prof.ativo){await sb.auth.signOut();window.location.href='/login.html?pendente=1';return;}
+  userId=session.user.id;
+  var nm=document.getElementById('user-name');
+  if(nm) nm.textContent=prof.full_name||session.user.email;
+})();
+async function doLogout(){await sb.auth.signOut();window.location.href='/login.html';}
+
+// ── SOURCE ──
+function setSource(s){
+  source=s;
+  document.getElementById('src-current').className='opt-btn'+(s==='current'?' active':'');
+  document.getElementById('src-historico').className='opt-btn'+(s==='historico'?' active':'');
+  document.getElementById('hist-selector').style.display=s==='historico'?'block':'none';
+  if(s==='historico' && histItems.length===0) loadHistorico();
+}
+
+async function loadHistorico(){
+  var res=await sb.from('historico').select('*').eq('user_id',userId).order('created_at',{ascending:false});
+  if(res.error){showToast('Erro ao carregar histórico.');return;}
+  histItems=res.data||[];
+  renderHistList();
+}
+
+function renderHistList(){
+  var el=document.getElementById('content-list');
+  if(!histItems.length){el.innerHTML='<div style="font-size:13px;color:var(--dim);padding:16px 0;text-align:center;">Nenhum conteúdo salvo ainda.</div>';return;}
+  el.innerHTML=histItems.map(function(item){
+    var sel=selectedIds.indexOf(item.id)>-1;
+    var fc='fmt-'+(item.formato||'post');
+    var fl=item.formato==='reels'?'▶ Reels':item.formato==='carrossel'?'☰ Carrossel':'◻ Post';
+    return '<div class="content-item '+fc+(sel?' selected':'')+'" onclick="toggleItem(\''+item.id+'\')">'
+      +'<div class="ci-check">'+(sel?'✓':'')+'</div>'
+      +'<div class="ci-fmt">'+fl+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+      +'<div class="ci-tema">'+(item.tema||'')+'</div>'
+      +'<div class="ci-meta">'+(item.nicho||'')+' · '+(item.tom||'')+'</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function toggleItem(id){
+  var idx=selectedIds.indexOf(id);
+  if(idx>-1) selectedIds.splice(idx,1);
+  else selectedIds.push(id);
+  renderHistList();
+}
+
+function toggleAll(){
+  if(selectedIds.length===histItems.length) selectedIds=[];
+  else selectedIds=histItems.map(function(i){return i.id;});
+  renderHistList();
+}
+
+// ── THEME ──
+function setTheme(t){
+  theme=t;
+  document.getElementById('theme-dark').className='opt-btn'+(t==='dark'?' active':'');
+  document.getElementById('theme-light').className='opt-btn'+(t==='light'?' active':'');
+}
+
+// ── EXPORT ──
+async function exportPDF(){
+  var btn=document.getElementById('btn-export');
+  btn.disabled=true; btn.textContent='Gerando PDF...';
+
+  var items=[];
+  if(source==='historico'){
+    if(!selectedIds.length){showToast('Selecione pelo menos 1 conteúdo.');btn.disabled=false;btn.textContent='↓ Gerar e Exportar PDF';return;}
+    items=histItems.filter(function(i){return selectedIds.indexOf(i.id)>-1;});
+  } else {
+    // Try to get from sessionStorage (passed from index.html)
+    var stored=sessionStorage.getItem('pdf_export_data');
+    if(stored){
+      try{items=JSON.parse(stored);}catch(e){}
+    }
+    if(!items.length){
+      // Fallback: get latest from historico
+      var res=await sb.from('historico').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(9);
+      items=res.data||[];
+    }
+    if(!items.length){showToast('Nenhum conteúdo disponível. Gere conteúdo primeiro ou use o histórico.');btn.disabled=false;btn.textContent='↓ Gerar e Exportar PDF';return;}
+  }
+
+  buildPDF(items);
+
+  setTimeout(function(){
+    window.print();
+    btn.disabled=false;
+    btn.textContent='↓ Gerar e Exportar PDF';
+  }, 300);
+}
+
+function buildPDF(items){
+  var themeCls='pdf-'+theme;
+  var today=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  var nichos=[...new Set(items.map(function(i){return i.nicho||'';}))].filter(Boolean);
+  var nichoStr=nichos.slice(0,3).join(', ')+(nichos.length>3?' +':'');
+  var fmts={reels:0,carrossel:0,post:0};
+  items.forEach(function(i){if(fmts[i.formato]!==undefined)fmts[i.formato]++;});
+
+  // COVER
+  var cover='<div class="pdf-page pdf-cover '+themeCls+'">'
+    +'<div class="pdf-cover-badge">Relatório Editorial</div>'
+    +'<div class="pdf-cover-title pdf-cover-title">Criador de<br>Temas Virais</div>'
+    +(nichoStr?'<div class="pdf-cover-nicho">'+nichoStr+'</div>':'')
+    +'<div class="pdf-cover-subtitle">Conteúdos gerados com IA e prontos para publicar<br>Framework + Tom de Voz + Formatos</div>'
+    +'<div class="pdf-cover-meta">'
+    +'<div class="pdf-cover-meta-item"><div class="pdf-cover-meta-val">'+items.length+'</div><div class="pdf-cover-meta-label">Conteúdos</div></div>'
+    +(fmts.reels?'<div class="pdf-cover-meta-item"><div class="pdf-cover-meta-val">'+fmts.reels+'</div><div class="pdf-cover-meta-label">Reels</div></div>':'')
+    +(fmts.carrossel?'<div class="pdf-cover-meta-item"><div class="pdf-cover-meta-val">'+fmts.carrossel+'</div><div class="pdf-cover-meta-label">Carrosseis</div></div>':'')
+    +(fmts.post?'<div class="pdf-cover-meta-item"><div class="pdf-cover-meta-val">'+fmts.post+'</div><div class="pdf-cover-meta-label">Posts</div></div>':'')
+    +'</div>'
+    +'<div class="pdf-cover-date">Gerado em '+today+'</div>'
+    +'</div>';
+
+  // SUMMARY
+  var toc='<div class="pdf-page '+themeCls+'">'
+    +'<div class="pdf-toc-title">Sumário</div>'
+    +items.map(function(item,i){
+      var fl=item.formato==='reels'?'▶ Reels':item.formato==='carrossel'?'☰ Carrossel':'◻ Post';
+      return '<div class="pdf-toc-item">'
+        +'<span class="pdf-toc-num">'+(i+1).toString().padStart(2,'0')+'</span>'
+        +'<div><div style="font-weight:700;">'+(item.tema||'')+'</div>'
+        +'<div style="font-size:11px;opacity:.5;">'+(item.nicho||'')+' · '+(item.categoria||'')+'</div></div>'
+        +'<span class="pdf-toc-fmt">'+fl+'</span>'
+        +'</div>';
+    }).join('')
+    +'<div class="pdf-footer"><span>Criador de Temas Virais</span><span>'+today+'</span></div>'
+    +'</div>';
+
+  // CONTENT PAGES
+  var contentPages=items.map(function(item,idx){
+    var c=item.conteudo||{};
+    var fmt=item.formato;
+    var fc='fmt-'+fmt;
+    var catMap={'Erros Comuns':'cat-erros','Processos & Bastidores':'cat-proc','Análises & Estratégia':'cat-anal'};
+    var catCls=catMap[item.categoria]||'cat-erros';
+    var fl=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
+    var num=(idx+1).toString().padStart(2,'0');
+
+    var inner='';
+    if(fmt==='reels'){
+      inner='<div class="pdf-field-label">Hook</div>'
+        +'<div class="pdf-hook">'+(c.hook||'')+'</div>'
+        +'<div class="pdf-field-label">Cenas</div>'
+        +(c.cenas||[]).map(function(cn){return '<div class="pdf-cena"><div class="pdf-cena-num">Cena '+cn.num+'</div>'+cn.texto+'</div>';}).join('')
+        +'<div class="pdf-field-label">CTA</div>'
+        +'<div class="pdf-cta">'+(c.cta||'')+'</div>'
+        +'<div class="pdf-field-label">Legenda</div>'
+        +'<div class="pdf-text">'+(c.legenda||'')+'</div>'
+        +'<div class="pdf-hash">'+(c.hashtags||'')+'</div>';
+    } else if(fmt==='carrossel'){
+      var slidesHtml=(c.slides||[]).map(function(s,i){
+        var txt=typeof s==='object'?(s.texto||s.text||''):s;
+        return '<div class="pdf-slide-row"><span class="pdf-slide-num">Slide '+(i+2)+'</span><span class="pdf-text">'+txt+'</span></div>';
+      }).join('');
+      inner='<div class="pdf-field-label">Capa</div>'
+        +'<div class="pdf-hook">'+(c.capa||'')+'</div>'
+        +'<div class="pdf-field-label">Slides</div>'
+        +slidesHtml
+        +'<div class="pdf-field-label">Legenda</div>'
+        +'<div class="pdf-text">'+(c.legenda||'')+'</div>'
+        +'<div class="pdf-hash">'+(c.hashtags||'')+'</div>';
+    } else {
+      inner='<div class="pdf-field-label">Texto da Imagem</div>'
+        +'<div class="pdf-hook">'+(c.imagem||'')+'</div>'
+        +(c.subtexto?'<div class="pdf-text" style="margin-top:6px;font-style:italic;">'+(c.subtexto||'')+'</div>':'')
+        +'<div class="pdf-field-label">Legenda</div>'
+        +'<div class="pdf-text">'+(c.legenda||'')+'</div>'
+        +'<div class="pdf-hash">'+(c.hashtags||'')+'</div>';
+    }
+
+    return '<div class="pdf-page '+themeCls+'">'
+      +'<div class="pdf-section '+catCls+'">'
+      +'<div class="pdf-section-header">'
+      +'<span style="font-size:13px;font-weight:800;color:rgba(240,237,232,.3);">'+num+'</span>'
+      +'<span class="pdf-cat-tag">'+(item.categoria||'')+'</span>'
+      +'<span class="pdf-tema-title">'+(item.tema||'')+'</span>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">'
+      +'<span style="font-size:10px;font-weight:700;color:rgba(240,237,232,.4);">'+( item.nicho||'')+'</span>'
+      +(item.framework?'<span style="font-size:10px;font-weight:700;color:rgba(80,212,245,.6);">'+item.framework+'</span>':'')
+      +(item.tom?'<span style="font-size:10px;font-weight:700;color:rgba(240,160,80,.6);">'+item.tom+'</span>':'')
+      +'</div>'
+      +'<div class="pdf-card '+fc+'">'
+      +'<div class="pdf-card-header">'
+      +'<span class="pdf-fmt-badge">'+fl+'</span>'
+      +(item.titulo||c.titulo?'<span class="pdf-card-title">'+(item.titulo||c.titulo||'')+'</span>':'')
+      +'</div>'
+      +inner
+      +'</div>'
+      +'</div>'
+      +'<div class="pdf-footer"><span>Criador de Temas Virais · '+item.nicho+'</span><span>'+num+' / '+items.length+'</span></div>'
+      +'</div>';
+  }).join('');
+
+  document.getElementById('pdf-preview').innerHTML=cover+toc+contentPages;
+}
+
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2500);}
+</script>
+</body>
+</html>
