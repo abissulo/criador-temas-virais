@@ -388,6 +388,67 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 }
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 
+
+/* ── TOM DE VOZ ── */
+.tom-section{margin-bottom:20px;}
+.tom-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.tom-btn{
+  font-family:var(--f);font-size:12px;font-weight:600;padding:7px 14px;
+  border-radius:100px;background:var(--glass);border:1px solid var(--glass-border);
+  color:var(--muted);cursor:pointer;transition:all .2s;backdrop-filter:blur(4px);
+}
+.tom-btn:hover{border-color:var(--glass-border-h);color:var(--text);}
+.tom-btn.active{border-color:rgba(240,160,80,.5);background:rgba(240,160,80,.1);color:#f0a050;}
+.tom-emoji{margin-right:4px;}
+
+/* ── INLINE EDIT ── */
+.field-wrap{position:relative;margin-bottom:2px;}
+.field-text{cursor:pointer;transition:background .15s;border-radius:6px;padding:2px 4px;margin:-2px -4px;}
+.field-text:hover{background:rgba(255,255,255,.05);}
+.field-text:hover::after{content:' ✎';font-size:10px;color:var(--dim);margin-left:4px;}
+.field-edit-area{
+  width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(184,240,80,.35);
+  border-radius:8px;padding:8px 10px;font-family:var(--f);font-size:12px;
+  color:var(--text);outline:none;resize:vertical;min-height:52px;
+  box-shadow:0 0 0 3px rgba(184,240,80,.07);
+}
+.field-actions{display:flex;gap:6px;margin-top:5px;}
+.btn-save-field{
+  font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.05em;
+  background:var(--g1);color:#060608;border:none;border-radius:6px;
+  padding:5px 12px;cursor:pointer;transition:opacity .15s;
+}
+.btn-save-field:hover{opacity:.85;}
+.btn-cancel-field{
+  font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.05em;
+  background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--glass-border);
+  border-radius:6px;padding:5px 10px;cursor:pointer;
+}
+.btn-regen-field{
+  font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.05em;
+  background:rgba(240,160,80,.1);color:#f0a050;border:1px solid rgba(240,160,80,.25);
+  border-radius:6px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;
+  transition:background .15s;margin-left:auto;
+}
+.btn-regen-field:hover{background:rgba(240,160,80,.18);}
+.btn-regen-field:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── TOM CHANGE BAR no resultado ── */
+.tom-change-bar{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  padding:10px 16px;background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:var(--r);flex-wrap:wrap;backdrop-filter:blur(12px);
+}
+.tom-change-label{font-size:11px;font-weight:700;color:var(--dim);white-space:nowrap;letter-spacing:.05em;text-transform:uppercase;}
+.tom-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.tom-pill{
+  font-family:var(--f);font-size:11px;font-weight:700;padding:4px 11px;border-radius:100px;
+  background:rgba(255,255,255,.04);border:1px solid var(--glass-border);
+  color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.tom-pill:hover{border-color:var(--glass-border-h);color:var(--text);}
+.tom-pill.active{background:rgba(240,160,80,.1);border-color:rgba(240,160,80,.3);color:#f0a050;}
+
 /* ── PRINT ── */
 @media print{
   #bg-canvas,.grid-overlay,.orb,.steps,.fw-change-bar,.res-actions,.btn-ghost,.btn-fmt,.fmt-tabs,canvas{display:none!important;}
@@ -480,6 +541,16 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
   </div>
   <span class="lbl">Escolha os temas (até 3)</span>
   <div class="temas-grid" id="temas-grid"></div>
+  <div class="tom-section">
+    <div class="sec-title">Tom de Voz</div>
+    <div class="tom-grid" id="tom-grid">
+      <button class="tom-btn active" data-tom="educativo" onclick="selectTom(this)"><span class="tom-emoji">📚</span>Educativo</button>
+      <button class="tom-btn" data-tom="inspiracional" onclick="selectTom(this)"><span class="tom-emoji">✨</span>Inspiracional</button>
+      <button class="tom-btn" data-tom="autoridade" onclick="selectTom(this)"><span class="tom-emoji">🎯</span>Autoridade</button>
+      <button class="tom-btn" data-tom="descontraido" onclick="selectTom(this)"><span class="tom-emoji">😄</span>Descontraído</button>
+      <button class="tom-btn" data-tom="provocativo" onclick="selectTom(this)"><span class="tom-emoji">🔥</span>Provocativo</button>
+    </div>
+  </div>
   <div style="margin-bottom:20px;">
     <div class="sec-title">Lógica do Conteúdo</div>
     <div class="fw-grid" id="fw-grid"></div>
@@ -504,9 +575,15 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
       <button class="btn-ghost" onclick="window.print()">↓ PDF</button>
     </div>
   </div>
-  <div class="fw-change-bar">
-    <span class="fw-change-label">Framework:</span>
-    <div class="fw-pills" id="fw-pills"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+    <div class="fw-change-bar" style="flex:1;margin-bottom:0;">
+      <span class="fw-change-label">Framework:</span>
+      <div class="fw-pills" id="fw-pills"></div>
+    </div>
+    <div class="tom-change-bar" style="flex:1;margin-bottom:0;">
+      <span class="tom-change-label">Tom:</span>
+      <div class="tom-pills" id="tom-pills"></div>
+    </div>
   </div>
   <div id="resultado-out"></div>
 </div>
@@ -517,8 +594,8 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL  = 'https://ezrhzvrgndvnnslrfxge.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
+const SUPABASE_URL  = 'COLE_SUA_SUPABASE_URL_AQUI';
+const SUPABASE_ANON = 'COLE_SUA_SUPABASE_ANON_KEY_AQUI';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // Verifica autenticação e plano ativo
@@ -582,9 +659,62 @@ const TCLS=['tb-t1','tb-t2','tb-t3'];
 const MSGS1=['Analisando o nicho...','Identificando tendências...','Mapeando temas virais...','Quase pronto...'];
 const MSGS2=['Estruturando os temas...','Aplicando o framework...','Gerando os cards...','Finalizando...'];
 
-let nicho='',temasDisp=[],temasSel=[],fwSel='aida',resultado=null;
+let nicho='',temasDisp=[],temasSel=[],fwSel='aida',tomSel='educativo',resultado=null;
 const fmtGerado={};
 let msgTimer;
+
+
+const TONS = {
+  educativo:    {nome:'Educativo',    emoji:'📚', desc:'ensina e explica com clareza', instrucao:'Use linguagem didática, explique conceitos, dê exemplos práticos e mostre o passo a passo. Tom professor.'},
+  inspiracional:{nome:'Inspiracional',emoji:'✨', desc:'motiva e emociona',            instrucao:'Use linguagem emotiva, histórias de transformação, frases motivacionais e conexão emocional. Tom coach.'},
+  autoridade:   {nome:'Autoridade',   emoji:'🎯', desc:'direto e técnico',             instrucao:'Use linguagem assertiva, dados, fatos e posicionamento forte. Sem rodeios. Tom especialista.'},
+  descontraido: {nome:'Descontraído', emoji:'😄', desc:'humor e leveza',               instrucao:'Use linguagem informal, humor leve, analogias do dia a dia e proximidade. Tom amigo.'},
+  provocativo:  {nome:'Provocativo',  emoji:'🔥', desc:'questiona e gera polêmica',    instrucao:'Use linguagem desafiadora, questione crenças, gere curiosidade e até polêmica saudável. Tom provocador.'}
+};
+
+function selectTom(btn){
+  document.querySelectorAll('.tom-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  tomSel = btn.dataset.tom;
+}
+
+function getTomInstrucao(){
+  return TONS[tomSel]?.instrucao || '';
+}
+
+function renderTomPills(){
+  const pills = document.getElementById('tom-pills');
+  if(!pills) return;
+  pills.innerHTML = Object.entries(TONS).map(([id,t])=>
+    `<button class="tom-pill${id===tomSel?' active':''}" onclick="trocarTom('${id}')">${t.emoji} ${t.nome}</button>`
+  ).join('');
+}
+
+async function trocarTom(id){
+  if(id===tomSel) return;
+  tomSel = id;
+  renderTomPills();
+  // Limpa formatos gerados pois o tom mudou
+  Object.keys(fmtGerado).forEach(k=>delete fmtGerado[k]);
+  // Regenera estrutura com novo tom
+  document.getElementById('res-fw-label').textContent = resultado.fw.nome + ' — ' + TONS[id].nome + ' (gerando...)';
+  const tStr = resultado.originais.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
+  const n = resultado.originais.length;
+  const fw = resultado.fw;
+  const prompt = `Especialista em conteúdo viral. Tom: ${TONS[id].instrucao} Responda APENAS JSON válido.
+Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} (${fw.steps.join(' -> ')})
+Para cada tema gere erros/proc/anal com titulo (6-10 palavras, tom ${TONS[id].nome}) e fw_steps (${fw.steps.length} objetos com etapas: ${fw.steps.join(', ')}).
+{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}
+Gere EXATAMENTE ${n} tema(s).`;
+  try {
+    const d = await callAPI(prompt, n===1?1200:n===2?2000:2800);
+    resultado = {nicho, fw, temas:d.temas, originais:resultado.originais};
+    renderResultado(resultado);
+  } catch(e) {
+    alert('Erro ao trocar tom.');
+    document.getElementById('res-fw-label').textContent = fw.nome + ' — ' + fw.foco;
+  }
+}
 
 function startLoad(id,msgs){let i=0;document.getElementById(id+'-txt').textContent=msgs[0];msgTimer=setInterval(()=>{i=(i+1)%msgs.length;document.getElementById(id+'-txt').textContent=msgs[i];},1700);}
 function stopLoad(id){clearInterval(msgTimer);document.getElementById(id).classList.remove('on');}
@@ -707,6 +837,7 @@ function renderResultado(data){
   FWS.forEach(fw=>{
     pills.innerHTML+=`<button class="fw-pill${fw.id===data.fw.id?' active':''}" onclick="trocarFW('${fw.id}')">${fw.nome}</button>`;
   });
+  renderTomPills();
   const out=document.getElementById('resultado-out');out.innerHTML='';
   data.temas.forEach((t,ti)=>{
     const orig=data.originais[ti];
@@ -764,24 +895,26 @@ async function gerarFormato(cardKey, fmt, ti, ci){
   outEl.innerHTML=`<div class="gen-loading"><div class="spin"></div><span>Gerando ${fmt}...</span></div>`;
 
   let prompt='';
+  const tomInstrucao = getTomInstrucao();
+  const tomNome = TONS[tomSel]?.nome || 'Educativo';
   if(fmt==='reels'){
-    prompt=`Crie um roteiro de Reels/TikTok completo em português. Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome}
+    prompt=`Crie um roteiro de Reels/TikTok completo em português. Tom: ${tomInstrucao} Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome} | Tom: ${tomNome}
 Conteúdo base: "${cd.titulo}"
 
-JSON: {"hook":"frase abertura impactante 3 segundos muito direta e provocativa","cenas":[{"num":1,"texto":"narração cena 1 detalhada"},{"num":2,"texto":"narração cena 2"},{"num":3,"texto":"narração cena 3"},{"num":4,"texto":"narração cena 4"}],"cta":"chamada para ação final do vídeo","legenda":"legenda completa instagram com emojis 3-4 frases engajamento","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+JSON: {"hook":"frase abertura impactante 3 segundos no tom ${tomNome}","cenas":[{"num":1,"texto":"cena 1 detalhada"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"chamada para ação no tom ${tomNome}","legenda":"legenda completa com emojis 3-4 frases no tom ${tomNome}","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
   } else if(fmt==='carrossel'){
-    prompt=`Crie um carrossel do Instagram completo em português. Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome}
+    prompt=`Crie um carrossel Instagram completo em português. Tom: ${tomInstrucao} Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome} | Tom: ${tomNome}
 Conteúdo base: "${cd.titulo}"
 
-JSON: {"capa":"texto impactante slide capa max 8 palavras","slides":["texto slide 2 informativo","texto slide 3","texto slide 4","texto slide 5 conclusão"],"legenda":"legenda completa com emojis 3-4 frases","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+JSON: {"capa":"texto impactante capa max 8 palavras no tom ${tomNome}","slides":["slide 2","slide 3","slide 4","slide 5"],"legenda":"legenda com emojis no tom ${tomNome}","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
   } else {
-    prompt=`Crie um post de imagem Instagram completo em português. Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome}
+    prompt=`Crie um post de imagem Instagram completo em português. Tom: ${tomInstrucao} Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome} | Tom: ${tomNome}
 Conteúdo base: "${cd.titulo}"
 
-JSON: {"imagem":"texto principal imagem max 10 palavras impactante","subtexto":"subtítulo max 6 palavras","legenda":"legenda completa com emojis e CTA 4-5 frases","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+JSON: {"imagem":"texto imagem max 10 palavras no tom ${tomNome}","subtexto":"subtítulo max 6 palavras","legenda":"legenda com emojis e CTA no tom ${tomNome}","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
   }
 
   try{
@@ -799,6 +932,94 @@ JSON: {"imagem":"texto principal imagem max 10 palavras impactante","subtexto":"
   btn.disabled=false;
 }
 
+/* ── INLINE FIELD HELPERS ── */
+function editField(el, cardKey, fmt, fieldKey, currentVal){
+  const wrap = el.closest('.field-wrap');
+  const escaped = currentVal.replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  wrap.innerHTML = `
+    <textarea class="field-edit-area" id="fea-${cardKey}-${fmt}-${fieldKey}">${currentVal}</textarea>
+    <div class="field-actions">
+      <button class="btn-save-field" onclick="saveField('${cardKey}','${fmt}','${fieldKey}')">✓ Salvar</button>
+      <button class="btn-cancel-field" onclick="cancelField('${cardKey}','${fmt}','${fieldKey}','${escaped}')">Cancelar</button>
+      <button class="btn-regen-field" onclick="regenField(this,'${cardKey}','${fmt}','${fieldKey}')">↺ Regenerar este campo</button>
+    </div>`;
+  document.getElementById(`fea-${cardKey}-${fmt}-${fieldKey}`).focus();
+}
+
+function saveField(cardKey, fmt, fieldKey){
+  const ta = document.getElementById(`fea-${cardKey}-${fmt}-${fieldKey}`);
+  if(!ta) return;
+  const val = ta.value.trim();
+  if(!fmtGerado[cardKey]) fmtGerado[cardKey]={};
+  if(!fmtGerado[cardKey][fmt]) fmtGerado[cardKey][fmt]={};
+  // Handle nested fields like cenas.0
+  if(fieldKey.startsWith('cena_')){
+    const idx = parseInt(fieldKey.split('_')[1]);
+    fmtGerado[cardKey][fmt].cenas[idx].texto = val;
+  } else {
+    fmtGerado[cardKey][fmt][fieldKey] = val;
+  }
+  const outEl = document.getElementById(`output-${cardKey}`);
+  renderFmtOutput(cardKey, fmt, outEl);
+  showToast('Salvo!');
+}
+
+function cancelField(cardKey, fmt, fieldKey, originalVal){
+  const outEl = document.getElementById(`output-${cardKey}`);
+  renderFmtOutput(cardKey, fmt, outEl);
+}
+
+async function regenField(btn, cardKey, fmt, fieldKey){
+  btn.disabled = true;
+  btn.textContent = '↺ Gerando...';
+  // Find card context
+  const [ti, ci] = cardKey.replace('t','').split('_c').map(Number);
+  const t = resultado.temas[ti];
+  const cat = CATS[ci];
+  const cd = t[cat.key];
+  const fw = resultado.fw;
+  const orig = resultado.originais[ti];
+  const tomNome = TONS[tomSel]?.nome || 'Educativo';
+  const tomInst = getTomInstrucao();
+
+  const fieldLabels = {
+    hook:'hook (frase abertura 3 segundos)',
+    cta:'CTA (chamada para ação final)',
+    legenda:'legenda completa com emojis (3-4 frases)',
+    hashtags:'5 hashtags relevantes separados por espaço',
+    capa:'texto impactante para capa do carrossel (max 8 palavras)',
+    imagem:'texto principal da imagem (max 10 palavras)',
+    subtexto:'subtítulo da imagem (max 6 palavras)'
+  };
+  if(fieldKey.startsWith('cena_')){
+    const idx = parseInt(fieldKey.split('_')[1]);
+    const prompt = `Reescreva a cena ${idx+1} de um roteiro de Reels. Tom: ${tomInst} Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Tom: ${tomNome}
+JSON: {"texto":"narração desta cena detalhada e no tom correto"}`;
+    try {
+      const d = await callAPI(prompt, 300);
+      fmtGerado[cardKey][fmt].cenas[idx].texto = d.texto;
+    } catch(e){}
+  } else {
+    const prompt = `Reescreva apenas o campo "${fieldLabels[fieldKey]||fieldKey}" para um conteúdo de ${fmt}. Tom: ${tomInst} Responda APENAS JSON.
+Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Tom: ${tomNome}
+Conteúdo base: "${cd.titulo}"
+JSON: {"${fieldKey}":"novo conteúdo aqui"}`;
+    try {
+      const d = await callAPI(prompt, 300);
+      fmtGerado[cardKey][fmt][fieldKey] = d[fieldKey] || fmtGerado[cardKey][fmt][fieldKey];
+    } catch(e){}
+  }
+  const outEl = document.getElementById(`output-${cardKey}`);
+  renderFmtOutput(cardKey, fmt, outEl);
+}
+
+function makeField(val, cardKey, fmt, fieldKey, extraClass=''){
+  const safeVal = (val||'').replace(/'/g,"\'").replace(/
+/g,'\n');
+  return `<div class="field-wrap"><span class="field-text ${extraClass}" onclick="editField(this,'${cardKey}','${fmt}','${fieldKey}','${safeVal}')">${val||''}</span></div>`;
+}
+
 /* ── RENDER OUTPUT ── */
 function renderFmtOutput(cardKey,fmt,outEl){
   const gerado=fmtGerado[cardKey]||{};
@@ -813,27 +1034,42 @@ function renderFmtOutput(cardKey,fmt,outEl){
     const d=gerado[f];
     let inner='';
     if(f==='reels'){
-      const cenas=(d.cenas||[]).map(c=>`<div class="rs-cena"><div class="rs-cena-num">Cena ${c.num}</div>${c.texto}</div>`).join('');
-      const copyTxt=`REELS\nHook: ${d.hook}\n${(d.cenas||[]).map(c=>`Cena ${c.num}: ${c.texto}`).join('\n')}\nCTA: ${d.cta}\nLegenda: ${d.legenda}\n${d.hashtags}`;
+      const cenas=(d.cenas||[]).map((cn,i)=>`<div class="rs-cena"><div class="rs-cena-num">Cena ${cn.num}</div>${makeField(cn.texto,cardKey,f,'cena_'+i)}</div>`).join('');
+      const copyTxt=`REELS | Tom: ${TONS[tomSel]?.nome||''}
+Hook: ${d.hook}
+${(d.cenas||[]).map(c=>`Cena ${c.num}: ${c.texto}`).join('
+')}
+CTA: ${d.cta}
+Legenda: ${d.legenda}
+${d.hashtags}`;
       inner=`
-        <div class="rs-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">${d.hook||''}</div></div>
+        <div class="rs-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">${makeField(d.hook,cardKey,f,'hook','rs-hook-inner')}</div></div>
         <div class="rs-section"><div class="rs-label">Cenas</div><div class="rs-box">${cenas}</div></div>
-        <div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">${d.cta||''}</div></div>
-        <div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box"><div class="rs-legenda">${d.legenda||''}</div><div class="rs-hash">${d.hashtags||''}</div></div></div>
+        <div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">${makeField(d.cta,cardKey,f,'cta')}</div></div>
+        <div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box">${makeField(d.legenda,cardKey,f,'legenda','rs-legenda')}${makeField(d.hashtags,cardKey,f,'hashtags','rs-hash')}</div></div>
         <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar roteiro</button>`;
     } else if(f==='carrossel'){
-      const slides=[`<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">${d.capa||''}</div></div>`];
-      (d.slides||[]).forEach((s,i)=>slides.push(`<div class="slide"><span class="slide-num">${i+2}</span><div class="slide-txt">${s}</div></div>`));
-      const copyTxt=`CARROSSEL\nCapa: ${d.capa}\n${(d.slides||[]).map((s,i)=>`Slide ${i+2}: ${s}`).join('\n')}\nLegenda: ${d.legenda}\n${d.hashtags}`;
+      const slides=[`<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">${makeField(d.capa,cardKey,f,'capa')}</div></div>`];
+      (d.slides||[]).forEach((s,i)=>slides.push(`<div class="slide"><span class="slide-num">${i+2}</span><div class="slide-txt">${makeField(s,cardKey,f,'slide_'+i)}</div></div>`));
+      const copyTxt=`CARROSSEL | Tom: ${TONS[tomSel]?.nome||''}
+Capa: ${d.capa}
+${(d.slides||[]).map((s,i)=>`Slide ${i+2}: ${s}`).join('
+')}
+Legenda: ${d.legenda}
+${d.hashtags}`;
       inner=`
         <div class="slides-wrap">${slides.join('')}</div>
-        <div class="leg-box"><div class="leg-lbl">Legenda</div><div class="leg-txt">${d.legenda||''}</div><div class="leg-hash">${d.hashtags||''}</div></div>
+        <div class="leg-box"><div class="leg-lbl">Legenda</div>${makeField(d.legenda,cardKey,f,'legenda','leg-txt')}${makeField(d.hashtags,cardKey,f,'hashtags','leg-hash')}</div>
         <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar carrossel</button>`;
     } else {
-      const copyTxt=`POST\nImagem: ${d.imagem}\nSubtítulo: ${d.subtexto}\nLegenda: ${d.legenda}\n${d.hashtags}`;
+      const copyTxt=`POST | Tom: ${TONS[tomSel]?.nome||''}
+Imagem: ${d.imagem}
+Subtítulo: ${d.subtexto}
+Legenda: ${d.legenda}
+${d.hashtags}`;
       inner=`
-        <div class="post-img"><div class="post-img-lbl">Texto da imagem</div><div class="post-img-txt">${d.imagem||''}</div><div class="post-img-sub">${d.subtexto||''}</div></div>
-        <div class="leg-box"><div class="leg-lbl">Legenda</div><div class="leg-txt">${d.legenda||''}</div><div class="leg-hash">${d.hashtags||''}</div></div>
+        <div class="post-img"><div class="post-img-lbl">Texto da imagem</div>${makeField(d.imagem,cardKey,f,'imagem','post-img-txt')}${makeField(d.subtexto,cardKey,f,'subtexto','post-img-sub')}</div>
+        <div class="leg-box"><div class="leg-lbl">Legenda</div>${makeField(d.legenda,cardKey,f,'legenda','leg-txt')}${makeField(d.hashtags,cardKey,f,'hashtags','leg-hash')}</div>
         <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar post</button>`;
     }
     panesHtml+=`<div class="fmt-pane${f===fmt?' active':''}" id="pane-${cardKey}-${f}">${inner}</div>`;
@@ -877,12 +1113,26 @@ Gere EXATAMENTE ${n} tema(s).`;
 }
 
 /* ── UTILS ── */
-async function callAPI(prompt,maxTokens){
-  const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:maxTokens})});
-  const d=await r.json();
-  if(d.error)throw new Error(d.message);
-  const clean=d.text.replace(/```json|```/g,'').trim();
-  return JSON.parse(clean);
+async function callAPI(prompt,maxTokens,retries=3){
+  for(let i=0;i<retries;i++){
+    try{
+      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:maxTokens})});
+      const d=await r.json();
+      if(d.error){
+        // Rate limit — wait and retry
+        if((d.message&&(d.message.includes('rate')||d.message.includes('429')||d.message.includes('limit'))) && i<retries-1){
+          await new Promise(res=>setTimeout(res,2000*(i+1)));
+          continue;
+        }
+        throw new Error(d.message);
+      }
+      const clean=d.text.replace(/```json|```/g,'').trim();
+      return JSON.parse(clean);
+    }catch(e){
+      if(i===retries-1) throw e;
+      await new Promise(res=>setTimeout(res,1500*(i+1)));
+    }
+  }
 }
 
 function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/"/g,'&quot;');}
