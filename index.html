@@ -611,51 +611,44 @@ const SUPABASE_URL  = 'https://ezrhzvrgndvnnslrfxge.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Verifica autenticação e plano ativo
-(async()=>{
-  const {data:{session}}=await sb.auth.getSession();
-  if(!session){window.location.href='/login.html';return;}
-  const {data}=await sb.from('profiles').select('ativo,full_name').eq('id',session.user.id).single();
-  if(!data?.ativo){await sb.auth.signOut();window.location.href='/login.html?pendente=1';return;}
-  // Exibe nome do usuário
-  const nameEl=document.getElementById('user-name');
-  if(nameEl)nameEl.textContent=data.full_name||session.user.email;
+(async function(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ window.location.href='/login.html'; return; }
+  const {data} = await sb.from('profiles').select('ativo,full_name').eq('id',session.user.id).single();
+  if(!data || !data.ativo){ await sb.auth.signOut(); window.location.href='/login.html?pendente=1'; return; }
+  const nm = document.getElementById('user-name');
+  if(nm) nm.textContent = data.full_name || session.user.email;
 })();
 
-async function doLogout(){await sb.auth.signOut();window.location.href='/login.html';}
-</script>
+async function doLogout(){ await sb.auth.signOut(); window.location.href='/login.html'; }
 
-<script>
 /* ── PARTICLES ── */
 (function(){
-  const c=document.getElementById('bg-canvas');
-  const ctx=c.getContext('2d');
-  let W,H,pts=[];
+  var c=document.getElementById('bg-canvas'),ctx=c.getContext('2d'),W,H,pts=[];
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
-  resize();window.addEventListener('resize',resize);
-  function mkPt(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,a:Math.random()};}
-  for(let i=0;i<60;i++)pts.push(mkPt());
+  resize(); window.addEventListener('resize',resize);
+  for(var i=0;i<60;i++) pts.push({x:Math.random()*1920,y:Math.random()*1080,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,a:Math.random()});
   function draw(){
     ctx.clearRect(0,0,W,H);
-    pts.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.x<0||p.x>W)p.vx*=-1;
-      if(p.y<0||p.y>H)p.vy*=-1;
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(184,240,80,${p.a*0.35})`;ctx.fill();
+    pts.forEach(function(p){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(184,240,80,'+p.a*.35+')'; ctx.fill();
     });
-    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{
-      const d=Math.hypot(a.x-b.x,a.y-b.y);
-      if(d<120){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-        ctx.strokeStyle=`rgba(184,240,80,${(1-d/120)*.06})`;ctx.lineWidth=.5;ctx.stroke();}
-    }));
+    pts.forEach(function(a,i){ pts.slice(i+1).forEach(function(b){
+      var d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<120){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle='rgba(184,240,80,'+(1-d/120)*.06+')'; ctx.lineWidth=.5; ctx.stroke(); }
+    });});
     requestAnimationFrame(draw);
   }
   draw();
 })();
 
 /* ── DATA ── */
-const FWS=[
+var FWS=[
   {id:'aida',tag:'Copywriting',foco:'Conversão',nome:'AIDA',desc:'Atenção, Interesse, Desejo, Ação',steps:['Atenção','Interesse','Desejo','Ação']},
   {id:'pas',tag:'Copywriting',foco:'Dor & Solução',nome:'PAS',desc:'Problema, Agitação, Solução',steps:['Problema','Agitação','Solução']},
   {id:'bab',tag:'Copywriting',foco:'Transformação',nome:'BAB',desc:'Before, After, Bridge',steps:['Before','After','Bridge']},
@@ -663,134 +656,132 @@ const FWS=[
   {id:'enti',tag:'Retórica',foco:'Persuasão Sutil',nome:'Entimema',desc:'Silogismo com premissa implícita',steps:['Premissa explícita','Premissa implícita','Conclusão da audiência']},
   {id:'story',tag:'Narrativa',foco:'Conexão',nome:'Storytelling',desc:'Jornada do Herói',steps:['Mundo comum','Chamado/Problema','Provação','Transformação']}
 ];
-const CATS=[
+var CATS=[
   {key:'erros',tag:'Erros Comuns',cls:'cc-erros'},
   {key:'proc',tag:'Processos & Bastidores',cls:'cc-proc'},
   {key:'anal',tag:'Análises & Estratégia',cls:'cc-anal'}
 ];
-const TCLS=['tb-t1','tb-t2','tb-t3'];
-const MSGS1=['Analisando o nicho...','Identificando tendências...','Mapeando temas virais...','Quase pronto...'];
-const MSGS2=['Estruturando os temas...','Aplicando o framework...','Gerando os cards...','Finalizando...'];
-
-let nicho='',temasDisp=[],temasSel=[],fwSel='aida',tomSel='educativo',resultado=null;
-const fmtGerado={};
-let msgTimer;
-
-
-const TONS = {
-  educativo:    {nome:'Educativo',    emoji:'📚', desc:'ensina e explica com clareza', instrucao:'Use linguagem didática, explique conceitos, dê exemplos práticos e mostre o passo a passo. Tom professor.'},
-  inspiracional:{nome:'Inspiracional',emoji:'✨', desc:'motiva e emociona',            instrucao:'Use linguagem emotiva, histórias de transformação, frases motivacionais e conexão emocional. Tom coach.'},
-  autoridade:   {nome:'Autoridade',   emoji:'🎯', desc:'direto e técnico',             instrucao:'Use linguagem assertiva, dados, fatos e posicionamento forte. Sem rodeios. Tom especialista.'},
-  descontraido: {nome:'Descontraído', emoji:'😄', desc:'humor e leveza',               instrucao:'Use linguagem informal, humor leve, analogias do dia a dia e proximidade. Tom amigo.'},
-  provocativo:  {nome:'Provocativo',  emoji:'🔥', desc:'questiona e gera polêmica',    instrucao:'Use linguagem desafiadora, questione crenças, gere curiosidade e até polêmica saudável. Tom provocador.'}
+var TCLS=['tb-t1','tb-t2','tb-t3'];
+var TONS={
+  educativo:    {nome:'Educativo',    emoji:'📚',instrucao:'Tom didático: explique conceitos, dê exemplos práticos, mostre o passo a passo.'},
+  inspiracional:{nome:'Inspiracional',emoji:'✨',instrucao:'Tom emotivo: histórias de transformação, frases motivacionais, conexão emocional.'},
+  autoridade:   {nome:'Autoridade',   emoji:'🎯',instrucao:'Tom assertivo: dados, fatos, posicionamento forte, sem rodeios.'},
+  descontraido: {nome:'Descontraído', emoji:'😄',instrucao:'Tom informal: humor leve, analogias do dia a dia, linguagem de amigo.'},
+  provocativo:  {nome:'Provocativo',  emoji:'🔥',instrucao:'Tom desafiador: questione crenças, gere curiosidade e polêmica saudável.'}
 };
+var MSGS1=['Analisando o nicho...','Identificando tendências...','Mapeando temas virais...','Quase pronto...'];
+var MSGS2=['Estruturando os temas...','Aplicando o framework...','Gerando os cards...','Finalizando...'];
 
+var nicho='',temasDisp=[],temasSel=[],fwSel='aida',tomSel='educativo',resultado=null;
+var fmtGerado={};
+var msgTimer;
+
+/* ── TOM ── */
 function selectTom(btn){
-  document.querySelectorAll('.tom-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tom-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
-  tomSel = btn.dataset.tom;
+  tomSel=btn.dataset.tom;
 }
-
-function getTomInstrucao(){
-  return TONS[tomSel]?.instrucao || '';
-}
+function getTomInstrucao(){ return TONS[tomSel] ? TONS[tomSel].instrucao : ''; }
+function getTomNome(){ return TONS[tomSel] ? TONS[tomSel].nome : 'Educativo'; }
 
 function renderTomPills(){
-  const pills = document.getElementById('tom-pills');
+  var pills=document.getElementById('tom-pills');
   if(!pills) return;
-  pills.innerHTML = Object.entries(TONS).map(([id,t])=>
-    `<button class="tom-pill${id===tomSel?' active':''}" onclick="trocarTom('${id}')">${t.emoji} ${t.nome}</button>`
-  ).join('');
+  pills.innerHTML=Object.keys(TONS).map(function(id){
+    var t=TONS[id];
+    return '<button class="tom-pill'+(id===tomSel?' active':'')+'" onclick="trocarTom(\''+id+'\')">'+t.emoji+' '+t.nome+'</button>';
+  }).join('');
 }
 
 async function trocarTom(id){
   if(id===tomSel) return;
-  tomSel = id;
+  tomSel=id;
   renderTomPills();
-  // Limpa formatos gerados pois o tom mudou
-  Object.keys(fmtGerado).forEach(k=>delete fmtGerado[k]);
-  // Regenera estrutura com novo tom
-  document.getElementById('res-fw-label').textContent = resultado.fw.nome + ' — ' + TONS[id].nome + ' (gerando...)';
-  const tStr = resultado.originais.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
-  const n = resultado.originais.length;
-  const fw = resultado.fw;
-  const prompt = `Especialista em conteúdo viral. Tom: ${TONS[id].instrucao} Responda APENAS JSON válido.
-Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} (${fw.steps.join(' -> ')})
-Para cada tema gere erros/proc/anal com titulo (6-10 palavras, tom ${TONS[id].nome}) e fw_steps (${fw.steps.length} objetos com etapas: ${fw.steps.join(', ')}).
-{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}
-Gere EXATAMENTE ${n} tema(s).`;
+  Object.keys(fmtGerado).forEach(function(k){delete fmtGerado[k];});
+  document.getElementById('res-fw-label').textContent=resultado.fw.nome+' — '+TONS[id].nome+' (gerando...)';
+  var tStr=resultado.originais.map(function(t,i){return 'Tema '+(i+1)+': "'+t.nome+'"';}).join(', ');
+  var n=resultado.originais.length;
+  var fw=resultado.fw;
+  var prompt='Especialista em conteúdo viral. Responda APENAS JSON válido.\n'
+    +'Nicho: "'+nicho+'" | Temas: '+tStr+' | Framework: '+fw.nome+' ('+fw.steps.join(' -> ')+')\n'
+    +'Tom: '+getTomInstrucao()+'\n'
+    +'Para cada tema gere erros/proc/anal com titulo (6-10 palavras) e fw_steps ('+fw.steps.length+' objetos {"label":"etapa","texto":"conteudo"}).\n'
+    +'{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
+    +'Gere EXATAMENTE '+n+' tema(s).';
   try {
-    const d = await callAPI(prompt, n===1?1200:n===2?2000:2800);
-    resultado = {nicho, fw, temas:d.temas, originais:resultado.originais};
+    var d=await callAPI(prompt,n===1?1200:n===2?2000:2800);
+    resultado={nicho:nicho,fw:fw,temas:d.temas,originais:resultado.originais};
     renderResultado(resultado);
-  } catch(e) {
+  } catch(e){
     alert('Erro ao trocar tom.');
-    document.getElementById('res-fw-label').textContent = fw.nome + ' — ' + fw.foco;
+    document.getElementById('res-fw-label').textContent=fw.nome+' — '+fw.foco;
   }
 }
 
-function startLoad(id,msgs){let i=0;document.getElementById(id+'-txt').textContent=msgs[0];msgTimer=setInterval(()=>{i=(i+1)%msgs.length;document.getElementById(id+'-txt').textContent=msgs[i];},1700);}
-function stopLoad(id){clearInterval(msgTimer);document.getElementById(id).classList.remove('on');}
+/* ── LOADING ── */
+function startLoad(id,msgs){
+  var i=0;
+  document.getElementById(id+'-txt').textContent=msgs[0];
+  msgTimer=setInterval(function(){i=(i+1)%msgs.length;document.getElementById(id+'-txt').textContent=msgs[i];},1700);
+}
+function stopLoad(id){ clearInterval(msgTimer); document.getElementById(id).classList.remove('on'); }
 
+/* ── STEPS ── */
 function setStep(n){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   document.getElementById('panel-'+n).classList.add('active');
-  [1,2,3].forEach(i=>{
-    const el=document.getElementById('s-'+i);
+  [1,2,3].forEach(function(i){
+    var el=document.getElementById('s-'+i);
     el.classList.remove('active','done');
-    if(i<n)el.classList.add('done');
-    if(i===n)el.classList.add('active');
+    if(i<n) el.classList.add('done');
+    if(i===n) el.classList.add('active');
   });
 }
 
 /* ── STEP 1 ── */
 async function analisarNicho(){
   nicho=document.getElementById('inp-nicho').value.trim();
-  if(!nicho){shake('inp-nicho');return;}
+  if(!nicho){ shake('inp-nicho'); return; }
   document.getElementById('btn-analisar').disabled=true;
   document.getElementById('load-1').classList.add('on');
   startLoad('load-1',MSGS1);
   try{
-    const d=await callAPI(`Para o nicho "${nicho}", identifique 6 temas com alto potencial viral para redes sociais. Responda APENAS JSON sem markdown: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral agora max 10 palavras"}]} Gere exatamente 6 temas variados.`,800);
-    temasDisp=d.temas;temasSel=[];
-    renderStep2();stopLoad('load-1');
+    var d=await callAPI('Para o nicho "'+nicho+'", identifique 6 temas com alto potencial viral para redes sociais. Responda APENAS JSON sem markdown: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral agora max 10 palavras"}]} Gere exatamente 6 temas variados.',800);
+    temasDisp=d.temas; temasSel=[];
+    renderStep2(); stopLoad('load-1');
     document.getElementById('btn-analisar').disabled=false;
     setStep(2);
-  }catch(e){stopLoad('load-1');document.getElementById('btn-analisar').disabled=false;alert('Erro. Tente novamente.');}
+  }catch(e){ stopLoad('load-1'); document.getElementById('btn-analisar').disabled=false; alert('Erro. Tente novamente.'); }
 }
 
 /* ── STEP 2 ── */
 function renderStep2(){
   document.getElementById('s2-nicho-label').textContent=nicho;
-  const tg=document.getElementById('temas-grid');tg.innerHTML='';
-  temasDisp.forEach((t,i)=>{
-    tg.innerHTML+=`<div class="tema-card" id="tc-${i}" onclick="toggleTema(${i})">
-      <div class="tc-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#060608" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-      <div class="tc-viral">viral</div>
-      <div class="tc-nome">${t.nome}</div>
-      <div class="tc-why">${t.potencial}</div>
-    </div>`;
+  var tg=document.getElementById('temas-grid'); tg.innerHTML='';
+  temasDisp.forEach(function(t,i){
+    tg.innerHTML+='<div class="tema-card" id="tc-'+i+'" onclick="toggleTema('+i+')">'
+      +'<div class="tc-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#060608" stroke-width="1.8" stroke-linecap="round"/></svg></div>'
+      +'<div class="tc-viral">viral</div>'
+      +'<div class="tc-nome">'+t.nome+'</div>'
+      +'<div class="tc-why">'+t.potencial+'</div></div>';
   });
-  const fg=document.getElementById('fw-grid');fg.innerHTML='';
-  FWS.forEach(fw=>{
-    fg.innerHTML+=`<div class="fw-card${fw.id===fwSel?' selected':''}" id="fw-${fw.id}" onclick="selectFW('${fw.id}')">
-      <div class="fw-tag">${fw.tag} · ${fw.foco}</div>
-      <div class="fw-nome">${fw.nome}</div>
-      <div class="fw-desc">${fw.desc}</div>
-    </div>`;
+  var fg=document.getElementById('fw-grid'); fg.innerHTML='';
+  FWS.forEach(function(fw){
+    fg.innerHTML+='<div class="fw-card'+(fw.id===fwSel?' selected':'')+'" id="fw-'+fw.id+'" onclick="selectFW(\''+fw.id+'\')"><div class="fw-tag">'+fw.tag+' · '+fw.foco+'</div><div class="fw-nome">'+fw.nome+'</div><div class="fw-desc">'+fw.desc+'</div></div>';
   });
   updateCount();
 }
 
 function toggleTema(i){
-  const idx=temasSel.indexOf(i);
-  if(idx>-1){temasSel.splice(idx,1);document.getElementById('tc-'+i).classList.remove('selected');}
-  else{if(temasSel.length>=3){showToast('Máximo 3 temas');return;}temasSel.push(i);document.getElementById('tc-'+i).classList.add('selected');}
+  var idx=temasSel.indexOf(i);
+  if(idx>-1){ temasSel.splice(idx,1); document.getElementById('tc-'+i).classList.remove('selected'); }
+  else{ if(temasSel.length>=3){ showToast('Máximo 3 temas'); return; } temasSel.push(i); document.getElementById('tc-'+i).classList.add('selected'); }
   updateCount();
 }
 function selectFW(id){
   fwSel=id;
-  document.querySelectorAll('.fw-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.fw-card').forEach(function(c){c.classList.remove('selected');});
   document.getElementById('fw-'+id).classList.add('selected');
 }
 function updateCount(){
@@ -799,154 +790,125 @@ function updateCount(){
 }
 
 async function refreshTemas(){
-  const btn=document.getElementById('btn-refresh');
-  btn.disabled=true;btn.textContent='↺ Buscando...';
+  var btn=document.getElementById('btn-refresh');
+  btn.disabled=true; btn.textContent='↺ Buscando...';
   try{
-    const d=await callAPI(`Para o nicho "${nicho}", identifique 6 NOVOS temas virais para redes sociais, diferentes dos anteriores. Responda APENAS JSON: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral max 10 palavras"}]} Exatamente 6 temas.`,800);
-    temasDisp=d.temas;temasSel=[];renderStep2();
-  }catch(e){showToast('Erro ao buscar novos temas');}
-  btn.disabled=false;btn.textContent='↺ Novos temas';
+    var d=await callAPI('Para o nicho "'+nicho+'", identifique 6 NOVOS temas virais para redes sociais. Responda APENAS JSON: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral max 10 palavras"}]} Exatamente 6 temas diferentes.',800);
+    temasDisp=d.temas; temasSel=[]; renderStep2();
+  }catch(e){ showToast('Erro ao buscar novos temas'); }
+  btn.disabled=false; btn.textContent='↺ Novos temas';
 }
 
-/* ── STEP 3: gera só estrutura (fw_steps + titulo) ── */
+/* ── STEP 3: GERAR ESTRUTURA ── */
 async function gerarEstrutura(){
-  if(!temasSel.length)return;
-  const fw=FWS.find(f=>f.id===fwSel);
-  const escolhidos=temasSel.map(i=>temasDisp[i]);
+  if(!temasSel.length) return;
+  var fw=FWS.find(function(f){return f.id===fwSel;});
+  var escolhidos=temasSel.map(function(i){return temasDisp[i];});
   document.getElementById('btn-gerar').disabled=true;
   document.getElementById('load-2').classList.add('on');
   startLoad('load-2',MSGS2);
-
-  const tStr=escolhidos.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
-  const prompt=`Especialista em conteúdo viral. Responda APENAS JSON válido.
-Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} (${fw.steps.join(' -> ')})
-
-Para cada tema gere 3 conteúdos (erros, proc, anal) com:
-- titulo: título chamativo 6-10 palavras
-- fw_steps: array com ${fw.steps.length} objetos {"label":"etapa","texto":"conteúdo real 1-2 frases"}
-
-JSON: {"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}
-Gere EXATAMENTE ${escolhidos.length} tema(s).`;
-
+  var tStr=escolhidos.map(function(t,i){return 'Tema '+(i+1)+': "'+t.nome+'"';}).join(', ');
+  var prompt='Especialista em conteúdo viral. Responda APENAS JSON válido.\n'
+    +'Nicho: "'+nicho+'" | Temas: '+tStr+' | Framework: '+fw.nome+' ('+fw.steps.join(' -> ')+')\n'
+    +'Tom: '+getTomInstrucao()+'\n'
+    +'Para cada tema gere 3 conteúdos (erros, proc, anal) com titulo (6-10 palavras) e fw_steps ('+fw.steps.length+' objetos {"label":"etapa","texto":"conteudo 1-2 frases"} para as etapas: '+fw.steps.join(', ')+').\n'
+    +'{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
+    +'Gere EXATAMENTE '+escolhidos.length+' tema(s).';
   try{
-    const d=await callAPI(prompt,escolhidos.length===1?1200:escolhidos.length===2?2000:2800);
-    resultado={nicho,fw,temas:d.temas,originais:escolhidos};
-    Object.keys(fmtGerado).forEach(k=>delete fmtGerado[k]);
+    var d=await callAPI(prompt,escolhidos.length===1?1200:escolhidos.length===2?2000:2800);
+    resultado={nicho:nicho,fw:fw,temas:d.temas,originais:escolhidos};
+    Object.keys(fmtGerado).forEach(function(k){delete fmtGerado[k];});
     renderResultado(resultado);
     stopLoad('load-2');
     document.getElementById('btn-gerar').disabled=false;
     setStep(3);
   }catch(e){
-    stopLoad('load-2');document.getElementById('btn-gerar').disabled=false;
-    console.error(e);alert('Erro ao gerar. Tente novamente.');
+    stopLoad('load-2'); document.getElementById('btn-gerar').disabled=false;
+    console.error(e); alert('Erro ao gerar. Tente novamente.');
   }
 }
 
 /* ── RENDER RESULTADO ── */
 function renderResultado(data){
   document.getElementById('res-nicho-label').textContent=data.nicho;
-  document.getElementById('res-fw-label').textContent=`${data.fw.nome} — ${data.fw.foco}`;
-  const pills=document.getElementById('fw-pills');pills.innerHTML='';
-  FWS.forEach(fw=>{
-    pills.innerHTML+=`<button class="fw-pill${fw.id===data.fw.id?' active':''}" onclick="trocarFW('${fw.id}')">${fw.nome}</button>`;
-  });
+  document.getElementById('res-fw-label').textContent=data.fw.nome+' — '+data.fw.foco;
   renderTomPills();
-  const out=document.getElementById('resultado-out');out.innerHTML='';
-  data.temas.forEach((t,ti)=>{
-    const orig=data.originais[ti];
-    let cardsHtml='';
-    CATS.forEach((cat,ci)=>{
-      const cd=t[cat.key];
-      const cardKey=`t${ti}_c${ci}`;
-      const stepsHtml=(cd.fw_steps||[]).map(s=>`<div class="fw-step-item"><strong>${s.label}:</strong> ${s.texto}</div>`).join('');
-      cardsHtml+=`<div class="cc ${cat.cls}" id="card-${cardKey}">
-        <div class="cc-top"></div>
-        <div class="cc-body">
-          <div class="cc-tag">${cat.tag}</div>
-          <div class="cc-titulo">${cd.titulo||''}</div>
-          <div class="fw-steps-mini">
-            <div class="fw-steps-label">${data.fw.nome}</div>
-            ${stepsHtml}
-          </div>
-          <div class="fmt-demand">
-            <div class="fmt-demand-title">Gerar formato</div>
-            <div class="fmt-btns-row">
-              <button class="btn-fmt reels-btn" id="btn-reels-${cardKey}" onclick="gerarFormato('${cardKey}','reels',${ti},${ci})">▶ Reels</button>
-              <button class="btn-fmt carr-btn"  id="btn-carr-${cardKey}"  onclick="gerarFormato('${cardKey}','carrossel',${ti},${ci})">☰ Carrossel</button>
-              <button class="btn-fmt post-btn"  id="btn-post-${cardKey}"  onclick="gerarFormato('${cardKey}','post',${ti},${ci})">◻ Post</button>
-            </div>
-          </div>
-          <div id="output-${cardKey}"></div>
-        </div>
-      </div>`;
+  var pills=document.getElementById('fw-pills'); pills.innerHTML='';
+  FWS.forEach(function(fw){
+    pills.innerHTML+='<button class="fw-pill'+(fw.id===data.fw.id?' active':'')+'" onclick="trocarFW(\''+fw.id+'\')">'+fw.nome+'</button>';
+  });
+  var out=document.getElementById('resultado-out'); out.innerHTML='';
+  data.temas.forEach(function(t,ti){
+    var orig=data.originais[ti];
+    var cardsHtml='';
+    CATS.forEach(function(cat,ci){
+      var cd=t[cat.key];
+      var cardKey='t'+ti+'_c'+ci;
+      var stepsHtml=(cd.fw_steps||[]).map(function(s){
+        return '<div class="fw-step-item"><strong>'+s.label+':</strong> '+s.texto+'</div>';
+      }).join('');
+      cardsHtml+='<div class="cc '+cat.cls+'" id="card-'+cardKey+'">'
+        +'<div class="cc-top"></div><div class="cc-body">'
+        +'<div class="cc-tag">'+cat.tag+'</div>'
+        +'<div class="cc-titulo">'+(cd.titulo||'')+'</div>'
+        +'<div class="fw-steps-mini"><div class="fw-steps-label">'+data.fw.nome+'</div>'+stepsHtml+'</div>'
+        +'<div class="fmt-demand"><div class="fmt-demand-title">Gerar formato</div>'
+        +'<div class="fmt-btns-row">'
+        +'<button class="btn-fmt reels-btn" id="btn-reels-'+cardKey+'" onclick="gerarFormato(\''+cardKey+'\',\'reels\','+ti+','+ci+')">▶ Reels</button>'
+        +'<button class="btn-fmt carr-btn" id="btn-carr-'+cardKey+'" onclick="gerarFormato(\''+cardKey+'\',\'carrossel\','+ti+','+ci+')">☰ Carrossel</button>'
+        +'<button class="btn-fmt post-btn" id="btn-post-'+cardKey+'" onclick="gerarFormato(\''+cardKey+'\',\'post\','+ti+','+ci+')">◻ Post</button>'
+        +'</div></div>'
+        +'<div id="output-'+cardKey+'"></div>'
+        +'</div></div>';
     });
-    out.innerHTML+=`<div class="tema-block ${TCLS[ti]}" style="animation-delay:${ti*.1}s">
-      <div class="tema-block-header">
-        <span class="tb-num">Tema ${ti+1}</span>
-        <div><div class="tb-nome">${orig?orig.nome:t.nome}</div><div class="tb-why">${orig?orig.potencial:''}</div></div>
-      </div>
-      <div class="content-cards">${cardsHtml}</div>
-    </div>`;
+    out.innerHTML+='<div class="tema-block '+TCLS[ti]+'" style="animation-delay:'+(ti*.1)+'s">'
+      +'<div class="tema-block-header">'
+      +'<span class="tb-num">Tema '+(ti+1)+'</span>'
+      +'<div><div class="tb-nome">'+(orig?orig.nome:t.nome)+'</div><div class="tb-why">'+(orig?orig.potencial:'')+'</div></div>'
+      +'</div>'
+      +'<div class="content-cards">'+cardsHtml+'</div>'
+      +'</div>';
   });
 }
 
-/* ── GERAR FORMATO SOB DEMANDA ── */
-async function gerarFormato(cardKey, fmt, ti, ci){
-  const btn=document.getElementById(`btn-${fmt==='carrossel'?'carr':fmt}-${cardKey}`);
-  const outEl=document.getElementById(`output-${cardKey}`);
-  if(!btn||!outEl)return;
-
-  btn.disabled=true;
-  btn.textContent='...';
-
-  const t=resultado.temas[ti];
-  const cat=CATS[ci];
-  const cd=t[cat.key];
-  const fw=resultado.fw;
-  const orig=resultado.originais[ti];
-
-  outEl.innerHTML=`<div class="gen-loading"><div class="spin"></div><span>Gerando ${fmt}...</span></div>`;
-
-  let prompt='';
-  const tomInstrucao = getTomInstrucao();
-  const tomNome = TONS[tomSel]?.nome || 'Educativo';
+/* ── GERAR FORMATO ── */
+async function gerarFormato(cardKey,fmt,ti,ci){
+  var btnId=fmt==='carrossel'?'btn-carr-'+cardKey:'btn-'+fmt+'-'+cardKey;
+  var btn=document.getElementById(btnId);
+  var outEl=document.getElementById('output-'+cardKey);
+  if(!btn||!outEl) return;
+  btn.disabled=true; btn.textContent='...';
+  var t=resultado.temas[ti];
+  var cat=CATS[ci];
+  var cd=t[cat.key];
+  var fw=resultado.fw;
+  var orig=resultado.originais[ti];
+  var temaNome=orig?orig.nome:t.nome;
+  var tomNome=getTomNome();
+  var tomInst=getTomInstrucao();
+  outEl.innerHTML='<div class="gen-loading"><div class="spin"></div><span>Gerando '+fmt+'...</span></div>';
+  var prompt='';
   if(fmt==='reels'){
-    prompt=`Crie um roteiro de Reels/TikTok completo em português. Tom: ${tomInstrucao} Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome} | Tom: ${tomNome}
-Conteúdo base: "${cd.titulo}"
-
-JSON: {"hook":"frase abertura impactante 3 segundos no tom ${tomNome}","cenas":[{"num":1,"texto":"cena 1 detalhada"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"chamada para ação no tom ${tomNome}","legenda":"legenda completa com emojis 3-4 frases no tom ${tomNome}","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+    prompt='Crie roteiro de Reels/TikTok completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
+      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Framework: '+fw.nome+' | Tom: '+tomNome+'\n'
+      +'Conteudo base: "'+cd.titulo+'"\n'
+      +'JSON: {"hook":"frase abertura 3 segundos tom '+tomNome+'","cenas":[{"num":1,"texto":"cena 1"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"chamada acao tom '+tomNome+'","legenda":"legenda emojis 3-4 frases tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
   } else if(fmt==='carrossel'){
-    prompt=`Crie um carrossel Instagram completo em português. Tom: ${tomInstrucao} Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome} | Tom: ${tomNome}
-Conteúdo base: "${cd.titulo}"
-
-JSON: {"capa":"texto impactante capa max 8 palavras no tom ${tomNome}","slides":["slide 2","slide 3","slide 4","slide 5"],"legenda":"legenda com emojis no tom ${tomNome}","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+    prompt='Crie carrossel Instagram completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
+      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
+      +'JSON: {"capa":"texto capa max 8 palavras","slides":["slide2","slide3","slide4","slide5"],"legenda":"legenda emojis tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
   } else {
-    prompt=`Crie um post de imagem Instagram completo em português. Tom: ${tomInstrucao} Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Framework: ${fw.nome} | Tom: ${tomNome}
-Conteúdo base: "${cd.titulo}"
-
-JSON: {"imagem":"texto imagem max 10 palavras no tom ${tomNome}","subtexto":"subtítulo max 6 palavras","legenda":"legenda com emojis e CTA no tom ${tomNome}","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}`;
+    prompt='Crie post Instagram completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
+      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
+      +'JSON: {"imagem":"texto imagem max 10 palavras","subtexto":"subtitulo max 6 palavras","legenda":"legenda emojis CTA tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
   }
-
   try{
-    const d=await callAPI(prompt,1000);
-    if(!fmtGerado[cardKey])fmtGerado[cardKey]={};
+    var d=await callAPI(prompt,1000);
+    if(!fmtGerado[cardKey]) fmtGerado[cardKey]={};
     fmtGerado[cardKey][fmt]=d;
     renderFmtOutput(cardKey,fmt,outEl);
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
     btn.classList.add('done');
-    // Add save button if not already there
-    const saveId=`save-btn-${cardKey}-${fmt}`;
-    if(!document.getElementById(saveId)){
-      const saveBtn=document.createElement('button');
-      saveBtn.id=saveId;
-      saveBtn.className='btn-salvar-hist';
-      saveBtn.innerHTML='★ Salvar no histórico';
-      saveBtn.onclick=()=>salvarConteudo(cardKey,fmt,ti,ci,saveBtn);
-      document.getElementById(`output-${cardKey}`)?.appendChild(saveBtn);
-    }
   }catch(e){
     outEl.innerHTML='';
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
@@ -955,140 +917,120 @@ JSON: {"imagem":"texto imagem max 10 palavras no tom ${tomNome}","subtexto":"sub
   btn.disabled=false;
 }
 
-/* ── INLINE FIELD HELPERS ── */
-/* editField replaced by startEdit/saveFieldById */
-
-async function regenField(btn, cardKey, fmt, fieldKey){
-  btn.disabled = true;
-  btn.textContent = '↺ Gerando...';
-  // Find card context
-  const [ti, ci] = cardKey.replace('t','').split('_c').map(Number);
-  const t = resultado.temas[ti];
-  const cat = CATS[ci];
-  const cd = t[cat.key];
-  const fw = resultado.fw;
-  const orig = resultado.originais[ti];
-  const tomNome = TONS[tomSel]?.nome || 'Educativo';
-  const tomInst = getTomInstrucao();
-
-  const fieldLabels = {
-    hook:'hook (frase abertura 3 segundos)',
-    cta:'CTA (chamada para ação final)',
-    legenda:'legenda completa com emojis (3-4 frases)',
-    hashtags:'5 hashtags relevantes separados por espaço',
-    capa:'texto impactante para capa do carrossel (max 8 palavras)',
-    imagem:'texto principal da imagem (max 10 palavras)',
-    subtexto:'subtítulo da imagem (max 6 palavras)'
-  };
-  if(fieldKey.startsWith('cena_')){
-    const idx = parseInt(fieldKey.split('_')[1]);
-    const prompt = `Reescreva a cena ${idx+1} de um roteiro de Reels. Tom: ${tomInst} Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Tom: ${tomNome}
-JSON: {"texto":"narração desta cena detalhada e no tom correto"}`;
-    try {
-      const d = await callAPI(prompt, 300);
-      fmtGerado[cardKey][fmt].cenas[idx].texto = d.texto;
-    } catch(e){}
-  } else {
-    const prompt = `Reescreva apenas o campo "${fieldLabels[fieldKey]||fieldKey}" para um conteúdo de ${fmt}. Tom: ${tomInst} Responda APENAS JSON.
-Nicho: "${nicho}" | Tema: "${orig?orig.nome:t.nome}" | Categoria: "${cat.tag}" | Tom: ${tomNome}
-Conteúdo base: "${cd.titulo}"
-JSON: {"${fieldKey}":"novo conteúdo aqui"}`;
-    try {
-      const d = await callAPI(prompt, 300);
-      fmtGerado[cardKey][fmt][fieldKey] = d[fieldKey] || fmtGerado[cardKey][fmt][fieldKey];
-    } catch(e){}
-  }
-  const outEl = document.getElementById(`output-${cardKey}`);
-  renderFmtOutput(cardKey, fmt, outEl);
+/* ── MAKEFELD ── */
+function makeField(val,cardKey,fmt,fieldKey,extraClass){
+  var id='fld-'+cardKey+'-'+fmt+'-'+fieldKey;
+  var display=val||'';
+  var ec=extraClass||'';
+  return '<div class="field-wrap" id="'+id+'-wrap"><span class="field-text '+ec+'" onclick="startEdit(\''+id+'\',\''+cardKey+'\',\''+fmt+'\',\''+fieldKey+'\')">'+display+'</span></div>';
 }
 
-function makeField(val, cardKey, fmt, fieldKey, extraClass=''){
-  const id = 'fld-' + cardKey + '-' + fmt + '-' + fieldKey;
-  const display = val || '';
-  return `<div class="field-wrap" id="${id}-wrap"><span class="field-text ${extraClass}" onclick="startEdit('${id}','${cardKey}','${fmt}','${fieldKey}')">${display}</span></div>`;
-}
-
-function startEdit(id, cardKey, fmt, fieldKey){
-  const wrap = document.getElementById(id + '-wrap');
+function startEdit(id,cardKey,fmt,fieldKey){
+  var wrap=document.getElementById(id+'-wrap');
   if(!wrap) return;
-  const span = wrap.querySelector('span');
-  const currentVal = span ? span.textContent : '';
-  wrap.innerHTML = `<textarea class="field-edit-area" id="${id}-ta">${currentVal}</textarea>
-    <div class="field-actions">
-      <button class="btn-save-field" onclick="saveFieldById('${id}','${cardKey}','${fmt}','${fieldKey}')">✓ Salvar</button>
-      <button class="btn-cancel-field" onclick="cancelFieldById('${id}','${cardKey}','${fmt}','${fieldKey}')">Cancelar</button>
-      <button class="btn-regen-field" onclick="regenField(this,'${cardKey}','${fmt}','${fieldKey}')">↺ Regenerar</button>
-    </div>`;
-  document.getElementById(id + '-ta').focus();
+  var span=wrap.querySelector('span');
+  var currentVal=span?span.textContent:'';
+  wrap.innerHTML='<textarea class="field-edit-area" id="'+id+'-ta">'+currentVal+'</textarea>'
+    +'<div class="field-actions">'
+    +'<button class="btn-save-field" onclick="saveFieldById(\''+id+'\',\''+cardKey+'\',\''+fmt+'\',\''+fieldKey+'\')">✓ Salvar</button>'
+    +'<button class="btn-cancel-field" onclick="cancelFieldById(\''+id+'\',\''+cardKey+'\',\''+fmt+'\',\''+fieldKey+'\')">Cancelar</button>'
+    +'<button class="btn-regen-field" onclick="regenField(this,\''+cardKey+'\',\''+fmt+'\',\''+fieldKey+'\')">↺ Regenerar</button>'
+    +'</div>';
+  document.getElementById(id+'-ta').focus();
 }
 
-function saveFieldById(id, cardKey, fmt, fieldKey){
-  const ta = document.getElementById(id + '-ta');
+function saveFieldById(id,cardKey,fmt,fieldKey){
+  var ta=document.getElementById(id+'-ta');
   if(!ta) return;
-  const val = ta.value.trim();
-  if(!fmtGerado[cardKey]) fmtGerado[cardKey] = {};
-  if(!fmtGerado[cardKey][fmt]) fmtGerado[cardKey][fmt] = {};
-  if(fieldKey.startsWith('cena_')){
-    const idx = parseInt(fieldKey.split('_')[1]);
-    if(fmtGerado[cardKey][fmt].cenas) fmtGerado[cardKey][fmt].cenas[idx].texto = val;
-  } else if(fieldKey.startsWith('slide_')){
-    const idx = parseInt(fieldKey.split('_')[1]);
-    if(fmtGerado[cardKey][fmt].slides) fmtGerado[cardKey][fmt].slides[idx] = val;
+  var val=ta.value.trim();
+  if(!fmtGerado[cardKey]) fmtGerado[cardKey]={};
+  if(!fmtGerado[cardKey][fmt]) fmtGerado[cardKey][fmt]={};
+  if(fieldKey.indexOf('cena_')===0){
+    var idx=parseInt(fieldKey.split('_')[1]);
+    if(fmtGerado[cardKey][fmt].cenas) fmtGerado[cardKey][fmt].cenas[idx].texto=val;
+  } else if(fieldKey.indexOf('slide_')===0){
+    var idx2=parseInt(fieldKey.split('_')[1]);
+    if(fmtGerado[cardKey][fmt].slides) fmtGerado[cardKey][fmt].slides[idx2]=val;
   } else {
-    fmtGerado[cardKey][fmt][fieldKey] = val;
+    fmtGerado[cardKey][fmt][fieldKey]=val;
   }
-  const outEl = document.getElementById('output-' + cardKey);
-  renderFmtOutput(cardKey, fmt, outEl);
+  var outEl=document.getElementById('output-'+cardKey);
+  renderFmtOutput(cardKey,fmt,outEl);
   showToast('Salvo!');
 }
 
-function cancelFieldById(id, cardKey, fmt, fieldKey){
-  const outEl = document.getElementById('output-' + cardKey);
-  renderFmtOutput(cardKey, fmt, outEl);
+function cancelFieldById(id,cardKey,fmt,fieldKey){
+  var outEl=document.getElementById('output-'+cardKey);
+  renderFmtOutput(cardKey,fmt,outEl);
+}
+
+async function regenField(btn,cardKey,fmt,fieldKey){
+  btn.disabled=true; btn.textContent='↺ Gerando...';
+  var parts=cardKey.replace('t','').split('_c');
+  var ti=parseInt(parts[0]); var ci=parseInt(parts[1]);
+  var t=resultado.temas[ti]; var cat=CATS[ci]; var cd=t[cat.key];
+  var orig=resultado.originais[ti]; var temaNome=orig?orig.nome:t.nome;
+  var tomNome=getTomNome(); var tomInst=getTomInstrucao();
+  var fieldLabel={hook:'hook (frase abertura 3s)',cta:'CTA chamada para ação',legenda:'legenda com emojis',hashtags:'5 hashtags',capa:'texto capa carrossel',imagem:'texto imagem',subtexto:'subtítulo imagem'};
+  var prompt='';
+  if(fieldKey.indexOf('cena_')===0){
+    var idx=parseInt(fieldKey.split('_')[1]);
+    prompt='Reescreva apenas a cena '+(idx+1)+' de um roteiro de Reels. Tom: '+tomInst+' Responda APENAS JSON.\nNicho: "'+nicho+'" | Tema: "'+temaNome+'" | Tom: '+tomNome+'\nJSON: {"texto":"narração cena detalhada"}';
+    try{var d=await callAPI(prompt,300); fmtGerado[cardKey][fmt].cenas[idx].texto=d.texto;}catch(e){}
+  } else if(fieldKey.indexOf('slide_')===0){
+    var idx2=parseInt(fieldKey.split('_')[1]);
+    prompt='Reescreva apenas o slide '+(idx2+2)+' de um carrossel. Tom: '+tomInst+' Responda APENAS JSON.\nNicho: "'+nicho+'" | Tema: "'+temaNome+'" | Tom: '+tomNome+'\nJSON: {"texto":"conteudo do slide"}';
+    try{var d2=await callAPI(prompt,300); fmtGerado[cardKey][fmt].slides[idx2]=d2.texto;}catch(e){}
+  } else {
+    var fl=fieldLabel[fieldKey]||fieldKey;
+    prompt='Reescreva apenas o campo "'+fl+'" para um '+fmt+'. Tom: '+tomInst+' Responda APENAS JSON.\nNicho: "'+nicho+'" | Tema: "'+temaNome+'" | Tom: '+tomNome+'\nJSON: {"'+fieldKey+'":"novo conteudo"}';
+    try{var d3=await callAPI(prompt,300); if(d3[fieldKey]) fmtGerado[cardKey][fmt][fieldKey]=d3[fieldKey];}catch(e){}
+  }
+  var outEl=document.getElementById('output-'+cardKey);
+  renderFmtOutput(cardKey,fmt,outEl);
 }
 
 /* ── RENDER OUTPUT ── */
 function renderFmtOutput(cardKey,fmt,outEl){
-  const gerado=fmtGerado[cardKey]||{};
-  const fmts=Object.keys(gerado);
+  var gerado=fmtGerado[cardKey]||{};
+  var fmts=Object.keys(gerado);
   if(!fmts.length){outEl.innerHTML='';return;}
-  const labels={'reels':'▶ Reels','carrossel':'☰ Carrossel','post':'◻ Post'};
-  const tabs=fmts.map(f=>'<button class="fmt-tab'+(f===fmt?' active':'')+'" onclick="switchTab(''+cardKey+'',''+f+'')">'+labels[f]+'</button>').join('');
-  let panesHtml='';
+  var labels={'reels':'▶ Reels','carrossel':'☰ Carrossel','post':'◻ Post'};
+  var tabs=fmts.map(function(f){
+    return '<button class="fmt-tab'+(f===fmt?' active':'')+'" onclick="switchTab(\''+cardKey+'\',\''+f+'\')">'+labels[f]+'</button>';
+  }).join('');
+  var panesHtml='';
   fmts.forEach(function(f){
-    const d=gerado[f];
-    let inner='';
-    const tomNome=TONS[tomSel]?TONS[tomSel].nome:'';
+    var d=gerado[f];
+    var inner='';
+    var tomNome=getTomNome();
     if(f==='reels'){
-      const cenas=(d.cenas||[]).map(function(cn,i){
+      var cenas=(d.cenas||[]).map(function(cn,i){
         return '<div class="rs-cena"><div class="rs-cena-num">Cena '+cn.num+'</div>'+makeField(cn.texto,cardKey,f,'cena_'+i)+'</div>';
       }).join('');
-      const copyLines=['REELS | Tom: '+tomNome,'Hook: '+(d.hook||'')];
-      (d.cenas||[]).forEach(function(cn){copyLines.push('Cena '+cn.num+': '+cn.texto);});
-      copyLines.push('CTA: '+(d.cta||''),'Legenda: '+(d.legenda||''),d.hashtags||'');
-      const copyTxt=copyLines.join('\n');
+      var copyParts=['REELS | Tom: '+tomNome,'Hook: '+(d.hook||'')];
+      (d.cenas||[]).forEach(function(cn){copyParts.push('Cena '+cn.num+': '+cn.texto);});
+      copyParts.push('CTA: '+(d.cta||''),'Legenda: '+(d.legenda||''),d.hashtags||'');
+      var copyTxt=copyParts.join('\n');
       inner='<div class="rs-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">'+makeField(d.hook,cardKey,f,'hook')+'</div></div>'
-           +'<div class="rs-section"><div class="rs-label">Cenas</div><div class="rs-box">'+cenas+'</div></div>'
-           +'<div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">'+makeField(d.cta,cardKey,f,'cta')+'</div></div>'
-           +'<div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box">'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="rs-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div></div>'
-           +'<button class="copy-btn" onclick="copyText('+JSON.stringify(copyTxt)+')">⎘ Copiar roteiro</button>';
+        +'<div class="rs-section"><div class="rs-label">Cenas</div><div class="rs-box">'+cenas+'</div></div>'
+        +'<div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">'+makeField(d.cta,cardKey,f,'cta')+'</div></div>'
+        +'<div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box">'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="rs-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div></div>'
+        +'<button class="copy-btn" onclick="copyLines('+JSON.stringify(copyParts)+')">⎘ Copiar roteiro</button>';
     } else if(f==='carrossel'){
-      let slides='<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">'+makeField(d.capa,cardKey,f,'capa')+'</div></div>';
+      var slides='<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">'+makeField(d.capa,cardKey,f,'capa')+'</div></div>';
       (d.slides||[]).forEach(function(s,i){slides+='<div class="slide"><span class="slide-num">'+(i+2)+'</span><div class="slide-txt">'+makeField(s,cardKey,f,'slide_'+i)+'</div></div>';});
-      const copyLines2=['CARROSSEL | Tom: '+tomNome,'Capa: '+(d.capa||'')];
-      (d.slides||[]).forEach(function(s,i){copyLines2.push('Slide '+(i+2)+': '+s);});
-      copyLines2.push('Legenda: '+(d.legenda||''),d.hashtags||'');
-      const copyTxt2=copyLines2.join('\n');
+      var copyParts2=['CARROSSEL | Tom: '+tomNome,'Capa: '+(d.capa||'')];
+      (d.slides||[]).forEach(function(s,i){copyParts2.push('Slide '+(i+2)+': '+s);});
+      copyParts2.push('Legenda: '+(d.legenda||''),d.hashtags||'');
       inner='<div class="slides-wrap">'+slides+'</div>'
-           +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
-           +'<button class="copy-btn" onclick="copyText('+JSON.stringify(copyTxt2)+')">⎘ Copiar carrossel</button>';
+        +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
+        +'<button class="copy-btn" onclick="copyLines('+JSON.stringify(copyParts2)+')">⎘ Copiar carrossel</button>';
     } else {
-      const copyLines3=['POST | Tom: '+tomNome,'Imagem: '+(d.imagem||''),'Subtítulo: '+(d.subtexto||''),'Legenda: '+(d.legenda||''),d.hashtags||''];
-      const copyTxt3=copyLines3.join('\n');
+      var copyParts3=['POST | Tom: '+tomNome,'Imagem: '+(d.imagem||''),'Subtítulo: '+(d.subtexto||''),'Legenda: '+(d.legenda||''),d.hashtags||''];
       inner='<div class="post-img"><div class="post-img-lbl">Texto da imagem</div>'+makeField(d.imagem,cardKey,f,'imagem','post-img-txt')+makeField(d.subtexto,cardKey,f,'subtexto','post-img-sub')+'</div>'
-           +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda','leg-txt')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
-           +'<button class="copy-btn" onclick="copyText('+JSON.stringify(copyTxt3)+')">⎘ Copiar post</button>';
+        +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda','leg-txt')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
+        +'<button class="copy-btn" onclick="copyLines('+JSON.stringify(copyParts3)+')">⎘ Copiar post</button>';
     }
     panesHtml+='<div class="fmt-pane'+(f===fmt?' active':'')+'" id="pane-'+cardKey+'-'+f+'">'+inner+'</div>';
   });
@@ -1096,111 +1038,69 @@ function renderFmtOutput(cardKey,fmt,outEl){
 }
 
 function switchTab(cardKey,fmt){
-  const outEl=document.getElementById(`output-${cardKey}`);
-  if(!outEl)return;
-  outEl.querySelectorAll('.fmt-tab').forEach(t=>t.classList.toggle('active',t.textContent.includes(fmt==='reels'?'Reels':fmt==='carrossel'?'Carrossel':'Post')));
-  outEl.querySelectorAll('.fmt-pane').forEach(p=>{
-    const id=p.id;
-    p.classList.toggle('active',id===`pane-${cardKey}-${fmt}`);
+  var outEl=document.getElementById('output-'+cardKey);
+  if(!outEl) return;
+  outEl.querySelectorAll('.fmt-tab').forEach(function(t){
+    t.classList.toggle('active',t.textContent.indexOf(fmt==='reels'?'Reels':fmt==='carrossel'?'Carrossel':'Post')>-1);
+  });
+  outEl.querySelectorAll('.fmt-pane').forEach(function(p){
+    p.classList.toggle('active',p.id==='pane-'+cardKey+'-'+fmt);
   });
 }
 
 /* ── TROCAR FRAMEWORK ── */
 async function trocarFW(id){
-  if(id===resultado.fw.id)return;
-  const fw=FWS.find(f=>f.id===id);
-  document.querySelectorAll('.fw-pill').forEach(p=>p.classList.toggle('active',p.textContent===fw.nome));
-  document.getElementById('res-fw-label').textContent=`${fw.nome} — gerando...`;
-  const tStr=resultado.originais.map((t,i)=>`Tema ${i+1}: "${t.nome}"`).join(', ');
-  const n=resultado.originais.length;
-  const prompt=`Especialista em conteúdo viral. Responda APENAS JSON válido.
-Nicho: "${nicho}" | Temas: ${tStr} | Framework: ${fw.nome} (${fw.steps.join(' -> ')})
-Para cada tema gere erros/proc/anal com titulo (6-10 palavras) e fw_steps (${fw.steps.length} objetos {"label":"etapa","texto":"conteúdo 1-2 frases"} usando as etapas: ${fw.steps.join(', ')}).
-{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}
-Gere EXATAMENTE ${n} tema(s).`;
+  if(id===resultado.fw.id) return;
+  var fw=FWS.find(function(f){return f.id===id;});
+  document.querySelectorAll('.fw-pill').forEach(function(p){p.classList.toggle('active',p.textContent===fw.nome);});
+  document.getElementById('res-fw-label').textContent=fw.nome+' — gerando...';
+  var tStr=resultado.originais.map(function(t,i){return 'Tema '+(i+1)+': "'+t.nome+'"';}).join(', ');
+  var n=resultado.originais.length;
+  var prompt='Especialista em conteúdo viral. Responda APENAS JSON válido.\n'
+    +'Nicho: "'+nicho+'" | Temas: '+tStr+' | Framework: '+fw.nome+' ('+fw.steps.join(' -> ')+')\n'
+    +'Tom: '+getTomInstrucao()+'\n'
+    +'Para cada tema gere erros/proc/anal com titulo e fw_steps ('+fw.steps.length+' objetos para as etapas: '+fw.steps.join(', ')+').\n'
+    +'{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
+    +'Gere EXATAMENTE '+n+' tema(s).';
   try{
-    const d=await callAPI(prompt,n===1?1200:n===2?2000:2800);
-    resultado={nicho,fw,temas:d.temas,originais:resultado.originais};
-    Object.keys(fmtGerado).forEach(k=>delete fmtGerado[k]);
+    var d=await callAPI(prompt,n===1?1200:n===2?2000:2800);
+    resultado={nicho:nicho,fw:fw,temas:d.temas,originais:resultado.originais};
+    Object.keys(fmtGerado).forEach(function(k){delete fmtGerado[k];});
     renderResultado(resultado);
-  }catch(e){alert('Erro ao trocar framework.');document.getElementById('res-fw-label').textContent=`${resultado.fw.nome} — ${resultado.fw.foco}`;}
+  }catch(e){ alert('Erro ao trocar framework.'); document.getElementById('res-fw-label').textContent=fw.nome+' — '+fw.foco; }
 }
 
 /* ── UTILS ── */
-async function callAPI(prompt,maxTokens,retries=3){
-  for(let i=0;i<retries;i++){
+async function callAPI(prompt,maxTokens,retries){
+  retries=retries||3;
+  for(var i=0;i<retries;i++){
     try{
-      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:maxTokens})});
-      const d=await r.json();
+      var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:maxTokens})});
+      var d=await r.json();
       if(d.error){
-        // Rate limit — wait and retry
-        if((d.message&&(d.message.includes('rate')||d.message.includes('429')||d.message.includes('limit'))) && i<retries-1){
-          await new Promise(res=>setTimeout(res,2000*(i+1)));
-          continue;
-        }
+        var isLimit=d.message&&(d.message.indexOf('rate')>-1||d.message.indexOf('429')>-1||d.message.indexOf('limit')>-1);
+        if(isLimit&&i<retries-1){await new Promise(function(res){setTimeout(res,2000*(i+1));});continue;}
         throw new Error(d.message);
       }
-      const clean=d.text.replace(/```json|```/g,'').trim();
+      var clean=d.text.replace(/```json|```/g,'').trim();
       return JSON.parse(clean);
     }catch(e){
       if(i===retries-1) throw e;
-      await new Promise(res=>setTimeout(res,1500*(i+1)));
+      await new Promise(function(res){setTimeout(res,1500*(i+1));});
     }
   }
 }
 
-function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/"/g,'&quot;');}
-function copyText(txt){navigator.clipboard.writeText(txt.replace(/\\n/g,'\n').replace(/&quot;/g,'"')).then(()=>showToast('Copiado!'));}
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
-function shake(id){const el=document.getElementById(id);el.style.borderColor='rgba(240,96,96,.5)';el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:280});setTimeout(()=>el.style.borderColor='',1200);}
-
-/* ── SALVAR NO HISTÓRICO ── */
-async function salvarConteudo(cardKey, fmt, ti, ci, btn){
-  const {data:{session}} = await sb.auth.getSession();
-  if(!session){ showToast('Faça login para salvar.'); return; }
-
-  btn.disabled = true;
-  btn.textContent = '★ Salvando...';
-
-  const t = resultado.temas[ti];
-  const cat = CATS[ci];
-  const cd = t[cat.key];
-  const orig = resultado.originais[ti];
-  const conteudo = fmtGerado[cardKey]?.[fmt] || {};
-
-  const registro = {
-    user_id:    session.user.id,
-    nicho:      nicho,
-    tema:       orig?.nome || t.nome,
-    categoria:  cat.tag,
-    framework:  resultado.fw.nome,
-    tom:        TONS[tomSel]?.nome || tomSel,
-    formato:    fmt,
-    titulo:     cd.titulo || '',
-    conteudo:   JSON.stringify(conteudo),
-    criado_em:  new Date().toISOString()
-  };
-
-  const {error} = await sb.from('historico').insert(registro);
-
-  if(error){
-    console.error(error);
-    showToast('Erro ao salvar. Tente novamente.');
-    btn.disabled = false;
-    btn.textContent = '★ Salvar no histórico';
-    return;
-  }
-
-  btn.classList.add('saved');
-  btn.textContent = '✓ Salvo no histórico!';
-  btn.disabled = true;
-  showToast('Salvo no histórico!');
+function copyLines(parts){
+  navigator.clipboard.writeText(parts.join('\n')).then(function(){showToast('Copiado!');});
 }
 
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2200);}
+function shake(id){var el=document.getElementById(id);el.style.borderColor='rgba(240,96,96,.5)';el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:280});setTimeout(function(){el.style.borderColor='';},1200);}
 function voltarStep1(limpar){if(limpar){document.getElementById('inp-nicho').value='';temasDisp=[];temasSel=[];resultado=null;}setStep(1);}
 function voltarStep2(){setStep(2);}
 
-document.getElementById('inp-nicho').addEventListener('keydown',e=>{if(e.key==='Enter')analisarNicho();});
+document.getElementById('inp-nicho').addEventListener('keydown',function(e){if(e.key==='Enter')analisarNicho();});
 </script>
 </body>
 </html>
