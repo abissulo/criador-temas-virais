@@ -1053,60 +1053,46 @@ function renderFmtOutput(cardKey,fmt,outEl){
   const gerado=fmtGerado[cardKey]||{};
   const fmts=Object.keys(gerado);
   if(!fmts.length){outEl.innerHTML='';return;}
-
   const labels={'reels':'▶ Reels','carrossel':'☰ Carrossel','post':'◻ Post'};
-  const tabs=fmts.map(f=>`<button class="fmt-tab${f===fmt?' active':''}" onclick="switchTab('${cardKey}','${f}')">${labels[f]}</button>`).join('');
-
+  const tabs=fmts.map(f=>'<button class="fmt-tab'+(f===fmt?' active':'')+'" onclick="switchTab(''+cardKey+'',''+f+'')">'+labels[f]+'</button>').join('');
   let panesHtml='';
-  fmts.forEach(f=>{
+  fmts.forEach(function(f){
     const d=gerado[f];
     let inner='';
+    const tomNome=TONS[tomSel]?TONS[tomSel].nome:'';
     if(f==='reels'){
-      const cenas=(d.cenas||[]).map((cn,i)=>`<div class="rs-cena"><div class="rs-cena-num">Cena ${cn.num}</div>${makeField(cn.texto,cardKey,f,'cena_'+i)}</div>`).join('');
-      const copyTxt=`REELS | Tom: ${TONS[tomSel]?.nome||''}
-Hook: ${d.hook}
-${(d.cenas||[]).map(c=>`Cena ${c.num}: ${c.texto}`).join('
-')}
-CTA: ${d.cta}
-Legenda: ${d.legenda}
-${d.hashtags}`;
-      inner=`
-        <div class="rs-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">${makeField(d.hook,cardKey,f,'hook','rs-hook-inner')}</div></div>
-        <div class="rs-section"><div class="rs-label">Cenas</div><div class="rs-box">${cenas}</div></div>
-        <div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">${makeField(d.cta,cardKey,f,'cta')}</div></div>
-        <div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box">${makeField(d.legenda,cardKey,f,'legenda','rs-legenda')}${makeField(d.hashtags,cardKey,f,'hashtags','rs-hash')}</div></div>
-        <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar roteiro</button>`;
+      const cenas=(d.cenas||[]).map(function(cn,i){
+        return '<div class="rs-cena"><div class="rs-cena-num">Cena '+cn.num+'</div>'+makeField(cn.texto,cardKey,f,'cena_'+i)+'</div>';
+      }).join('');
+      const copyLines=['REELS | Tom: '+tomNome,'Hook: '+(d.hook||'')];
+      (d.cenas||[]).forEach(function(cn){copyLines.push('Cena '+cn.num+': '+cn.texto);});
+      copyLines.push('CTA: '+(d.cta||''),'Legenda: '+(d.legenda||''),d.hashtags||'');
+      const copyTxt=copyLines.join('\n');
+      inner='<div class="rs-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">'+makeField(d.hook,cardKey,f,'hook')+'</div></div>'
+           +'<div class="rs-section"><div class="rs-label">Cenas</div><div class="rs-box">'+cenas+'</div></div>'
+           +'<div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">'+makeField(d.cta,cardKey,f,'cta')+'</div></div>'
+           +'<div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box">'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="rs-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div></div>'
+           +'<button class="copy-btn" onclick="copyText('+JSON.stringify(copyTxt)+')">⎘ Copiar roteiro</button>';
     } else if(f==='carrossel'){
-      const slides=[`<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">${makeField(d.capa,cardKey,f,'capa')}</div></div>`];
-      (d.slides||[]).forEach((s,i)=>slides.push(`<div class="slide"><span class="slide-num">${i+2}</span><div class="slide-txt">${makeField(s,cardKey,f,'slide_'+i)}</div></div>`));
-      const copyTxt=`CARROSSEL | Tom: ${TONS[tomSel]?.nome||''}
-Capa: ${d.capa}
-${(d.slides||[]).map((s,i)=>`Slide ${i+2}: ${s}`).join('
-')}
-Legenda: ${d.legenda}
-${d.hashtags}`;
-      inner=`
-        <div class="slides-wrap">${slides.join('')}</div>
-        <div class="leg-box"><div class="leg-lbl">Legenda</div>${makeField(d.legenda,cardKey,f,'legenda','leg-txt')}${makeField(d.hashtags,cardKey,f,'hashtags','leg-hash')}</div>
-        <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar carrossel</button>`;
+      let slides='<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">'+makeField(d.capa,cardKey,f,'capa')+'</div></div>';
+      (d.slides||[]).forEach(function(s,i){slides+='<div class="slide"><span class="slide-num">'+(i+2)+'</span><div class="slide-txt">'+makeField(s,cardKey,f,'slide_'+i)+'</div></div>';});
+      const copyLines2=['CARROSSEL | Tom: '+tomNome,'Capa: '+(d.capa||'')];
+      (d.slides||[]).forEach(function(s,i){copyLines2.push('Slide '+(i+2)+': '+s);});
+      copyLines2.push('Legenda: '+(d.legenda||''),d.hashtags||'');
+      const copyTxt2=copyLines2.join('\n');
+      inner='<div class="slides-wrap">'+slides+'</div>'
+           +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
+           +'<button class="copy-btn" onclick="copyText('+JSON.stringify(copyTxt2)+')">⎘ Copiar carrossel</button>';
     } else {
-      const copyTxt=`POST | Tom: ${TONS[tomSel]?.nome||''}
-Imagem: ${d.imagem}
-Subtítulo: ${d.subtexto}
-Legenda: ${d.legenda}
-${d.hashtags}`;
-      inner=`
-        <div class="post-img"><div class="post-img-lbl">Texto da imagem</div>${makeField(d.imagem,cardKey,f,'imagem','post-img-txt')}${makeField(d.subtexto,cardKey,f,'subtexto','post-img-sub')}</div>
-        <div class="leg-box"><div class="leg-lbl">Legenda</div>${makeField(d.legenda,cardKey,f,'legenda','leg-txt')}${makeField(d.hashtags,cardKey,f,'hashtags','leg-hash')}</div>
-        <button class="copy-btn" onclick="copyText('${esc(copyTxt)}')">⎘ Copiar post</button>`;
+      const copyLines3=['POST | Tom: '+tomNome,'Imagem: '+(d.imagem||''),'Subtítulo: '+(d.subtexto||''),'Legenda: '+(d.legenda||''),d.hashtags||''];
+      const copyTxt3=copyLines3.join('\n');
+      inner='<div class="post-img"><div class="post-img-lbl">Texto da imagem</div>'+makeField(d.imagem,cardKey,f,'imagem','post-img-txt')+makeField(d.subtexto,cardKey,f,'subtexto','post-img-sub')+'</div>'
+           +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda','leg-txt')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
+           +'<button class="copy-btn" onclick="copyText('+JSON.stringify(copyTxt3)+')">⎘ Copiar post</button>';
     }
-    panesHtml+=`<div class="fmt-pane${f===fmt?' active':''}" id="pane-${cardKey}-${f}">${inner}</div>`;
+    panesHtml+='<div class="fmt-pane'+(f===fmt?' active':'')+'" id="pane-'+cardKey+'-'+f+'">'+inner+'</div>';
   });
-
-  outEl.innerHTML=`<div class="fmt-output">
-    ${fmts.length>1?`<div class="fmt-tabs">${tabs}</div>`:''}
-    ${panesHtml}
-  </div>`;
+  outEl.innerHTML='<div class="fmt-output">'+(fmts.length>1?'<div class="fmt-tabs">'+tabs+'</div>':'')+panesHtml+'</div>';
 }
 
 function switchTab(cardKey,fmt){
