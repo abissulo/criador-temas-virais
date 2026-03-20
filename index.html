@@ -364,6 +364,21 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 .post-img-txt{font-size:14px;font-weight:800;color:var(--text);line-height:1.3;}
 .post-img-sub{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
 
+/* ── SAVE HIST BTN ── */
+.save-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.btn-save-hist{
+  position:relative;overflow:hidden;
+  font-family:var(--f);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  background:rgba(184,240,80,.08);color:var(--g1);
+  border:1px solid rgba(184,240,80,.25);border-radius:8px;
+  padding:6px 13px;cursor:pointer;transition:all .2s;
+}
+.btn-save-hist::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.2) 50%,transparent 65%);transform:translateX(-100%);transition:transform .4s;}
+.btn-save-hist:hover::after{transform:translateX(100%);}
+.btn-save-hist:hover{background:rgba(184,240,80,.15);border-color:rgba(184,240,80,.4);}
+.btn-save-hist:disabled{opacity:.4;cursor:not-allowed;}
+.btn-save-hist.saved{color:var(--muted);border-color:var(--glass-border);background:transparent;}
+
 /* ── COPY BTN ── */
 .copy-btn{
   display:flex;align-items:center;gap:5px;margin-top:8px;
@@ -497,9 +512,10 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 
 <div style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(6,6,8,0.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);">
   <div style="font-size:12px;font-weight:700;letter-spacing:.05em;background:linear-gradient(90deg,#b8f050,#50d4f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Criador de Temas Virais</div>
-  <div style="display:flex;align-items:center;gap:14px;">
+  <div style="display:flex;align-items:center;gap:10px;">
     <span id="user-name" style="font-size:13px;color:rgba(240,237,232,0.5);"></span>
-    <button onclick="doLogout()" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,0.04);color:rgba(240,237,232,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;cursor:pointer;transition:color .15s;">Sair</button>
+    <a href="/historico" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(184,240,80,0.7);text-decoration:none;padding:6px 12px;border:1px solid rgba(184,240,80,0.2);border-radius:8px;background:rgba(184,240,80,0.05);">Histórico</a>
+    <button onclick="doLogout()" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,0.04);color:rgba(240,237,232,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;cursor:pointer;">Sair</button>
   </div>
 </div>
 
@@ -858,6 +874,7 @@ function renderResultado(data){
         +'<button class="btn-fmt carr-btn" id="btn-carr-'+cardKey+'" onclick="gerarFormato(\''+cardKey+'\',\'carrossel\','+ti+','+ci+')">☰ Carrossel</button>'
         +'<button class="btn-fmt post-btn" id="btn-post-'+cardKey+'" onclick="gerarFormato(\''+cardKey+'\',\'post\','+ti+','+ci+')">◻ Post</button>'
         +'</div></div>'
+        +'<div id="save-wrap-'+cardKey+'" class="save-wrap"></div>'
         +'<div id="output-'+cardKey+'"></div>'
         +'</div></div>';
     });
@@ -909,6 +926,19 @@ async function gerarFormato(cardKey,fmt,ti,ci){
     renderFmtOutput(cardKey,fmt,outEl);
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
     btn.classList.add('done');
+    // Show save button
+    var saveBtn=document.getElementById('save-btn-'+cardKey+'-'+fmt);
+    if(!saveBtn){
+      var saveWrap=document.getElementById('save-wrap-'+cardKey);
+      if(saveWrap){
+        var sb2=document.createElement('button');
+        sb2.id='save-btn-'+cardKey+'-'+fmt;
+        sb2.className='btn-save-hist';
+        sb2.setAttribute('onclick','salvarHistorico(''+cardKey+'',''+fmt+'','+ti+','+ci+')');
+        sb2.textContent='✦ Salvar no histórico';
+        saveWrap.appendChild(sb2);
+      }
+    }
   }catch(e){
     outEl.innerHTML='';
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
@@ -1097,6 +1127,34 @@ function copyLines(parts){
 
 function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2200);}
 function shake(id){var el=document.getElementById(id);el.style.borderColor='rgba(240,96,96,.5)';el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:280});setTimeout(function(){el.style.borderColor='';},1200);}
+async function salvarHistorico(cardKey,fmt,ti,ci){
+  var btn=document.getElementById('save-btn-'+cardKey+'-'+fmt);
+  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+  var session=(await sb.auth.getSession()).data.session;
+  if(!session){showToast('Faça login para salvar.');return;}
+  var t=resultado.temas[ti];
+  var cat=CATS[ci];
+  var orig=resultado.originais[ti];
+  var d=fmtGerado[cardKey]&&fmtGerado[cardKey][fmt];
+  if(!d){showToast('Gere o conteúdo antes de salvar.');return;}
+  var row={
+    user_id:session.user.id,
+    nicho:nicho,
+    tema:orig?orig.nome:t.nome,
+    categoria:cat.tag,
+    formato:fmt,
+    framework:resultado.fw.nome,
+    tom:getTomNome(),
+    conteudo:d
+  };
+  var res=await sb.from('historico').insert(row);
+  if(res.error){showToast('Erro ao salvar.');if(btn){btn.disabled=false;btn.textContent='✦ Salvar no histórico';}}
+  else{
+    showToast('Salvo no histórico!');
+    if(btn){btn.textContent='✓ Salvo';btn.classList.add('saved');}
+  }
+}
+
 function voltarStep1(limpar){if(limpar){document.getElementById('inp-nicho').value='';temasDisp=[];temasSel=[];resultado=null;}setStep(1);}
 function voltarStep2(){setStep(2);}
 
