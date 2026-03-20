@@ -934,7 +934,7 @@ async function gerarFormato(cardKey,fmt,ti,ci){
         var saveBtnEl=document.createElement('button');
         saveBtnEl.id='save-btn-'+cardKey+'-'+fmt;
         saveBtnEl.className='btn-save-hist';
-        saveBtnEl.setAttribute('onclick','salvarHistorico(''+cardKey+'',''+fmt+'','+ti+','+ci+')');
+        saveBtnEl.setAttribute('onclick','salvarHistorico("'+cardKey+'","'+fmt+'",'+ti+','+ci+')');
         saveBtnEl.textContent='✦ Salvar no histórico';
         saveWrap.appendChild(saveBtnEl);
       }
