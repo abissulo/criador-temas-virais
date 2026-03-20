@@ -93,26 +93,43 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
   /* DARK THEME */
   .pdf-dark { background: #060608 !important; color: #f0ede8 !important; }
-  .pdf-dark .pdf-cover { background: linear-gradient(135deg,#0f0f18,#060608) !important; }
+  .pdf-dark .pdf-cover { background: #060608 !important; }
   .pdf-dark .pdf-section { background: #111116 !important; border: 1px solid rgba(255,255,255,.08) !important; }
   .pdf-dark .pdf-card { background: #1a1a22 !important; border: 1px solid rgba(255,255,255,.1) !important; }
-  .pdf-dark .pdf-text { color: rgba(240,237,232,.65) !important; }
+  .pdf-dark .pdf-text { color: rgba(240,237,232,.75) !important; }
+  .pdf-dark .pdf-cena { color: rgba(240,237,232,.7) !important; }
+  body.pdf-printing-dark { background: #060608 !important; }
 
   /* LIGHT THEME */
   .pdf-light { background: #ffffff !important; color: #1a1a1a !important; }
   .pdf-light .pdf-cover { background: linear-gradient(135deg,#f8fffe,#f0f9ff) !important; }
-  .pdf-light .pdf-section { background: #f8f8f8 !important; border: 1px solid #e5e5e5 !important; }
+  .pdf-light .pdf-section { background: #f4f4f4 !important; border: 1px solid #ddd !important; }
   .pdf-light .pdf-card { background: #ffffff !important; border: 1px solid #e0e0e0 !important; }
-  .pdf-light .pdf-text { color: #555 !important; }
-  .pdf-light .pdf-cover-title { -webkit-text-fill-color: #1a1a1a !important; }
+  .pdf-light .pdf-text { color: #444 !important; }
+  .pdf-light .pdf-cena { color: #444 !important; border-bottom-color: #e0e0e0 !important; }
+  .pdf-light .pdf-cena-num { color: #999 !important; }
+  .pdf-light .pdf-cover-title { -webkit-text-fill-color: #1a1a1a !important; background: none !important; }
   .pdf-light .pdf-cover-subtitle { color: #555 !important; }
-  .pdf-light .pdf-toc-item { color: #333 !important; }
+  .pdf-light .pdf-cover-meta-label { color: #666 !important; }
+  .pdf-light .pdf-cover-date { color: #888 !important; }
+  .pdf-light .pdf-toc-item { color: #333 !important; border-bottom-color: #e0e0e0 !important; }
+  .pdf-light .pdf-toc-title { color: #1a1a1a !important; }
   .pdf-light .pdf-tema-title { color: #1a1a1a !important; }
   .pdf-light .pdf-card-title { color: #1a1a1a !important; }
   .pdf-light .pdf-step-label { color: #1a1a1a !important; }
+  .pdf-light .pdf-hook { color: #1a1a1a !important; border-left-color: #22aa22 !important; }
+  .pdf-light .pdf-cta { color: #1a1a1a !important; border-left-color: #cc44aa !important; }
+  .pdf-light .pdf-field-label { color: #888 !important; }
+  .pdf-light .pdf-footer { color: #999 !important; border-top-color: #e0e0e0 !important; }
+  .pdf-light .pdf-section-header .pdf-tema-title { color: #111 !important; }
+  .pdf-light .pdf-slide-num { color: #999 !important; }
+  .pdf-light .pdf-slide-row { border-bottom-color: #eee !important; }
 
   .pdf-page { page-break-after: always; padding: 48px 56px; min-height: 100vh; }
   .pdf-page:last-child { page-break-after: avoid; }
+  @page { margin: 0; }
+  body.pdf-printing-dark { background: #060608 !important; }
+  body.pdf-printing-light { background: #ffffff !important; }
 }
 
 /* ── PDF PREVIEW (visible on screen) ── */
@@ -130,7 +147,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .pdf-cover {
   display: flex; flex-direction: column;
   justify-content: center; align-items: center;
-  text-align: center; min-height: 100vh; padding: 60px 48px;
+  text-align: center; height: 270mm; padding: 60px 48px;
 }
 .pdf-cover-badge {
   font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
@@ -380,10 +397,15 @@ async function exportPDF(){
 
   buildPDF(items);
 
+  // Apply theme class to body for print background
+  document.body.className = theme === 'dark' ? 'pdf-printing-dark' : 'pdf-printing-light';
   setTimeout(function(){
     window.print();
-    btn.disabled=false;
-    btn.textContent='↓ Gerar e Exportar PDF';
+    setTimeout(function(){
+      document.body.className = '';
+      btn.disabled=false;
+      btn.textContent='↓ Gerar e Exportar PDF';
+    }, 500);
   }, 300);
 }
 
