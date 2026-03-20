@@ -364,6 +364,17 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 .post-img-txt{font-size:14px;font-weight:800;color:var(--text);line-height:1.3;}
 .post-img-sub{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
 
+/* ── CLIENT FIELD ── */
+.client-wrap{margin-top:10px;display:none;}
+.client-wrap.show{display:block;}
+.client-input{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);
+  border-radius:8px;padding:7px 11px;font-family:var(--f);font-size:12px;
+  color:var(--text);outline:none;transition:border-color .2s;
+}
+.client-input:focus{border-color:rgba(184,240,80,.35);}
+.client-input::placeholder{color:var(--dim);}
+.client-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
 /* ── SAVE HIST BTN ── */
 .save-row{margin-top:10px;padding-top:10px;border-top:1px solid var(--glass-border);}
 .save-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
@@ -516,8 +527,6 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
   <div style="display:flex;align-items:center;gap:10px;">
     <span id="user-name" style="font-size:13px;color:rgba(240,237,232,0.5);"></span>
     <a href="/historico" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(184,240,80,0.7);text-decoration:none;padding:6px 12px;border:1px solid rgba(184,240,80,0.2);border-radius:8px;background:rgba(184,240,80,0.05);">Histórico</a>
-    <a href="/calendario" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(80,212,245,0.7);text-decoration:none;padding:6px 12px;border:1px solid rgba(80,212,245,0.2);border-radius:8px;background:rgba(80,212,245,0.05);">Calendário</a>
-    <a href="/exportar" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(240,80,164,0.7);text-decoration:none;padding:6px 12px;border:1px solid rgba(240,80,164,0.2);border-radius:8px;background:rgba(240,80,164,0.05);">↓ PDF</a>
     <button onclick="doLogout()" style="font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,0.04);color:rgba(240,237,232,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;cursor:pointer;">Sair</button>
   </div>
 </div>
@@ -1018,6 +1027,22 @@ async function regenField(btn,cardKey,fmt,fieldKey){
   renderFmtOutput(cardKey,fmt,outEl);
 }
 
+
+function buildSaveRow(cardKey,p){
+  var html='<div class="save-row">';
+  html+='<button class="btn-save-hist" id="savehist-'+cardKey+'" ';
+  html+='data-cardkey="'+cardKey+'" data-ti="'+(p[0]||0)+'" data-ci="'+(p[1]||0)+'" ';
+  html+='onclick="salvarHistoricoAtivo(this)">&#10022; Salvar no hist&#243;rico</button>';
+  html+='<div class="client-wrap" id="cliwrap-'+cardKey+'">';
+  html+='<div style="font-size:10px;font-weight:700;letter-spacing:.08em;';
+  html+='text-transform:uppercase;color:var(--muted);margin:8px 0 5px;">Cliente / Projeto ';
+  html+='<span style="font-weight:400;opacity:.5;">(opcional)</span></div>';
+  html+='<input class="client-input" id="cliinput-'+cardKey+'" ';
+  html+='type="text" placeholder="Ex: Empresa X, @influenciador..." maxlength="80" />';
+  html+='</div></div>';
+  return html;
+}
+
 /* ── RENDER OUTPUT ── */
 function renderFmtOutput(cardKey,fmt,outEl){
   var gerado=fmtGerado[cardKey]||{};
@@ -1064,7 +1089,7 @@ function renderFmtOutput(cardKey,fmt,outEl){
   });
   // Single save button - ti,ci extracted from cardKey "t{ti}_c{ci}"
   var _p=cardKey.replace('t','').split('_c');
-  var saveRow='<div class="save-row"><button class="btn-save-hist" id="savehist-'+cardKey+'" data-cardkey="'+cardKey+'" data-ti="'+(_p[0]||0)+'" data-ci="'+(_p[1]||0)+'" onclick="salvarHistoricoAtivo(this)">✦ Salvar no hist\u00f3rico</button></div>';
+  var saveRow=buildSaveRow(cardKey,_p);
   outEl.innerHTML='<div class="fmt-output">'
     +(fmts.length>1?'<div class="fmt-tabs">'+tabs+'</div>':'')
     +panesHtml
@@ -1163,6 +1188,15 @@ async function salvarHistoricoAtivo(btn){
   var cardKey=btn.getAttribute('data-cardkey');
   var ti=parseInt(btn.getAttribute('data-ti'));
   var ci=parseInt(btn.getAttribute('data-ci'));
+  // Show client field if not visible yet
+  var cliwrap=document.getElementById('cliwrap-'+cardKey);
+  if(cliwrap&&!cliwrap.classList.contains('show')){
+    cliwrap.classList.add('show');
+    btn.textContent='✦ Confirmar e salvar';
+    var inp=document.getElementById('cliinput-'+cardKey);
+    if(inp) inp.focus();
+    return;
+  }
   // Find which format tab is currently active
   var outEl=document.getElementById('output-'+cardKey);
   if(!outEl) return;
@@ -1176,8 +1210,11 @@ async function salvarHistoricoAtivo(btn){
 }
 
 async function salvarHistorico(cardKey,fmt,ti,ci){
-  var btn=document.getElementById('save-btn-'+cardKey+'-'+fmt);
-  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+  // Get save button and client input
+  var savehist=document.getElementById('savehist-'+cardKey);
+  if(savehist){savehist.disabled=true;savehist.textContent='Salvando...';}
+  var cliinput=document.getElementById('cliinput-'+cardKey);
+  var cliente=(cliinput&&cliinput.value.trim())||'';
   var session=(await sb.auth.getSession()).data.session;
   if(!session){showToast('Faça login para salvar.');return;}
   var t=resultado.temas[ti];
@@ -1193,13 +1230,16 @@ async function salvarHistorico(cardKey,fmt,ti,ci){
     formato:fmt,
     framework:resultado.fw.nome,
     tom:getTomNome(),
-    conteudo:d
+    conteudo:d,
+    cliente:cliente||null
   };
   var res=await sb.from('historico').insert(row);
-  if(res.error){showToast('Erro ao salvar.');if(btn){btn.disabled=false;btn.textContent='✦ Salvar no histórico';}}
-  else{
-    showToast('Salvo no histórico!');
-    if(btn){btn.textContent='✓ Salvo';btn.classList.add('saved');}
+  if(res.error){
+    showToast('Erro ao salvar.');
+    if(savehist){savehist.disabled=false;savehist.textContent='✦ Confirmar e salvar';}
+  } else {
+    showToast(cliente?'Salvo para "'+cliente+'"!':'Salvo no histórico!');
+    if(savehist){savehist.textContent='✓ Salvo';savehist.classList.add('saved');}
   }
 }
 

@@ -168,7 +168,11 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.5);}
     <div class="cstat"><div class="cstat-label">Posts + Carrosseis</div><div class="cstat-val" id="stat-outros">—</div></div>
   </div>
 
-  <div class="layout">
+  <div id="client-filter-bar" style="display:none;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+  <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Cliente:</span>
+  <div id="cal-client-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+</div>
+<div class="layout">
     <div>
       <div class="cal-grid" id="cal-grid">
         <div class="loading-state"><div class="spin"></div><span>Carregando calendário...</span></div>
@@ -192,7 +196,7 @@ var SUPABASE_URL='https://ezrhzvrgndvnnslrfxge.supabase.co';
 var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
 var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
-var allItems=[], currentDate=new Date(), userId=null, dragItem=null;
+var allItems=[], currentDate=new Date(), userId=null, dragItem=null, clienteAtivo='todos';
 
 // ── AUTH ──
 (async function(){
@@ -214,11 +218,31 @@ async function loadData(){
   if(res.error){showToast('Erro ao carregar.');return;}
   allItems=res.data||[];
   updateStats();
+  renderCalClientPills();
   renderCalendar();
   renderSidebar();
 }
 
 // ── STATS ──
+function renderCalClientPills(){
+  var clientes=[...new Set(allItems.map(function(i){return i.cliente||'';}).filter(Boolean))];
+  var bar=document.getElementById('client-filter-bar');
+  var pills=document.getElementById('cal-client-pills');
+  if(!clientes.length){if(bar)bar.style.display='none';return;}
+  if(bar)bar.style.display='flex';
+  if(!pills)return;
+  var html='<button class="filter-pill'+(clienteAtivo==='todos'?' active':'')+'" data-c="" onclick="setCalCliente(this)">Todos</button>';
+  clientes.forEach(function(cl){
+    html+='<button class="filter-pill'+(clienteAtivo===cl?' active':'')+'" data-c="'+cl+'" onclick="setCalCliente(this)">'+cl+'</button>';
+  });
+  pills.innerHTML=html;
+}
+function setCalCliente(btn){
+  clienteAtivo=btn.getAttribute('data-c')||'todos';
+  document.querySelectorAll('#cal-client-pills .filter-pill').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  updateStats();renderCalendar();renderSidebar();
+}
 function updateStats(){
   var agendados=allItems.filter(function(i){return i.data_publicacao;}).length;
   var hoje=new Date();
@@ -259,8 +283,9 @@ function renderCalendar(){
   var today=new Date();
 
   // Build events map by date string "YYYY-MM-DD"
+  var visItems=clienteAtivo==='todos'?allItems:allItems.filter(function(i){return (i.cliente||'')===clienteAtivo;});
   var evMap={};
-  allItems.forEach(function(item){
+  visItems.forEach(function(item){
     if(!item.data_publicacao) return;
     var key=item.data_publicacao.substring(0,10);
     if(!evMap[key]) evMap[key]=[];
@@ -315,7 +340,8 @@ function renderCalendar(){
 
 // ── SIDEBAR ──
 function renderSidebar(){
-  var unscheduled=allItems.filter(function(i){return !i.data_publicacao;});
+  var baseItems=clienteAtivo==='todos'?allItems:allItems.filter(function(i){return (i.cliente||'')===clienteAtivo;});
+  var unscheduled=baseItems.filter(function(i){return !i.data_publicacao;});
   var el=document.getElementById('sidebar-items');
   if(!unscheduled.length){
     el.innerHTML='<div class="sidebar-empty">Todos os conteúdos estão agendados! 🎉<br>Gere novos conteúdos para agendar.</div>';
@@ -330,7 +356,7 @@ function renderSidebar(){
       +' id="si-'+item.id+'">'
       +'<div class="si-fmt">'+fmtLabel+'</div>'
       +'<div class="si-tema">'+(item.tema||'')+'</div>'
-      +'<div class="si-nicho">'+(item.nicho||'')+'</div>'
+      +'<div class="si-nicho">'+(item.nicho||'')+(item.cliente?' · <span style="color:var(--g2);font-weight:700;">'+item.cliente+'</span>':'')+'</div>'
       +'</div>';
   }).join('');
 }
@@ -372,6 +398,7 @@ async function agendarItem(id,dateStr){
   var item=allItems.find(function(i){return i.id===id;});
   if(item) item.data_publicacao=dateStr;
   updateStats();
+  renderCalClientPills();
   renderCalendar();
   renderSidebar();
   showToast('✓ Agendado para '+formatDate(dateStr));
@@ -383,6 +410,7 @@ async function desagendarItem(id){
   var item=allItems.find(function(i){return i.id===id;});
   if(item) item.data_publicacao=null;
   updateStats();
+  renderCalClientPills();
   renderCalendar();
   renderSidebar();
   closeModal();
@@ -444,7 +472,7 @@ function showDayModal(dateStr,e){
       return '<div class="sidebar-item '+fmtCls+'" onclick="closeModal();setTimeout(function(){openModal(\''+item.id+'\')},100)" style="cursor:pointer;">'
         +'<div class="si-fmt">'+fmtLabel+'</div>'
         +'<div class="si-tema">'+(item.tema||'')+'</div>'
-        +'<div class="si-nicho">'+(item.nicho||'')+'</div>'
+        +'<div class="si-nicho">'+(item.nicho||'')+(item.cliente?' · <span style="color:var(--g2);font-weight:700;">'+item.cliente+'</span>':'')+'</div>'
         +'</div>';
     }).join('')
     +'</div>'

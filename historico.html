@@ -124,6 +124,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <button class="filter-pill" onclick="setFmt('carrossel',this)">☰ Carrossel</button>
     <button class="filter-pill" onclick="setFmt('post',this)">◻ Post</button>
   </div>
+  <div class="filters-bar" id="client-filters" style="display:none;">
+    <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Cliente:</span>
+    <div id="client-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+  </div>
   <div id="hist-container"><div class="loading-state"><div class="spin"></div><span>Carregando...</span></div></div>
 </div>
 
@@ -134,7 +138,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 var SUPABASE_URL='https://ezrhzvrgndvnnslrfxge.supabase.co';
 var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
 var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
-var allItems=[],fmtAtivo='todos';
+var allItems=[],fmtAtivo='todos',clienteAtivo='todos';
 
 (async function(){
   var session=(await sb.auth.getSession()).data.session;
@@ -146,10 +150,33 @@ var allItems=[],fmtAtivo='todos';
   var res=await sb.from('historico').select('*').eq('user_id',session.user.id).order('created_at',{ascending:false});
   if(res.error){document.getElementById('hist-container').innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><h3>Erro ao carregar</h3><p>Tente recarregar a página.</p></div>';return;}
   allItems=res.data||[];
-  updateStats();renderCards();
+  updateStats();renderClientPills();renderCards();
 })();
 
 async function doLogout(){await sb.auth.signOut();window.location.href='/login.html';}
+
+function renderClientPills(){
+  var clientes=['todos',...new Set(allItems.map(function(i){return i.cliente||'';}).filter(Boolean))];
+  var bar=document.getElementById('client-filters');
+  var pills=document.getElementById('client-pills');
+  if(clientes.length<=1){if(bar)bar.style.display='none';return;}
+  if(bar)bar.style.display='flex';
+  if(!pills)return;
+  var pillHtml='<button class="filter-pill'+(clienteAtivo==='todos'?' active':'')+'" ';
+  pillHtml+='onclick="setCliente(this)">Todos</button>';
+  clientes.filter(function(c){return c!=='todos';}).forEach(function(cl){
+    pillHtml+='<button class="filter-pill'+(clienteAtivo===cl?' active':'')+'" ';
+    pillHtml+='data-cliente="'+cl+'" onclick="setCliente(this)">'+cl+'</button>';
+  });
+  pills.innerHTML=pillHtml;
+}
+
+function setCliente(btn){
+  clienteAtivo=btn.getAttribute('data-cliente')||'todos';
+  document.querySelectorAll('#client-pills .filter-pill').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderCards();
+}
 
 function updateStats(){
   document.getElementById('stat-total').textContent=allItems.length;
@@ -168,8 +195,9 @@ function renderCards(){
   var search=document.getElementById('search').value.toLowerCase();
   var items=allItems.filter(function(item){
     var mFmt=fmtAtivo==='todos'||item.formato===fmtAtivo;
-    var mSearch=!search||(item.tema||'').toLowerCase().indexOf(search)>-1||(item.nicho||'').toLowerCase().indexOf(search)>-1;
-    return mFmt&&mSearch;
+    var mSearch=!search||(item.tema||'').toLowerCase().indexOf(search)>-1||(item.nicho||'').toLowerCase().indexOf(search)>-1||(item.cliente||'').toLowerCase().indexOf(search)>-1;
+    var mClient=clienteAtivo==='todos'||(item.cliente||'')===clienteAtivo;
+    return mFmt&&mSearch&&mClient;
   });
   var el=document.getElementById('hist-container');
   if(!items.length){

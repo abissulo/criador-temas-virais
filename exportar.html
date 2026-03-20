@@ -413,6 +413,8 @@ function buildPDF(items){
   var themeCls='pdf-'+theme;
   var today=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
   var nichos=[...new Set(items.map(function(i){return i.nicho||'';}))].filter(Boolean);
+  var clientes=[...new Set(items.map(function(i){return i.cliente||'';}))].filter(Boolean);
+  var clienteStr=clientes.length===1?('Cliente: '+clientes[0]):clientes.length>1?('Clientes: '+clientes.slice(0,3).join(', ')):'';
   var nichoStr=nichos.slice(0,3).join(', ')+(nichos.length>3?' +':'');
   var fmts={reels:0,carrossel:0,post:0};
   items.forEach(function(i){if(fmts[i.formato]!==undefined)fmts[i.formato]++;});
@@ -422,6 +424,7 @@ function buildPDF(items){
     +'<div class="pdf-cover-badge">Relatório Editorial</div>'
     +'<div class="pdf-cover-title pdf-cover-title">Criador de<br>Temas Virais</div>'
     +(nichoStr?'<div class="pdf-cover-nicho">'+nichoStr+'</div>':'')
+    +(clienteStr?'<div style="font-size:14px;font-weight:700;color:rgba(80,212,245,.8);margin-bottom:8px;">'+clienteStr+'</div>':'')
     +'<div class="pdf-cover-subtitle">Conteúdos gerados com IA e prontos para publicar<br>Framework + Tom de Voz + Formatos</div>'
     +'<div class="pdf-cover-meta">'
     +'<div class="pdf-cover-meta-item"><div class="pdf-cover-meta-val">'+items.length+'</div><div class="pdf-cover-meta-label">Conteúdos</div></div>'
