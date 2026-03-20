@@ -90,11 +90,11 @@ td{padding:12px 12px;font-size:13px;color:var(--text);vertical-align:middle;}
 <body>
 
 <!-- LOGIN ADMIN -->
-<div id="admin-login" class="login-wrap" style="display:none;">
+<div id="admin-login" class="login-wrap">
   <h2>Painel Admin</h2>
   <p>Acesso restrito ao administrador.</p>
   <div class="err-msg" id="admin-err">E-mail ou senha incorretos.</div>
-  <input type="email" id="admin-email" placeholder="seu@email.com"/>
+  <input type="text" id="admin-email" placeholder="Usuário"/>
   <input type="password" id="admin-pass" placeholder="Senha" onkeydown="if(event.key==='Enter')adminLogin()"/>
   <button class="btn-submit" onclick="adminLogin()">Entrar →</button>
 </div>
@@ -140,24 +140,27 @@ td{padding:12px 12px;font-size:13px;color:var(--text);vertical-align:middle;}
 <script>
 const SUPABASE_URL  = 'https://ezrhzvrgndvnnslrfxge.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cmh6dnJnbmR2bm5zbHJmeGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5Mzk3MDcsImV4cCI6MjA4OTUxNTcwN30.0m57LLbVHiM8uGml5vYGXfQFwRQllXqyCMzAg8IqzXw';
-const ADMIN_EMAIL   = 'alexabissulo@gmail.com';
+// ── CREDENCIAIS DO ADMIN — troque para as suas ──
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = '(Aveiro2022)';
+// ────────────────────────────────────────────────
+
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 let allUsers=[], currentFilter='todos';
 
-async function adminLogin(){
-  const email=document.getElementById('admin-email').value.trim();
+function adminLogin(){
+  const user=document.getElementById('admin-email').value.trim();
   const pass=document.getElementById('admin-pass').value;
-  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  if(error||data.user.email!==ADMIN_EMAIL){
-    await sb.auth.signOut();
+  if(user===ADMIN_USER && pass===ADMIN_PASS){
+    sessionStorage.setItem('admin_auth','1');
+    showPanel();
+  } else {
     document.getElementById('admin-err').classList.add('show');
-    return;
   }
-  showPanel();
 }
 
-async function doLogout(){await sb.auth.signOut();location.reload();}
+function doLogout(){sessionStorage.removeItem('admin_auth');location.reload();}
 
 async function showPanel(){
   document.getElementById('admin-login').style.display='none';
@@ -229,11 +232,9 @@ async function toggleUser(id,ativo){
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 
 // Init
-(async()=>{
-  const {data:{session}}=await sb.auth.getSession();
-  if(session?.user?.email===ADMIN_EMAIL){showPanel();}
-  else{document.getElementById('admin-login').style.display='block';}
-})();
+document.addEventListener('DOMContentLoaded', function(){
+  if(sessionStorage.getItem('admin_auth')==='1'){showPanel();}
+});
 </script>
 </body>
 </html>
