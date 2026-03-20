@@ -364,17 +364,6 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 .post-img-txt{font-size:14px;font-weight:800;color:var(--text);line-height:1.3;}
 .post-img-sub{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
 
-/* ── CLIENT FIELD ── */
-.client-wrap{margin-top:10px;display:none;}
-.client-wrap.show{display:block;}
-.client-input{
-  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);
-  border-radius:8px;padding:7px 11px;font-family:var(--f);font-size:12px;
-  color:var(--text);outline:none;transition:border-color .2s;
-}
-.client-input:focus{border-color:rgba(184,240,80,.35);}
-.client-input::placeholder{color:var(--dim);}
-.client-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
 /* ── SAVE HIST BTN ── */
 .save-row{margin-top:10px;padding-top:10px;border-top:1px solid var(--glass-border);}
 .save-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
@@ -488,6 +477,37 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 .btn-salvar-hist:hover{background:rgba(240,180,50,.15);border-color:rgba(240,180,50,.35);}
 .btn-salvar-hist.saved{color:rgba(59,158,59,.8);background:rgba(59,158,59,.08);border-color:rgba(59,158,59,.2);cursor:default;}
 
+/* ── BRIEFING MODAL ── */
+.bmodal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease;}
+.bmodal{background:#0f0f14;border:1px solid var(--glass-border);border-radius:18px;max-width:520px;width:100%;padding:28px;max-height:90vh;overflow-y:auto;}
+.bmodal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:12px;}
+.bmodal-title{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+.bmodal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px;line-height:1;}
+.bmodal-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.55;}
+.bfield{margin-bottom:18px;}
+.bfield-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.bfield-label span{font-weight:400;opacity:.5;font-size:10px;text-transform:none;letter-spacing:0;}
+.binput{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--r);padding:11px 14px;font-family:var(--f);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.binput:focus{border-color:rgba(184,240,80,.35);box-shadow:0 0 0 3px rgba(184,240,80,.06);}
+.binput::placeholder{color:var(--dim);}
+.bobj-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.bobj-btn{font-family:var(--f);font-size:12px;font-weight:600;padding:9px 12px;background:rgba(255,255,255,.03);border:1.5px solid var(--glass-border);border-radius:10px;color:var(--muted);cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:7px;}
+.bobj-btn:hover{border-color:var(--glass-border-h);color:var(--text);}
+.bobj-btn.active{border-color:rgba(184,240,80,.4);background:rgba(184,240,80,.06);color:var(--text);}
+.bobj-icon{font-size:14px;width:18px;text-align:center;}
+.bmodal-actions{display:flex;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--glass-border);}
+.btn-bsave{flex:1;font-family:var(--f);font-size:13px;font-weight:700;background:var(--g1);color:#060608;border:none;border-radius:var(--r);padding:12px;cursor:pointer;transition:opacity .15s;}
+.btn-bsave:hover{opacity:.88;}
+.btn-bskip{font-family:var(--f);font-size:13px;font-weight:600;background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--glass-border);border-radius:var(--r);padding:12px 18px;cursor:pointer;}
+.btn-ctx{
+  font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  background:rgba(184,240,80,.07);color:rgba(184,240,80,.7);border:1px solid rgba(184,240,80,.2);
+  border-radius:8px;padding:7px 13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-ctx:hover{background:rgba(184,240,80,.12);color:var(--g1);}
+.btn-ctx.has-ctx{background:rgba(184,240,80,.12);color:var(--g1);border-color:rgba(184,240,80,.35);}
+.ctx-badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:var(--g1);color:#060608;border-radius:50%;font-size:9px;font-weight:800;}
+
 /* ── PRINT ── */
 @media print{
   #bg-canvas,.grid-overlay,.orb,.steps,.fw-change-bar,.res-actions,.btn-ghost,.btn-fmt,.fmt-tabs,canvas{display:none!important;}
@@ -561,7 +581,11 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
     <span class="lbl">Qual é o seu nicho?</span>
     <div class="inp-row">
       <input type="text" id="inp-nicho" placeholder="Ex: personal trainer, finanças pessoais, culinária vegana..."/>
-      <button class="btn-primary" id="btn-analisar" onclick="analisarNicho()">Analisar nicho →</button>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <button class="btn-primary" id="btn-analisar" onclick="analisarNicho()">Analisar nicho →</button>
+    <button class="btn-ctx" id="btn-ctx" onclick="abrirBriefing()">✦ Adicionar contexto</button>
+  </div>
+  <div id="ctx-resumo" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(184,240,80,.05);border:1px solid rgba(184,240,80,.15);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7;"></div>
     </div>
     <div class="loading" id="load-1"><div class="spin"></div><span id="load-1-txt">Analisando...</span></div>
   </div>
@@ -632,6 +656,58 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- BRIEFING MODAL -->
+<div class="bmodal-overlay" id="bmodal" style="display:none;">
+  <div class="bmodal">
+    <div class="bmodal-header">
+      <div class="bmodal-title">Contexto do Conteúdo</div>
+      <button class="bmodal-close" onclick="fecharBriefing()">✕</button>
+    </div>
+    <p class="bmodal-sub">Quanto mais contexto você der, mais certeiros serão os temas gerados. Todos os campos são opcionais.</p>
+
+    <div class="bfield">
+      <div class="bfield-label">Público-alvo <span>(quem vai ver o conteúdo)</span></div>
+      <input class="binput" id="b-publico" type="text" placeholder="Ex: Construtoras e engenheiros civis" maxlength="120"/>
+    </div>
+
+    <div class="bfield">
+      <div class="bfield-label">Produto ou serviço principal</div>
+      <input class="binput" id="b-produto" type="text" placeholder="Ex: Aluguel de caçamba para entulho" maxlength="120"/>
+    </div>
+
+    <div class="bfield">
+      <div class="bfield-label">Principal dor do cliente <span>(problema que você resolve)</span></div>
+      <input class="binput" id="b-dor" type="text" placeholder="Ex: Atraso na obra por falta de descarte correto" maxlength="150"/>
+    </div>
+
+    <div class="bfield">
+      <div class="bfield-label">Objetivo do conteúdo</div>
+      <div class="bobj-grid">
+        <button class="bobj-btn" data-obj="educar" onclick="selectObj(this)"><span class="bobj-icon">📚</span>Educar o público</button>
+        <button class="bobj-btn" data-obj="engajar" onclick="selectObj(this)"><span class="bobj-icon">💬</span>Gerar engajamento</button>
+        <button class="bobj-btn" data-obj="leads" onclick="selectObj(this)"><span class="bobj-icon">🎯</span>Captar leads</button>
+        <button class="bobj-btn" data-obj="vender" onclick="selectObj(this)"><span class="bobj-icon">💰</span>Vender diretamente</button>
+      </div>
+    </div>
+
+    <div class="bfield" style="margin-bottom:0;">
+      <div class="bfield-label">Tom de voz preferido <span>(substitui a seleção do Step 2)</span></div>
+      <div class="bobj-grid">
+        <button class="bobj-btn" data-tom="educativo" onclick="selectTomB(this)"><span class="bobj-icon">📚</span>Educativo</button>
+        <button class="bobj-btn" data-tom="inspiracional" onclick="selectTomB(this)"><span class="bobj-icon">✨</span>Inspiracional</button>
+        <button class="bobj-btn" data-tom="autoridade" onclick="selectTomB(this)"><span class="bobj-icon">🎯</span>Autoridade</button>
+        <button class="bobj-btn" data-tom="descontraido" onclick="selectTomB(this)"><span class="bobj-icon">😄</span>Descontraído</button>
+        <button class="bobj-btn" data-tom="provocativo" onclick="selectTomB(this)"><span class="bobj-icon">🔥</span>Provocativo</button>
+      </div>
+    </div>
+
+    <div class="bmodal-actions">
+      <button class="btn-bsave" onclick="salvarBriefing()">✓ Aplicar contexto</button>
+      <button class="btn-bskip" onclick="fecharBriefing()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -701,6 +777,7 @@ var MSGS1=['Analisando o nicho...','Identificando tendências...','Mapeando tema
 var MSGS2=['Estruturando os temas...','Aplicando o framework...','Gerando os cards...','Finalizando...'];
 
 var nicho='',temasDisp=[],temasSel=[],fwSel='aida',tomSel='educativo',resultado=null;
+var briefing={publico:'',produto:'',dor:'',objetivo:'',tom:''};
 var fmtGerado={};
 var msgTimer;
 
@@ -734,6 +811,7 @@ async function trocarTom(id){
   var prompt='Especialista em conteúdo viral. Responda APENAS JSON válido.\n'
     +'Nicho: "'+nicho+'" | Temas: '+tStr+' | Framework: '+fw.nome+' ('+fw.steps.join(' -> ')+')\n'
     +'Tom: '+getTomInstrucao()+'\n'
+    +(getBriefingPrompt()?getBriefingPrompt()+'\n':'')
     +'Para cada tema gere erros/proc/anal com titulo (6-10 palavras) e fw_steps ('+fw.steps.length+' objetos {"label":"etapa","texto":"conteudo"}).\n'
     +'{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
     +'Gere EXATAMENTE '+n+' tema(s).';
@@ -748,6 +826,94 @@ async function trocarTom(id){
 }
 
 /* ── LOADING ── */
+/* ── BRIEFING ── */
+function abrirBriefing(){
+  var m=document.getElementById('bmodal');
+  if(m) m.style.display='flex';
+  // Restore saved values
+  if(briefing.publico) document.getElementById('b-publico').value=briefing.publico;
+  if(briefing.produto) document.getElementById('b-produto').value=briefing.produto;
+  if(briefing.dor) document.getElementById('b-dor').value=briefing.dor;
+  if(briefing.objetivo){
+    document.querySelectorAll('.bobj-btn[data-obj]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-obj')===briefing.objetivo);
+    });
+  }
+  if(briefing.tom){
+    document.querySelectorAll('.bobj-btn[data-tom]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-tom')===briefing.tom);
+    });
+  }
+}
+
+function fecharBriefing(){
+  var m=document.getElementById('bmodal');
+  if(m) m.style.display='none';
+}
+
+function selectObj(btn){
+  document.querySelectorAll('.bobj-btn[data-obj]').forEach(function(b){b.classList.remove('active');});
+  btn.classList.toggle('active', true);
+}
+
+function selectTomB(btn){
+  document.querySelectorAll('.bobj-btn[data-tom]').forEach(function(b){b.classList.remove('active');});
+  btn.classList.toggle('active', true);
+}
+
+function salvarBriefing(){
+  briefing.publico = document.getElementById('b-publico').value.trim();
+  briefing.produto = document.getElementById('b-produto').value.trim();
+  briefing.dor = document.getElementById('b-dor').value.trim();
+  var objBtn = document.querySelector('.bobj-btn[data-obj].active');
+  briefing.objetivo = objBtn ? objBtn.getAttribute('data-obj') : '';
+  var tomBtn = document.querySelector('.bobj-btn[data-tom].active');
+  briefing.tom = tomBtn ? tomBtn.getAttribute('data-tom') : '';
+
+  // Apply tom to main selector if selected
+  if(briefing.tom){
+    tomSel = briefing.tom;
+    document.querySelectorAll('.tom-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.tom===briefing.tom);
+    });
+  }
+
+  // Update button and summary
+  var hasCtx = briefing.publico||briefing.produto||briefing.dor||briefing.objetivo||briefing.tom;
+  var btn=document.getElementById('btn-ctx');
+  var resumo=document.getElementById('ctx-resumo');
+  if(hasCtx){
+    btn.className='btn-ctx has-ctx';
+    btn.innerHTML='<span class="ctx-badge">✓</span> Contexto adicionado';
+    var parts=[];
+    if(briefing.publico) parts.push('<strong>Público:</strong> '+briefing.publico);
+    if(briefing.produto) parts.push('<strong>Produto:</strong> '+briefing.produto);
+    if(briefing.dor) parts.push('<strong>Dor:</strong> '+briefing.dor);
+    if(briefing.objetivo) parts.push('<strong>Objetivo:</strong> '+{educar:'Educar',engajar:'Engajar',leads:'Captar leads',vender:'Vender'}[briefing.objetivo]);
+    if(briefing.tom) parts.push('<strong>Tom:</strong> '+TONS[briefing.tom].nome);
+    resumo.innerHTML=parts.join(' · ');
+    resumo.style.display='block';
+  } else {
+    btn.className='btn-ctx';
+    btn.innerHTML='✦ Adicionar contexto';
+    resumo.style.display='none';
+  }
+  fecharBriefing();
+  showToast('Contexto salvo!');
+}
+
+function getBriefingPrompt(){
+  var parts=[];
+  if(briefing.publico) parts.push('Público-alvo: '+briefing.publico);
+  if(briefing.produto) parts.push('Produto/serviço: '+briefing.produto);
+  if(briefing.dor) parts.push('Principal dor: '+briefing.dor);
+  if(briefing.objetivo){
+    var objMap={educar:'Objetivo: educar e informar',engajar:'Objetivo: gerar engajamento e interação',leads:'Objetivo: captar leads e contatos',vender:'Objetivo: vender e converter'};
+    parts.push(objMap[briefing.objetivo]||'');
+  }
+  return parts.length ? 'Contexto importante: '+parts.join('. ')+'.' : '';
+}
+
 function startLoad(id,msgs){
   var i=0;
   document.getElementById(id+'-txt').textContent=msgs[0];
@@ -775,7 +941,8 @@ async function analisarNicho(){
   document.getElementById('load-1').classList.add('on');
   startLoad('load-1',MSGS1);
   try{
-    var d=await callAPI('Para o nicho "'+nicho+'", identifique 6 temas com alto potencial viral para redes sociais. Responda APENAS JSON sem markdown: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral agora max 10 palavras"}]} Gere exatamente 6 temas variados.',800);
+    var ctxPrompt=getBriefingPrompt();
+    var d=await callAPI('Para o nicho "'+nicho+'".'+ctxPrompt+' Identifique 6 temas com alto potencial viral para redes sociais, MUITO específicos para este nicho e público. Responda APENAS JSON sem markdown: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral agora max 10 palavras"}]} Gere exatamente 6 temas variados e relevantes para o contexto.',800);
     temasDisp=d.temas; temasSel=[];
     renderStep2(); stopLoad('load-1');
     document.getElementById('btn-analisar').disabled=false;
@@ -916,19 +1083,20 @@ async function gerarFormato(cardKey,fmt,ti,ci){
   var tomInst=getTomInstrucao();
   outEl.innerHTML='<div class="gen-loading"><div class="spin"></div><span>Gerando '+fmt+'...</span></div>';
   var prompt='';
+  var ctxFmt=getBriefingPrompt();
   if(fmt==='reels'){
-    prompt='Crie roteiro de Reels/TikTok completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
+    prompt='Crie roteiro de Reels/TikTok completo em português. Tom: '+tomInst+(ctxFmt?' '+ctxFmt:'')+' Responda APENAS JSON.\n'
       +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Framework: '+fw.nome+' | Tom: '+tomNome+'\n'
       +'Conteudo base: "'+cd.titulo+'"\n'
       +'JSON: {"hook":"frase abertura 3 segundos tom '+tomNome+'","cenas":[{"num":1,"texto":"cena 1"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"chamada acao tom '+tomNome+'","legenda":"legenda emojis 3-4 frases tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
   } else if(fmt==='carrossel'){
-    prompt='Crie carrossel Instagram completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
+    prompt='Crie carrossel Instagram completo em português. Tom: '+tomInst+(ctxFmt?' '+ctxFmt:'')+' Responda APENAS JSON.\n'
       +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
       +'IMPORTANTE: slides deve ser array de STRINGS simples, nao objetos.\n'
       +'JSON: {"capa":"texto impactante capa max 8 palavras","slides":["texto simples slide 2","texto simples slide 3","texto simples slide 4","texto simples slide 5"],"legenda":"legenda completa com emojis","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}\n'
       +'CADA ITEM DE slides DEVE SER UMA STRING, NAO UM OBJETO.';
   } else {
-    prompt='Crie post Instagram completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
+    prompt='Crie post Instagram completo em português. Tom: '+tomInst+(ctxFmt?' '+ctxFmt:'')+' Responda APENAS JSON.\n'
       +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
       +'JSON: {"imagem":"texto imagem max 10 palavras","subtexto":"subtitulo max 6 palavras","legenda":"legenda emojis CTA tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
   }
@@ -1027,22 +1195,6 @@ async function regenField(btn,cardKey,fmt,fieldKey){
   renderFmtOutput(cardKey,fmt,outEl);
 }
 
-
-function buildSaveRow(cardKey,p){
-  var html='<div class="save-row">';
-  html+='<button class="btn-save-hist" id="savehist-'+cardKey+'" ';
-  html+='data-cardkey="'+cardKey+'" data-ti="'+(p[0]||0)+'" data-ci="'+(p[1]||0)+'" ';
-  html+='onclick="salvarHistoricoAtivo(this)">&#10022; Salvar no hist&#243;rico</button>';
-  html+='<div class="client-wrap" id="cliwrap-'+cardKey+'">';
-  html+='<div style="font-size:10px;font-weight:700;letter-spacing:.08em;';
-  html+='text-transform:uppercase;color:var(--muted);margin:8px 0 5px;">Cliente / Projeto ';
-  html+='<span style="font-weight:400;opacity:.5;">(opcional)</span></div>';
-  html+='<input class="client-input" id="cliinput-'+cardKey+'" ';
-  html+='type="text" placeholder="Ex: Empresa X, @influenciador..." maxlength="80" />';
-  html+='</div></div>';
-  return html;
-}
-
 /* ── RENDER OUTPUT ── */
 function renderFmtOutput(cardKey,fmt,outEl){
   var gerado=fmtGerado[cardKey]||{};
@@ -1089,7 +1241,7 @@ function renderFmtOutput(cardKey,fmt,outEl){
   });
   // Single save button - ti,ci extracted from cardKey "t{ti}_c{ci}"
   var _p=cardKey.replace('t','').split('_c');
-  var saveRow=buildSaveRow(cardKey,_p);
+  var saveRow='<div class="save-row"><button class="btn-save-hist" id="savehist-'+cardKey+'" data-cardkey="'+cardKey+'" data-ti="'+(_p[0]||0)+'" data-ci="'+(_p[1]||0)+'" onclick="salvarHistoricoAtivo(this)">✦ Salvar no hist\u00f3rico</button></div>';
   outEl.innerHTML='<div class="fmt-output">'
     +(fmts.length>1?'<div class="fmt-tabs">'+tabs+'</div>':'')
     +panesHtml
@@ -1188,15 +1340,6 @@ async function salvarHistoricoAtivo(btn){
   var cardKey=btn.getAttribute('data-cardkey');
   var ti=parseInt(btn.getAttribute('data-ti'));
   var ci=parseInt(btn.getAttribute('data-ci'));
-  // Show client field if not visible yet
-  var cliwrap=document.getElementById('cliwrap-'+cardKey);
-  if(cliwrap&&!cliwrap.classList.contains('show')){
-    cliwrap.classList.add('show');
-    btn.textContent='✦ Confirmar e salvar';
-    var inp=document.getElementById('cliinput-'+cardKey);
-    if(inp) inp.focus();
-    return;
-  }
   // Find which format tab is currently active
   var outEl=document.getElementById('output-'+cardKey);
   if(!outEl) return;
@@ -1210,11 +1353,8 @@ async function salvarHistoricoAtivo(btn){
 }
 
 async function salvarHistorico(cardKey,fmt,ti,ci){
-  // Get save button and client input
-  var savehist=document.getElementById('savehist-'+cardKey);
-  if(savehist){savehist.disabled=true;savehist.textContent='Salvando...';}
-  var cliinput=document.getElementById('cliinput-'+cardKey);
-  var cliente=(cliinput&&cliinput.value.trim())||'';
+  var btn=document.getElementById('save-btn-'+cardKey+'-'+fmt);
+  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
   var session=(await sb.auth.getSession()).data.session;
   if(!session){showToast('Faça login para salvar.');return;}
   var t=resultado.temas[ti];
@@ -1230,16 +1370,13 @@ async function salvarHistorico(cardKey,fmt,ti,ci){
     formato:fmt,
     framework:resultado.fw.nome,
     tom:getTomNome(),
-    conteudo:d,
-    cliente:cliente||null
+    conteudo:d
   };
   var res=await sb.from('historico').insert(row);
-  if(res.error){
-    showToast('Erro ao salvar.');
-    if(savehist){savehist.disabled=false;savehist.textContent='✦ Confirmar e salvar';}
-  } else {
-    showToast(cliente?'Salvo para "'+cliente+'"!':'Salvo no histórico!');
-    if(savehist){savehist.textContent='✓ Salvo';savehist.classList.add('saved');}
+  if(res.error){showToast('Erro ao salvar.');if(btn){btn.disabled=false;btn.textContent='✦ Salvar no histórico';}}
+  else{
+    showToast('Salvo no histórico!');
+    if(btn){btn.textContent='✓ Salvo';btn.classList.add('saved');}
   }
 }
 
