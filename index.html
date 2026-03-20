@@ -576,21 +576,21 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 </div>
 
 <!-- PANEL 1 -->
-<div class="panel active" id="panel-1">
-  <div class="glass-card" style="padding:32px;">
-    <div style="margin-bottom:18px;">
-      <span class="lbl" style="display:block;margin-bottom:8px;">Para qual cliente? <span style="font-size:10px;font-weight:400;opacity:.5;text-transform:none;letter-spacing:0;">(opcional)</span></span>
-      <input type="text" id="inp-cliente" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--r);padding:13px 16px;font-family:var(--f);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;" placeholder="Ex: Russo Locações — deixe vazio se for para você mesmo" maxlength="80"/>
+<div class="panel active" <div id="panel-1">
+  <div class="glass-card" style="padding:32px;max-width:580px;margin:0 auto;">
+    <div style="margin-bottom:16px;">
+      <span class="lbl" style="display:block;margin-bottom:7px;">Para qual cliente? <span style="font-size:10px;font-weight:400;opacity:.5;text-transform:none;letter-spacing:0;">(opcional)</span></span>
+      <input type="text" id="inp-cliente" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--r);padding:12px 16px;font-family:var(--f);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;" placeholder="Ex: Russo Locações — deixe vazio se for para você mesmo" maxlength="80"/>
     </div>
-    <span class="lbl">Qual é o seu nicho?</span>
-    <div class="inp-row">
-      <input type="text" id="inp-nicho" placeholder="Ex: personal trainer, finanças pessoais, culinária vegana..."/>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-    <button class="btn-primary" id="btn-analisar" onclick="analisarNicho()">Analisar nicho →</button>
-    <button class="btn-ctx" id="btn-ctx" onclick="abrirBriefing()">✦ Adicionar contexto</button>
-  </div>
-  <div id="ctx-resumo" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(184,240,80,.05);border:1px solid rgba(184,240,80,.15);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7;"></div>
+    <div style="margin-bottom:16px;">
+      <span class="lbl" style="display:block;margin-bottom:7px;">Qual é o seu nicho?</span>
+      <input type="text" id="inp-nicho" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--r);padding:12px 16px;font-family:var(--f);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;" placeholder="Ex: personal trainer, finanças pessoais, culinária vegana..."/>
     </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button class="btn-primary" id="btn-analisar" onclick="analisarNicho()" style="flex:1;">Analisar nicho →</button>
+      <button class="btn-ctx" id="btn-ctx" onclick="abrirBriefing()">✦ Adicionar contexto</button>
+    </div>
+    <div id="ctx-resumo" style="display:none;padding:10px 14px;background:rgba(184,240,80,.05);border:1px solid rgba(184,240,80,.15);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;"></div>
     <div class="loading" id="load-1"><div class="spin"></div><span id="load-1-txt">Analisando...</span></div>
   </div>
 </div>
@@ -624,7 +624,7 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
     <div class="fw-grid" id="fw-grid"></div>
   </div>
   <div class="s2-bar">
-    <div class="sel-count">Temas: <span id="sel-count">0</span>/3</div>
+    <div class="sel-count">Temas: <span id="sel-count">0</span>/2</div>
     <button class="btn-primary" id="btn-gerar" onclick="gerarEstrutura()" disabled>Criar estrutura →</button>
   </div>
   <div class="loading" id="load-2" style="margin-top:14px;"><div class="spin"></div><span id="load-2-txt">Gerando estrutura...</span></div>
@@ -824,7 +824,7 @@ async function trocarTom(id){
     +'{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
     +'Gere EXATAMENTE '+n+' tema(s).';
   try {
-    var d=await callAPI(prompt,n===1?1200:n===2?2000:2800);
+    var d=await callAPI(prompt,n===1?1200:1800);
     resultado={nicho:nicho,fw:fw,temas:d.temas,originais:resultado.originais};
     renderResultado(resultado);
   } catch(e){
@@ -1004,7 +1004,7 @@ function renderStep2(){
 function toggleTema(i){
   var idx=temasSel.indexOf(i);
   if(idx>-1){ temasSel.splice(idx,1); document.getElementById('tc-'+i).classList.remove('selected'); }
-  else{ if(temasSel.length>=3){ showToast('Máximo 3 temas'); return; } temasSel.push(i); document.getElementById('tc-'+i).classList.add('selected'); }
+  else{ if(temasSel.length>=2){ showToast('Máximo 2 temas'); return; } temasSel.push(i); document.getElementById('tc-'+i).classList.add('selected'); }
   updateCount();
 }
 function selectFW(id){
@@ -1334,7 +1334,7 @@ async function trocarFW(id){
     +'{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
     +'Gere EXATAMENTE '+n+' tema(s).';
   try{
-    var d=await callAPI(prompt,n===1?1200:n===2?2000:2800);
+    var d=await callAPI(prompt,n===1?1200:1800);
     resultado={nicho:nicho,fw:fw,temas:d.temas,originais:resultado.originais};
     Object.keys(fmtGerado).forEach(function(k){delete fmtGerado[k];});
     renderResultado(resultado);
@@ -1433,6 +1433,10 @@ async function salvarHistorico(cardKey,fmt,ti,ci){
   var orig=resultado.originais[ti];
   var d=fmtGerado[cardKey]&&fmtGerado[cardKey][fmt];
   if(!d){showToast('Gere o conteúdo antes de salvar.');return;}
+  var cardData=resultado.temas[ti]&&resultado.temas[ti][cat.key]||{};
+  var autoCliente2=briefing&&briefing.cliente?briefing.cliente:(document.getElementById('inp-cliente')?document.getElementById('inp-cliente').value.trim():'');
+  var cliinput2=document.getElementById('cliinput-'+cardKey);
+  var clienteFinal=(cliinput2&&cliinput2.value.trim())||autoCliente2||null;
   var row={
     user_id:session.user.id,
     nicho:nicho,
@@ -1441,7 +1445,9 @@ async function salvarHistorico(cardKey,fmt,ti,ci){
     formato:fmt,
     framework:resultado.fw.nome,
     tom:getTomNome(),
-    conteudo:d
+    conteudo:d,
+    estrutura:{titulo:cardData.titulo||'',fw_steps:cardData.fw_steps||[]},
+    cliente:clienteFinal
   };
   var res=await sb.from('historico').insert(row);
   if(res.error){showToast('Erro ao salvar.');if(btn){btn.disabled=false;btn.textContent='✦ Salvar no histórico';}}
