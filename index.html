@@ -1103,22 +1103,40 @@ async function trocarFW(id){
 }
 
 /* ── UTILS ── */
-async function callAPI(prompt,maxTokens,retries){
-  retries=retries||3;
+// ── REQUEST QUEUE — prevents simultaneous API calls ──
+var _apiQueue=Promise.resolve();
+function callAPI(prompt,maxTokens){
+  _apiQueue=_apiQueue.then(function(){
+    return _doCallAPI(prompt,maxTokens);
+  });
+  return _apiQueue;
+}
+async function _doCallAPI(prompt,maxTokens){
+  var retries=3;
   for(var i=0;i<retries;i++){
     try{
       var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:maxTokens})});
       var d=await r.json();
       if(d.error){
-        var isLimit=d.message&&(d.message.indexOf('rate')>-1||d.message.indexOf('429')>-1||d.message.indexOf('limit')>-1);
-        if(isLimit&&i<retries-1){await new Promise(function(res){setTimeout(res,2000*(i+1));});continue;}
+        var isLimit=d.message&&(d.message.indexOf('rate')>-1||d.message.indexOf('429')>-1||d.message.indexOf('limit')>-1||d.message.indexOf('Too Many')>-1);
+        if(isLimit&&i<retries-1){
+          await new Promise(function(res){setTimeout(res,3000*(i+1));});
+          continue;
+        }
         throw new Error(d.message);
       }
       var clean=d.text.replace(/```json|```/g,'').trim();
-      return JSON.parse(clean);
+      // Auto-fix common JSON issues
+      try{ return JSON.parse(clean); }
+      catch(parseErr){
+        // Try to extract JSON from response
+        var jsonMatch=clean.match(/[{][\s\S]*[}]/);
+        if(jsonMatch) return JSON.parse(jsonMatch[0]);
+        throw parseErr;
+      }
     }catch(e){
       if(i===retries-1) throw e;
-      await new Promise(function(res){setTimeout(res,1500*(i+1));});
+      await new Promise(function(res){setTimeout(res,2000*(i+1));});
     }
   }
 }
