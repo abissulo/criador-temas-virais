@@ -930,9 +930,13 @@ async function gerarFormato(cardKey,fmt,ti,ci){
     btn.classList.add('done');
   }catch(e){
     var errMsg=e&&e.message?e.message:'Erro desconhecido';
-    var isLimit=errMsg.indexOf('rate')>-1||errMsg.indexOf('429')>-1||errMsg.indexOf('limit')>-1;
-    outEl.innerHTML='<div style="padding:12px;background:rgba(240,96,96,.08);border:1px solid rgba(240,96,96,.2);border-radius:8px;font-size:12px;color:#f08080;">'
-      +(isLimit?'⏱ Muitas requisições simultâneas. Aguarde 5 segundos e tente novamente.':'⚠ Erro ao gerar. Tente novamente.')
+    console.error('[CRIADOR] Erro ao gerar '+fmt+':', errMsg);
+    var isLimit=errMsg.indexOf('rate')>-1||errMsg.indexOf('429')>-1||errMsg.indexOf('limit')>-1||errMsg.indexOf('Too Many')>-1;
+    outEl.innerHTML='<div style="padding:12px;background:rgba(240,96,96,.08);border:1px solid rgba(240,96,96,.2);border-radius:8px;font-size:12px;color:#f08080;line-height:1.5;">'
+      +(isLimit
+        ? '⏱ Limite de requisições atingido. Aguarde 10s e tente novamente.'
+        : '⚠ Erro: '+errMsg)
+      +'<br><small style="opacity:.6;font-size:10px;">Veja o Console (F12) para detalhes</small>'
       +'</div>';
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
   }
@@ -1126,13 +1130,22 @@ async function _doCallAPI(prompt,maxTokens){
         throw new Error(d.message);
       }
       var clean=d.text.replace(/```json|```/g,'').trim();
-      // Auto-fix common JSON issues
-      try{ return JSON.parse(clean); }
+      console.log('[API] Resposta recebida (primeiros 300 chars):', clean.substring(0,300));
+      try{ 
+        var parsed = JSON.parse(clean);
+        console.log('[API] JSON parseado OK, chaves:', Object.keys(parsed));
+        return parsed;
+      }
       catch(parseErr){
+        console.error('[API] Erro no parse JSON:', parseErr.message);
+        console.error('[API] Texto completo:', clean);
         // Try to extract JSON from response
-        var jsonMatch=clean.match(/[{][\s\S]*[}]/);
-        if(jsonMatch) return JSON.parse(jsonMatch[0]);
-        throw parseErr;
+        var jsonMatch=clean.match(/\{[\s\S]*\}/);
+        if(jsonMatch){
+          console.log('[API] Tentando extrair JSON do texto...');
+          return JSON.parse(jsonMatch[0]);
+        }
+        throw new Error('JSON inválido: '+parseErr.message+' | Resposta: '+clean.substring(0,100));
       }
     }catch(e){
       if(i===retries-1) throw e;
