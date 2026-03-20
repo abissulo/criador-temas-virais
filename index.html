@@ -365,6 +365,7 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 .post-img-sub{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
 
 /* ── SAVE HIST BTN ── */
+.save-row{margin-top:10px;padding-top:10px;border-top:1px solid var(--glass-border);}
 .save-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
 .btn-save-hist{
   position:relative;overflow:hidden;
@@ -874,7 +875,6 @@ function renderResultado(data){
         +'<button class="btn-fmt carr-btn" id="btn-carr-'+cardKey+'" onclick="gerarFormato(\''+cardKey+'\',\'carrossel\','+ti+','+ci+')">☰ Carrossel</button>'
         +'<button class="btn-fmt post-btn" id="btn-post-'+cardKey+'" onclick="gerarFormato(\''+cardKey+'\',\'post\','+ti+','+ci+')">◻ Post</button>'
         +'</div></div>'
-        +'<div id="save-wrap-'+cardKey+'" class="save-wrap"></div>'
         +'<div id="output-'+cardKey+'"></div>'
         +'</div></div>';
     });
@@ -926,19 +926,6 @@ async function gerarFormato(cardKey,fmt,ti,ci){
     renderFmtOutput(cardKey,fmt,outEl);
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
     btn.classList.add('done');
-    // Show save button
-    var saveBtn=document.getElementById('save-btn-'+cardKey+'-'+fmt);
-    if(!saveBtn){
-      var saveWrap=document.getElementById('save-wrap-'+cardKey);
-      if(saveWrap){
-        var saveBtnEl=document.createElement('button');
-        saveBtnEl.id='save-btn-'+cardKey+'-'+fmt;
-        saveBtnEl.className='btn-save-hist';
-        saveBtnEl.setAttribute('onclick','salvarHistorico("'+cardKey+'","'+fmt+'",'+ti+','+ci+')');
-        saveBtnEl.textContent='✦ Salvar no histórico';
-        saveWrap.appendChild(saveBtnEl);
-      }
-    }
   }catch(e){
     outEl.innerHTML='';
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
@@ -1049,9 +1036,9 @@ function renderFmtOutput(cardKey,fmt,outEl){
         +'<button class="copy-btn" onclick="copyLines('+JSON.stringify(copyParts)+')">⎘ Copiar roteiro</button>';
     } else if(f==='carrossel'){
       var slides='<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">'+makeField(d.capa,cardKey,f,'capa')+'</div></div>';
-      (d.slides||[]).forEach(function(s,i){slides+='<div class="slide"><span class="slide-num">'+(i+2)+'</span><div class="slide-txt">'+makeField(s,cardKey,f,'slide_'+i)+'</div></div>';});
+      (d.slides||[]).forEach(function(s,i){var txt=typeof s==='object'?(s.texto||s.text||JSON.stringify(s)):s;slides+='<div class="slide"><span class="slide-num">'+(i+2)+'</span><div class="slide-txt">'+makeField(txt,cardKey,f,'slide_'+i)+'</div></div>';});
       var copyParts2=['CARROSSEL | Tom: '+tomNome,'Capa: '+(d.capa||'')];
-      (d.slides||[]).forEach(function(s,i){copyParts2.push('Slide '+(i+2)+': '+s);});
+      (d.slides||[]).forEach(function(s,i){var txt2=typeof s==='object'?(s.texto||s.text||''):s;copyParts2.push('Slide '+(i+2)+': '+txt2);});
       copyParts2.push('Legenda: '+(d.legenda||''),d.hashtags||'');
       inner='<div class="slides-wrap">'+slides+'</div>'
         +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
@@ -1064,7 +1051,17 @@ function renderFmtOutput(cardKey,fmt,outEl){
     }
     panesHtml+='<div class="fmt-pane'+(f===fmt?' active':'')+'" id="pane-'+cardKey+'-'+f+'">'+inner+'</div>';
   });
-  outEl.innerHTML='<div class="fmt-output">'+(fmts.length>1?'<div class="fmt-tabs">'+tabs+'</div>':'')+panesHtml+'</div>';
+  // Single save button always shows current active format
+  var activeFmt = fmt;
+  var saveRow = '<div class="save-row">'
+    + '<button class="btn-save-hist" id="savehist-'+cardKey+'" '
+    + 'onclick="salvarHistoricoAtivo(this)" data-cardkey="'+cardKey+'" data-ti="'+ti+'" data-ci="'+ci+'">'+
+    + '✦ Salvar no histórico</button></div>';
+  outEl.innerHTML='<div class="fmt-output">'
+    +(fmts.length>1?'<div class="fmt-tabs">'+tabs+'</div>':'')
+    +panesHtml
+    +saveRow
+    +'</div>';
 }
 
 function switchTab(cardKey,fmt){
@@ -1127,6 +1124,22 @@ function copyLines(parts){
 
 function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2200);}
 function shake(id){var el=document.getElementById(id);el.style.borderColor='rgba(240,96,96,.5)';el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:280});setTimeout(function(){el.style.borderColor='';},1200);}
+async function salvarHistoricoAtivo(btn){
+  var cardKey=btn.getAttribute('data-cardkey');
+  var ti=parseInt(btn.getAttribute('data-ti'));
+  var ci=parseInt(btn.getAttribute('data-ci'));
+  // Find which format tab is currently active
+  var outEl=document.getElementById('output-'+cardKey);
+  if(!outEl) return;
+  var activePane=outEl.querySelector('.fmt-pane.active');
+  var activeFmt='post';
+  if(activePane){
+    var pid=activePane.id;
+    activeFmt=pid.substring(pid.lastIndexOf('-')+1);
+  }
+  await salvarHistorico(cardKey,activeFmt,ti,ci);
+}
+
 async function salvarHistorico(cardKey,fmt,ti,ci){
   var btn=document.getElementById('save-btn-'+cardKey+'-'+fmt);
   if(btn){btn.disabled=true;btn.textContent='Salvando...';}
