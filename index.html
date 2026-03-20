@@ -449,6 +449,18 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 .tom-pill:hover{border-color:var(--glass-border-h);color:var(--text);}
 .tom-pill.active{background:rgba(240,160,80,.1);border-color:rgba(240,160,80,.3);color:#f0a050;}
 
+
+/* ── SAVE TO HISTORY BUTTON ── */
+.btn-salvar-hist{
+  display:flex;align-items:center;gap:6px;margin-top:10px;
+  font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;
+  color:rgba(240,180,50,.8);background:rgba(240,180,50,.08);
+  border:1px solid rgba(240,180,50,.2);border-radius:8px;
+  padding:7px 14px;cursor:pointer;transition:all .2s;width:100%;justify-content:center;
+}
+.btn-salvar-hist:hover{background:rgba(240,180,50,.15);border-color:rgba(240,180,50,.35);}
+.btn-salvar-hist.saved{color:rgba(59,158,59,.8);background:rgba(59,158,59,.08);border-color:rgba(59,158,59,.2);cursor:default;}
+
 /* ── PRINT ── */
 @media print{
   #bg-canvas,.grid-overlay,.orb,.steps,.fw-change-bar,.res-actions,.btn-ghost,.btn-fmt,.fmt-tabs,canvas{display:none!important;}
@@ -573,6 +585,7 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
       <button class="btn-ghost" onclick="voltarStep2()">← Voltar</button>
       <button class="btn-ghost" onclick="voltarStep1(true)">↺ Novo nicho</button>
       <button class="btn-ghost" onclick="window.print()">↓ PDF</button>
+      <a href="/historico" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;">⊞ Histórico</a>
     </div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
@@ -924,6 +937,16 @@ JSON: {"imagem":"texto imagem max 10 palavras no tom ${tomNome}","subtexto":"sub
     renderFmtOutput(cardKey,fmt,outEl);
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
     btn.classList.add('done');
+    // Add save button if not already there
+    const saveId=`save-btn-${cardKey}-${fmt}`;
+    if(!document.getElementById(saveId)){
+      const saveBtn=document.createElement('button');
+      saveBtn.id=saveId;
+      saveBtn.className='btn-salvar-hist';
+      saveBtn.innerHTML='★ Salvar no histórico';
+      saveBtn.onclick=()=>salvarConteudo(cardKey,fmt,ti,ci,saveBtn);
+      document.getElementById(`output-${cardKey}`)?.appendChild(saveBtn);
+    }
   }catch(e){
     outEl.innerHTML='';
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
@@ -933,41 +956,7 @@ JSON: {"imagem":"texto imagem max 10 palavras no tom ${tomNome}","subtexto":"sub
 }
 
 /* ── INLINE FIELD HELPERS ── */
-function editField(el, cardKey, fmt, fieldKey, currentVal){
-  const wrap = el.closest('.field-wrap');
-  const escaped = currentVal.replace(/"/g,'&quot;').replace(/</g,'&lt;');
-  wrap.innerHTML = `
-    <textarea class="field-edit-area" id="fea-${cardKey}-${fmt}-${fieldKey}">${currentVal}</textarea>
-    <div class="field-actions">
-      <button class="btn-save-field" onclick="saveField('${cardKey}','${fmt}','${fieldKey}')">✓ Salvar</button>
-      <button class="btn-cancel-field" onclick="cancelField('${cardKey}','${fmt}','${fieldKey}','${escaped}')">Cancelar</button>
-      <button class="btn-regen-field" onclick="regenField(this,'${cardKey}','${fmt}','${fieldKey}')">↺ Regenerar este campo</button>
-    </div>`;
-  document.getElementById(`fea-${cardKey}-${fmt}-${fieldKey}`).focus();
-}
-
-function saveField(cardKey, fmt, fieldKey){
-  const ta = document.getElementById(`fea-${cardKey}-${fmt}-${fieldKey}`);
-  if(!ta) return;
-  const val = ta.value.trim();
-  if(!fmtGerado[cardKey]) fmtGerado[cardKey]={};
-  if(!fmtGerado[cardKey][fmt]) fmtGerado[cardKey][fmt]={};
-  // Handle nested fields like cenas.0
-  if(fieldKey.startsWith('cena_')){
-    const idx = parseInt(fieldKey.split('_')[1]);
-    fmtGerado[cardKey][fmt].cenas[idx].texto = val;
-  } else {
-    fmtGerado[cardKey][fmt][fieldKey] = val;
-  }
-  const outEl = document.getElementById(`output-${cardKey}`);
-  renderFmtOutput(cardKey, fmt, outEl);
-  showToast('Salvo!');
-}
-
-function cancelField(cardKey, fmt, fieldKey, originalVal){
-  const outEl = document.getElementById(`output-${cardKey}`);
-  renderFmtOutput(cardKey, fmt, outEl);
-}
+/* editField replaced by startEdit/saveFieldById */
 
 async function regenField(btn, cardKey, fmt, fieldKey){
   btn.disabled = true;
@@ -1015,9 +1004,48 @@ JSON: {"${fieldKey}":"novo conteúdo aqui"}`;
 }
 
 function makeField(val, cardKey, fmt, fieldKey, extraClass=''){
-  const safeVal = (val||'').replace(/'/g,"\'").replace(/
-/g,'\n');
-  return `<div class="field-wrap"><span class="field-text ${extraClass}" onclick="editField(this,'${cardKey}','${fmt}','${fieldKey}','${safeVal}')">${val||''}</span></div>`;
+  const id = 'fld-' + cardKey + '-' + fmt + '-' + fieldKey;
+  const display = val || '';
+  return `<div class="field-wrap" id="${id}-wrap"><span class="field-text ${extraClass}" onclick="startEdit('${id}','${cardKey}','${fmt}','${fieldKey}')">${display}</span></div>`;
+}
+
+function startEdit(id, cardKey, fmt, fieldKey){
+  const wrap = document.getElementById(id + '-wrap');
+  if(!wrap) return;
+  const span = wrap.querySelector('span');
+  const currentVal = span ? span.textContent : '';
+  wrap.innerHTML = `<textarea class="field-edit-area" id="${id}-ta">${currentVal}</textarea>
+    <div class="field-actions">
+      <button class="btn-save-field" onclick="saveFieldById('${id}','${cardKey}','${fmt}','${fieldKey}')">✓ Salvar</button>
+      <button class="btn-cancel-field" onclick="cancelFieldById('${id}','${cardKey}','${fmt}','${fieldKey}')">Cancelar</button>
+      <button class="btn-regen-field" onclick="regenField(this,'${cardKey}','${fmt}','${fieldKey}')">↺ Regenerar</button>
+    </div>`;
+  document.getElementById(id + '-ta').focus();
+}
+
+function saveFieldById(id, cardKey, fmt, fieldKey){
+  const ta = document.getElementById(id + '-ta');
+  if(!ta) return;
+  const val = ta.value.trim();
+  if(!fmtGerado[cardKey]) fmtGerado[cardKey] = {};
+  if(!fmtGerado[cardKey][fmt]) fmtGerado[cardKey][fmt] = {};
+  if(fieldKey.startsWith('cena_')){
+    const idx = parseInt(fieldKey.split('_')[1]);
+    if(fmtGerado[cardKey][fmt].cenas) fmtGerado[cardKey][fmt].cenas[idx].texto = val;
+  } else if(fieldKey.startsWith('slide_')){
+    const idx = parseInt(fieldKey.split('_')[1]);
+    if(fmtGerado[cardKey][fmt].slides) fmtGerado[cardKey][fmt].slides[idx] = val;
+  } else {
+    fmtGerado[cardKey][fmt][fieldKey] = val;
+  }
+  const outEl = document.getElementById('output-' + cardKey);
+  renderFmtOutput(cardKey, fmt, outEl);
+  showToast('Salvo!');
+}
+
+function cancelFieldById(id, cardKey, fmt, fieldKey){
+  const outEl = document.getElementById('output-' + cardKey);
+  renderFmtOutput(cardKey, fmt, outEl);
 }
 
 /* ── RENDER OUTPUT ── */
@@ -1120,8 +1148,7 @@ async function callAPI(prompt,maxTokens,retries=3){
       const d=await r.json();
       if(d.error){
         // Rate limit — wait and retry
-        const isRateLimit = d.message && (d.message.indexOf('rate')>-1 || d.message.indexOf('429')>-1 || d.message.indexOf('limit')>-1);
-if(isRateLimit && i<retries-1){
+        if((d.message&&(d.message.includes('rate')||d.message.includes('429')||d.message.includes('limit'))) && i<retries-1){
           await new Promise(res=>setTimeout(res,2000*(i+1)));
           continue;
         }
@@ -1140,6 +1167,50 @@ function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g
 function copyText(txt){navigator.clipboard.writeText(txt.replace(/\\n/g,'\n').replace(/&quot;/g,'"')).then(()=>showToast('Copiado!'));}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 function shake(id){const el=document.getElementById(id);el.style.borderColor='rgba(240,96,96,.5)';el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:280});setTimeout(()=>el.style.borderColor='',1200);}
+
+/* ── SALVAR NO HISTÓRICO ── */
+async function salvarConteudo(cardKey, fmt, ti, ci, btn){
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ showToast('Faça login para salvar.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '★ Salvando...';
+
+  const t = resultado.temas[ti];
+  const cat = CATS[ci];
+  const cd = t[cat.key];
+  const orig = resultado.originais[ti];
+  const conteudo = fmtGerado[cardKey]?.[fmt] || {};
+
+  const registro = {
+    user_id:    session.user.id,
+    nicho:      nicho,
+    tema:       orig?.nome || t.nome,
+    categoria:  cat.tag,
+    framework:  resultado.fw.nome,
+    tom:        TONS[tomSel]?.nome || tomSel,
+    formato:    fmt,
+    titulo:     cd.titulo || '',
+    conteudo:   JSON.stringify(conteudo),
+    criado_em:  new Date().toISOString()
+  };
+
+  const {error} = await sb.from('historico').insert(registro);
+
+  if(error){
+    console.error(error);
+    showToast('Erro ao salvar. Tente novamente.');
+    btn.disabled = false;
+    btn.textContent = '★ Salvar no histórico';
+    return;
+  }
+
+  btn.classList.add('saved');
+  btn.textContent = '✓ Salvo no histórico!';
+  btn.disabled = true;
+  showToast('Salvo no histórico!');
+}
+
 function voltarStep1(limpar){if(limpar){document.getElementById('inp-nicho').value='';temasDisp=[];temasSel=[];resultado=null;}setStep(1);}
 function voltarStep2(){setStep(2);}
 
