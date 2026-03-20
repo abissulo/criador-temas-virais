@@ -913,7 +913,9 @@ async function gerarFormato(cardKey,fmt,ti,ci){
   } else if(fmt==='carrossel'){
     prompt='Crie carrossel Instagram completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
       +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
-      +'JSON: {"capa":"texto capa max 8 palavras","slides":["slide2","slide3","slide4","slide5"],"legenda":"legenda emojis tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
+      +'IMPORTANTE: slides deve ser array de STRINGS simples, nao objetos.\n'
+      +'JSON: {"capa":"texto impactante capa max 8 palavras","slides":["texto simples slide 2","texto simples slide 3","texto simples slide 4","texto simples slide 5"],"legenda":"legenda completa com emojis","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}\n'
+      +'CADA ITEM DE slides DEVE SER UMA STRING, NAO UM OBJETO.';
   } else {
     prompt='Crie post Instagram completo em português. Tom: '+tomInst+' Responda APENAS JSON.\n'
       +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
@@ -927,9 +929,12 @@ async function gerarFormato(cardKey,fmt,ti,ci){
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
     btn.classList.add('done');
   }catch(e){
-    outEl.innerHTML='';
+    var errMsg=e&&e.message?e.message:'Erro desconhecido';
+    var isLimit=errMsg.indexOf('rate')>-1||errMsg.indexOf('429')>-1||errMsg.indexOf('limit')>-1;
+    outEl.innerHTML='<div style="padding:12px;background:rgba(240,96,96,.08);border:1px solid rgba(240,96,96,.2);border-radius:8px;font-size:12px;color:#f08080;">'
+      +(isLimit?'⏱ Muitas requisições simultâneas. Aguarde 5 segundos e tente novamente.':'⚠ Erro ao gerar. Tente novamente.')
+      +'</div>';
     btn.textContent=fmt==='reels'?'▶ Reels':fmt==='carrossel'?'☰ Carrossel':'◻ Post';
-    showToast('Erro ao gerar. Tente novamente.');
   }
   btn.disabled=false;
 }
@@ -1036,9 +1041,9 @@ function renderFmtOutput(cardKey,fmt,outEl){
         +'<button class="copy-btn" onclick="copyLines('+JSON.stringify(copyParts)+')">⎘ Copiar roteiro</button>';
     } else if(f==='carrossel'){
       var slides='<div class="slide slide-capa"><span class="slide-num">Capa</span><div class="slide-txt">'+makeField(d.capa,cardKey,f,'capa')+'</div></div>';
-      (d.slides||[]).forEach(function(s,i){var txt=typeof s==='object'?(s.texto||s.text||JSON.stringify(s)):s;slides+='<div class="slide"><span class="slide-num">'+(i+2)+'</span><div class="slide-txt">'+makeField(txt,cardKey,f,'slide_'+i)+'</div></div>';});
+      (d.slides||[]).forEach(function(s,i){var txt=typeof s==='object'&&s!==null?(s.texto||s.text||s.conteudo||s.content||Object.values(s)[0]||''):String(s||'');slides+='<div class="slide"><span class="slide-num">'+(i+2)+'</span><div class="slide-txt">'+makeField(txt,cardKey,f,'slide_'+i)+'</div></div>';});
       var copyParts2=['CARROSSEL | Tom: '+tomNome,'Capa: '+(d.capa||'')];
-      (d.slides||[]).forEach(function(s,i){var txt2=typeof s==='object'?(s.texto||s.text||''):s;copyParts2.push('Slide '+(i+2)+': '+txt2);});
+      (d.slides||[]).forEach(function(s,i){var txt2=typeof s==='object'&&s!==null?(s.texto||s.text||s.conteudo||s.content||Object.values(s)[0]||''):String(s||'');copyParts2.push('Slide '+(i+2)+': '+txt2);});
       copyParts2.push('Legenda: '+(d.legenda||''),d.hashtags||'');
       inner='<div class="slides-wrap">'+slides+'</div>'
         +'<div class="leg-box"><div class="leg-lbl">Legenda</div>'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="leg-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div>'
