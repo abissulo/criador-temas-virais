@@ -1060,12 +1060,9 @@ function renderFmtOutput(cardKey,fmt,outEl){
     }
     panesHtml+='<div class="fmt-pane'+(f===fmt?' active':'')+'" id="pane-'+cardKey+'-'+f+'">'+inner+'</div>';
   });
-  // Single save button always shows current active format
-  var activeFmt = fmt;
-  var saveRow = '<div class="save-row">'
-    + '<button class="btn-save-hist" id="savehist-'+cardKey+'" '
-    + 'onclick="salvarHistoricoAtivo(this)" data-cardkey="'+cardKey+'" data-ti="'+ti+'" data-ci="'+ci+'">'+
-    + '✦ Salvar no histórico</button></div>';
+  // Single save button - ti,ci extracted from cardKey "t{ti}_c{ci}"
+  var _p=cardKey.replace('t','').split('_c');
+  var saveRow='<div class="save-row"><button class="btn-save-hist" id="savehist-'+cardKey+'" data-cardkey="'+cardKey+'" data-ti="'+(_p[0]||0)+'" data-ci="'+(_p[1]||0)+'" onclick="salvarHistoricoAtivo(this)">✦ Salvar no hist\u00f3rico</button></div>';
   outEl.innerHTML='<div class="fmt-output">'
     +(fmts.length>1?'<div class="fmt-tabs">'+tabs+'</div>':'')
     +panesHtml
