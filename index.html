@@ -931,12 +931,12 @@ async function gerarFormato(cardKey,fmt,ti,ci){
     if(!saveBtn){
       var saveWrap=document.getElementById('save-wrap-'+cardKey);
       if(saveWrap){
-        var sb2=document.createElement('button');
-        sb2.id='save-btn-'+cardKey+'-'+fmt;
-        sb2.className='btn-save-hist';
-        sb2.setAttribute('onclick','salvarHistorico(''+cardKey+'',''+fmt+'','+ti+','+ci+')');
-        sb2.textContent='✦ Salvar no histórico';
-        saveWrap.appendChild(sb2);
+        var saveBtnEl=document.createElement('button');
+        saveBtnEl.id='save-btn-'+cardKey+'-'+fmt;
+        saveBtnEl.className='btn-save-hist';
+        saveBtnEl.setAttribute('onclick','salvarHistorico(''+cardKey+'',''+fmt+'','+ti+','+ci+')');
+        saveBtnEl.textContent='✦ Salvar no histórico';
+        saveWrap.appendChild(saveBtnEl);
       }
     }
   }catch(e){
