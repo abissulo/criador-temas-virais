@@ -1,3 +1,22 @@
+/* Default (no class) = light */
+html {
+  --bg: #f4f3f0;
+  --bg2: #ffffff;
+  --bg3: #eeede9;
+  --glass: rgba(255,255,255,.85);
+  --glass-border: rgba(0,0,0,.10);
+  --glass-border-h: rgba(0,0,0,.20);
+  --text: #1a1a1a;
+  --muted: rgba(20,20,20,.5);
+  --dim: rgba(20,20,20,.28);
+  --g1: #5a9e00;
+  --g2: #0088bb;
+  --g3: #cc2288;
+  --g4: #cc6600;
+  --r: 13px;
+  --f: 'Plus Jakarta Sans', sans-serif;
+}
+
 /* ── THEME SYSTEM ── */
 /* Apply to <html> element via JS, not body */
 
