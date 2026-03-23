@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Exportar PDF — Criador de Temas Virais</title>
+<link rel="stylesheet" href="/theme.css">
+<link rel="stylesheet" href="/responsive.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ── SCREEN STYLES ── */
@@ -231,6 +233,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   font-size: 11px; color: rgba(240,237,232,.25);
 }
 </style>
+<script>(function(){var t=localStorage.getItem("ctv-theme")||"light";document.documentElement.className="theme-"+t;})();</script>
 </head>
 <body>
 
@@ -241,7 +244,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <a href="/" class="tl">← Criar</a>
     <a href="/historico" class="tl hist">Histórico</a>
     <a href="/calendario" class="tl cal">Calendário</a>
+    <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme();updateDrawerTheme()" title="Alternar tema"></button>
     <button class="btn-logout" onclick="doLogout()">Sair</button>
+  <button class="hamburger" onclick="openDrawer()" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </div>
 
@@ -521,5 +526,42 @@ function buildPDF(items){
 
 function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2500);}
 </script>
+<script>document.getElementById("theme-toggle-btn").textContent=document.documentElement.classList.contains("theme-dark")?"\u2600\ufe0f":"\uD83C\uDF19";
+// Sync drawer user name
+var _duObs=new MutationObserver(function(){
+  var un=document.getElementById('user-name');
+  var dun=document.getElementById('drawer-user-name');
+  if(un&&dun&&un.textContent) dun.textContent=un.textContent;
+});
+var _unEl=document.getElementById('user-name');
+if(_unEl) _duObs.observe(_unEl,{childList:true,characterData:true,subtree:true});
+function drawerUserSync(){}
+
+</script>
+
+<!-- MOBILE DRAWER OVERLAY -->
+<div class="mobile-drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobile-drawer">
+  <div class="drawer-header">
+    <span class="drawer-logo">Criador de Temas Virais</span>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-user" id="drawer-user-name"></div>
+
+  <a href="/" class="drawer-link " onclick="closeDrawer()">🏠 Criar conteúdo</a>
+<a href="/historico" class="drawer-link dl-hist" onclick="closeDrawer()">📂 Histórico</a>
+<a href="/calendario" class="drawer-link " onclick="closeDrawer()">📅 Calendário</a>
+<a href="/exportar" class="drawer-link  active" onclick="closeDrawer()">📄 Exportar PDF</a>
+
+  <div class="drawer-divider"></div>
+  <button class="drawer-theme" onclick="toggleTheme();updateDrawerTheme()">
+    <span id="drawer-theme-icon">☀️</span>
+    <span id="drawer-theme-label">Tema claro</span>
+  </button>
+  <button class="drawer-logout" onclick="doLogout()">⎋ Sair</button>
+</div>
+
 </body>
 </html>

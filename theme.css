@@ -1,0 +1,123 @@
+/* ── THEME SYSTEM ── */
+/* Apply to <html> element via JS, not body */
+
+/* ── LIGHT THEME (default) ── */
+html.theme-light {
+  --bg: #f4f3f0;
+  --bg2: #ffffff;
+  --bg3: #eeede9;
+  --glass: rgba(255,255,255,.85);
+  --glass-border: rgba(0,0,0,.10);
+  --glass-border-h: rgba(0,0,0,.20);
+  --text: #1a1a1a;
+  --muted: rgba(20,20,20,.5);
+  --dim: rgba(20,20,20,.28);
+  --g1: #5a9e00;
+  --g2: #0088bb;
+  --g3: #cc2288;
+  --g4: #cc6600;
+  --r: 13px;
+  --f: 'Plus Jakarta Sans', sans-serif;
+  color-scheme: light;
+}
+
+/* ── DARK THEME ── */
+html.theme-dark {
+  --bg: #060608;
+  --bg2: rgba(255,255,255,.03);
+  --bg3: rgba(255,255,255,.06);
+  --glass: rgba(255,255,255,.04);
+  --glass-border: rgba(255,255,255,.08);
+  --glass-border-h: rgba(255,255,255,.15);
+  --text: #f0ede8;
+  --muted: rgba(240,237,232,.45);
+  --dim: rgba(240,237,232,.22);
+  --g1: #b8f050;
+  --g2: #50d4f5;
+  --g3: #f050a4;
+  --g4: #f0a050;
+  --r: 13px;
+  --f: 'Plus Jakarta Sans', sans-serif;
+  color-scheme: dark;
+}
+
+/* ── LIGHT: surface adjustments ── */
+html.theme-light body {
+  background: var(--bg);
+}
+html.theme-light body::before {
+  background-image:
+    linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
+}
+html.theme-light .glass-card {
+  background: var(--glass);
+  border-color: var(--glass-border);
+  box-shadow: 0 2px 24px rgba(0,0,0,.07);
+}
+html.theme-light .topbar {
+  background: rgba(244,243,240,.92) !important;
+  border-bottom-color: rgba(0,0,0,.1) !important;
+}
+html.theme-light input[type=text],
+html.theme-light input[type=email],
+html.theme-light input[type=password] {
+  background: rgba(0,0,0,.04) !important;
+  border-color: rgba(0,0,0,.12) !important;
+  color: var(--text) !important;
+}
+html.theme-light input::placeholder { color: rgba(0,0,0,.3) !important; }
+html.theme-light input:focus {
+  border-color: rgba(90,158,0,.4) !important;
+  box-shadow: 0 0 0 3px rgba(90,158,0,.08) !important;
+}
+html.theme-light .btn-primary {
+  background: var(--g1) !important;
+  color: #fff !important;
+}
+html.theme-light .cal-day,
+html.theme-light .cal-grid { border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .cal-day.today { background: rgba(0,136,187,.06) !important; }
+html.theme-light .tema-card { background: rgba(0,0,0,.03) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .fw-card { background: rgba(0,0,0,.03) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .cc { background: rgba(0,0,0,.03) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .hist-card { background: rgba(0,0,0,.03) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .sidebar { background: rgba(255,255,255,.8) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .cstat { background: rgba(255,255,255,.8) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .modal, html.theme-light .bmodal { background: #ffffff !important; border-color: rgba(0,0,0,.1) !important; }
+html.theme-light .fw-step-item { color: rgba(0,0,0,.6) !important; }
+html.theme-light .rs-box, html.theme-light .leg-box, html.theme-light .post-img {
+  background: rgba(0,0,0,.04) !important;
+  border-color: rgba(0,0,0,.08) !important;
+}
+html.theme-light .fmt-output { background: rgba(0,0,0,.02) !important; }
+html.theme-light .fmt-tab { background: rgba(0,0,0,.04) !important; color: var(--muted) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .fmt-tab.active { background: rgba(0,0,0,.08) !important; color: var(--text) !important; }
+html.theme-light .event-chip.fmt-reels { background: rgba(204,102,0,.12) !important; color: #cc6600 !important; }
+html.theme-light .event-chip.fmt-carrossel { background: rgba(0,136,187,.1) !important; color: #0088bb !important; }
+html.theme-light .event-chip.fmt-post { background: rgba(90,158,0,.1) !important; color: #5a9e00 !important; }
+html.theme-light .filter-pill.active { background: rgba(90,158,0,.1) !important; border-color: rgba(90,158,0,.3) !important; color: var(--g1) !important; }
+html.theme-light .sidebar-item { background: rgba(0,0,0,.03) !important; border-color: rgba(0,0,0,.08) !important; }
+html.theme-light .gen-loading { background: rgba(0,0,0,.04) !important; }
+html.theme-light .cc-top { opacity: .7; }
+
+/* ── THEME TOGGLE BUTTON ── */
+.theme-toggle {
+  font-family: var(--f);
+  font-size: 16px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--glass-border-h);
+  background: var(--bg3);
+}
