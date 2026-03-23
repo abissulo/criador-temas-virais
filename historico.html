@@ -311,6 +311,38 @@ var _unEl=document.getElementById('user-name');
 if(_unEl) _duObs.observe(_unEl,{childList:true,characterData:true,subtree:true});
 function drawerUserSync(){}
 
+
+function toggleTheme(){
+  var cur=document.documentElement.classList.contains('theme-dark')?'dark':'light';
+  var next=cur==='dark'?'light':'dark';
+  document.documentElement.className='theme-'+next;
+  localStorage.setItem('ctv-theme',next);
+  updateDrawerTheme();
+}
+function updateDrawerTheme(){
+  var isDark=document.documentElement.classList.contains('theme-dark');
+  var btn=document.getElementById('theme-toggle-btn');
+  var icon=document.getElementById('drawer-theme-icon');
+  var lbl=document.getElementById('drawer-theme-label');
+  if(btn) btn.textContent=isDark?'\u2600\ufe0f':'\uD83C\uDF19';
+  if(icon) icon.textContent=isDark?'\u2600\ufe0f':'\uD83C\uDF19';
+  if(lbl) lbl.textContent=isDark?'Tema claro':'Tema escuro';
+}
+function openDrawer(){
+  var d=document.getElementById('mobile-drawer');
+  var o=document.getElementById('drawer-overlay');
+  if(d) d.classList.add('open');
+  if(o) o.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(){
+  var d=document.getElementById('mobile-drawer');
+  var o=document.getElementById('drawer-overlay');
+  if(d) d.classList.remove('open');
+  if(o) o.classList.remove('open');
+  document.body.style.overflow='';
+}
+
 </script>
 
 <!-- MOBILE DRAWER OVERLAY -->
