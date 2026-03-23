@@ -148,7 +148,7 @@ html.theme-light .mobile-drawer {
 
 /* ── MAIN CONTENT SPACING ── */
 .wrap, .main-wrap {
-  padding-top: 72px;
+  padding-top: 60px;
 }
 @media (max-width: 640px) {
   .wrap, .main-wrap { padding: 64px 12px 80px; }

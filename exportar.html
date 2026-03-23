@@ -26,7 +26,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .tl.hist{color:rgba(184,240,80,.7);border-color:rgba(184,240,80,.2);background:rgba(184,240,80,.04);}
 .tl.cal{color:rgba(80,212,245,.7);border-color:rgba(80,212,245,.2);background:rgba(80,212,245,.04);}
 .btn-logout{font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,.04);color:rgba(240,237,232,.4);border:1px solid var(--glass-border);border-radius:8px;padding:6px 12px;cursor:pointer;}
-.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:88px 24px 80px;}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:64px 24px 80px;}
 .page-header{margin-bottom:32px;}
 .page-header h1{font-size:clamp(24px,4vw,38px);font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
 .page-header h1 em{font-style:normal;color:var(--g1);}
@@ -232,6 +232,27 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   display: flex; justify-content: space-between; align-items: center;
   font-size: 11px; color: rgba(240,237,232,.25);
 }
+
+/* ── TOPBAR (overrides responsive.css for clarity) ── */
+.topbar { position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:rgba(6,6,8,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--glass-border);gap:12px; }
+html.theme-light .topbar { background:rgba(244,243,240,.95); }
+.topbar-logo { font-size:13px;font-weight:800;background:linear-gradient(90deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;white-space:nowrap;flex-shrink:0; }
+.topbar-right { display:flex;align-items:center;gap:7px;flex-shrink:0; }
+.topbar-user { font-size:12px;color:var(--muted);white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis; }
+.topbar-link { font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--glass-border);border-radius:7px;transition:all .2s;white-space:nowrap; }
+.topbar-link:hover { color:var(--text);border-color:var(--glass-border-h); }
+.topbar-link.active { color:var(--g2);border-color:rgba(80,212,245,.3);background:rgba(80,212,245,.06); }
+.topbar-link.tl-hist { color:rgba(184,240,80,.8);border-color:rgba(184,240,80,.25);background:rgba(184,240,80,.05); }
+.topbar-link.tl-pdf { color:rgba(240,80,164,.8);border-color:rgba(240,80,164,.2);background:rgba(240,80,164,.04); }
+.btn-logout { font-family:var(--f);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,.04);color:rgba(240,237,232,.4);border:1px solid var(--glass-border);border-radius:7px;padding:5px 10px;cursor:pointer; }
+html.theme-light .btn-logout { color:rgba(0,0,0,.4);background:rgba(0,0,0,.04); }
+/* Hide on mobile */
+@media(max-width:640px) {
+  .topbar-link, .topbar-user, .btn-logout, .theme-toggle { display:none!important; }
+  .hamburger { display:flex!important; }
+  .topbar { padding:0 14px; }
+}
+
 </style>
 <script>(function(){var t=localStorage.getItem("ctv-theme")||"light";document.documentElement.className="theme-"+t;})();</script>
 </head>
@@ -240,13 +261,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <div class="topbar">
   <a href="/" class="topbar-logo">Criador de Temas Virais</a>
   <div class="topbar-right">
-    <span id="user-name" style="font-size:13px;color:var(--muted);"></span>
-    <a href="/" class="tl">← Criar</a>
-    <a href="/historico" class="tl hist">Histórico</a>
-    <a href="/calendario" class="tl cal">Calendário</a>
+    <span id="user-name" class="topbar-user"></span>
+    <a href="/" class="topbar-link ">← Criar</a>
+    <a href="/historico" class="topbar-link tl-hist">Histórico</a>
+    <a href="/calendario" class="topbar-link ">Calendário</a>
+    <a href="/exportar" class="topbar-link active tl-pdf">↓ PDF</a>
     <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme();updateDrawerTheme()" title="Alternar tema"></button>
     <button class="btn-logout" onclick="doLogout()">Sair</button>
-  <button class="hamburger" onclick="openDrawer()" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="hamburger" onclick="openDrawer()" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </div>
 
