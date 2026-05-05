@@ -1157,12 +1157,12 @@ async function gerarFormato(cardKey,fmt,ti,ci){
   var prompt='';
   var ctxFmt=getBriefingPrompt();
   if(fmt==='reels'){
-    prompt='Crie roteiro de Reels/TikTok profissional em português. Tom: '+tomInst+(ctxFmt?' Contexto: '+ctxFmt:'')+' Responda APENAS JSON.\n'
+    prompt='Crie roteiro de Reels/TikTok no formato "Talking Head" (câmera frontal, estilo influencer falando direto com a audiência, sem precisar de edições complexas ou mudanças de cena). Tom: '+tomInst+(ctxFmt?' Contexto: '+ctxFmt:'')+' Responda APENAS JSON.\n'
       +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Ângulo: "'+cd.titulo+'" | Tom: '+tomNome+'\n'
-      +'Hook: prende em 1-2s com número, contradiction ou afirmação ousada.\n'
-      +'Cenas: 4 cenas visuais e dinâmicas (máx 10s cada). CTA: urgente e específico.\n'
+      +'Hook: frase falada de abertura que prende a atenção em 1-2s.\n'
+      +'Cenas: divida a fala (o texto que a pessoa vai ler/falar para a câmera) em 4 blocos sequenciais.\n'
       +'Responda APENAS JSON válido:\n'
-      +'{"hook":"frase abertura poderosa","cenas":[{"num":1,"texto":"cena 1"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"CTA urgente e específico","legenda":"legenda completa com emojis e CTA","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}';
+      +'{"hook":"frase abertura poderosa","cenas":[{"num":1,"texto":"fala do bloco 1"},{"num":2,"texto":"fala do bloco 2"},{"num":3,"texto":"fala do bloco 3"},{"num":4,"texto":"fala do bloco 4"}],"cta":"chamada para ação falada","legenda":"legenda completa com emojis e CTA","hashtags":"#h1 #h2 #h3 #h4 #h5"}';
   } else if(fmt==='carrossel'){
     prompt='Crie carrossel de Instagram de alta performance em português. Tom: '+tomInst+(ctxFmt?' Contexto: '+ctxFmt:'')+' Responda APENAS JSON.\n'
       +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Ângulo: "'+cd.titulo+'" | Tom: '+tomNome+'\n'
@@ -1307,15 +1307,15 @@ function renderFmtOutput(cardKey,fmt,outEl){
     var tomNome=getTomNome();
     if(f==='reels'){
       var cenas=(d.cenas||[]).map(function(cn,i){
-        return '<div class="rs-cena"><div class="rs-cena-num">Cena '+cn.num+'</div>'+makeField(cn.texto,cardKey,f,'cena_'+i)+'</div>';
+        return '<div class="rs-cena"><div class="rs-cena-num">Bloco '+(i+1)+' (fala)</div>'+makeField(cn.texto,cardKey,f,'cena_'+i)+'</div>';
       }).join('');
       var copyParts=['REELS | Tom: '+tomNome,'Hook: '+(d.hook||'')];
-      (d.cenas||[]).forEach(function(cn){copyParts.push('Cena '+cn.num+': '+cn.texto);});
+      (d.cenas||[]).forEach(function(cn,i){copyParts.push('Bloco '+(i+1)+': '+cn.texto);});
       copyParts.push('CTA: '+(d.cta||''),'Legenda: '+(d.legenda||''),d.hashtags||'');
       var copyTxt=copyParts.join('\n');
-      inner='<div class="rs-section"><div class="rs-label">Hook</div><div class="rs-box rs-hook">'+makeField(d.hook,cardKey,f,'hook')+'</div></div>'
-        +'<div class="rs-section"><div class="rs-label">Cenas</div><div class="rs-box">'+cenas+'</div></div>'
-        +'<div class="rs-section"><div class="rs-label">CTA</div><div class="rs-box rs-cta">'+makeField(d.cta,cardKey,f,'cta')+'</div></div>'
+      inner='<div class="rs-section"><div class="rs-label">Gancho (0-3s)</div><div class="rs-box rs-hook">'+makeField(d.hook,cardKey,f,'hook')+'</div></div>'
+        +'<div class="rs-section"><div class="rs-label">Falas (Câmera Frontal)</div><div class="rs-box">'+cenas+'</div></div>'
+        +'<div class="rs-section"><div class="rs-label">Chamada (CTA)</div><div class="rs-box rs-cta">'+makeField(d.cta,cardKey,f,'cta')+'</div></div>'
         +'<div class="rs-section"><div class="rs-label">Legenda</div><div class="rs-box">'+makeField(d.legenda,cardKey,f,'legenda')+'<div class="rs-hash">'+makeField(d.hashtags,cardKey,f,'hashtags')+'</div></div></div>'
         +'<button class="copy-btn" onclick="copyLines('+JSON.stringify(copyParts)+')">⎘ Copiar roteiro</button>';
     } else if(f==='carrossel'){
