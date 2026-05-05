@@ -23,7 +23,7 @@ REGRAS ABSOLUTAS:
 5. Cada peça de conteúdo deve ter um ângulo único e original.
 6. Use gatilhos emocionais e persuasivos adaptados ao nicho fornecido.`;
 
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
     const geminiRes = await fetch(GEMINI_URL, {
@@ -39,7 +39,8 @@ REGRAS ABSOLUTAS:
         generationConfig: {
           temperature: 0.8,
           topP: 0.95,
-          maxOutputTokens: safeTokens
+          maxOutputTokens: 8192,
+          responseMimeType: "application/json"
         }
       }),
     });
