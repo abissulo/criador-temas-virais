@@ -1,28 +1,40 @@
 # Memória do Projeto: Criador de Temas Virais
 
 ## Visão Geral
-O **Criador de Temas Virais** é uma aplicação web focada na geração automática de ideias e roteiros de conteúdo para redes sociais (Instagram/TikTok). O projeto utiliza inteligência artificial para propor nichos, frameworks de copywriting, tons de voz e formatos (Reels, Carrossel, Post estático). 
+O **Criador de Temas Virais** é uma aplicação web focada na geração automática de ideias e roteiros de conteúdo para redes sociais (Instagram/TikTok). O projeto utiliza inteligência artificial para propor nichos, frameworks de copywriting, tons de voz e formatos (Reels, Carrossel, Post estático).
 
 ## Arquitetura e Tecnologias
-- **Frontend**: Vanilla HTML, CSS e JavaScript. Sem frameworks JS pesados.
-- **Backend / IA**: O projeto utiliza Serverless Functions (`api/chat.js`) hospedadas na Vercel para se comunicar com a API da Groq (modelos LLaMA 3).
-- **Banco de Dados & Autenticação**: Utiliza Supabase (tabela `profiles` e `historico`). O acesso é restrito apenas a usuários ativos (pagantes/liberados).
-- **Hospedagem**: Projetado para rodar na Vercel (possui `vercel.json` para roteamento limpo de URLs como `/login`, `/admin`, etc).
+- **Frontend**: Vanilla HTML, CSS e JavaScript. Design System moderno baseado na paleta **Royal/Teal/Navy** (inspirado no padrão AppOfertas).
+- **Backend / IA**: Serverless Functions (`api/chat.js`) na Vercel integradas com a API do **Google Gemini** (modelo **gemini-2.5-flash-lite**).
+- **Banco de Dados & Autenticação**: Supabase (tabela `profiles` e `historico`). Acesso restrito a usuários ativos.
+- **Hospedagem**: Vercel.
 
-## Estrutura de Arquivos Principais
-- `index.html`: A aplicação principal (Wizard de 3 passos: Nicho -> Temas -> Conteúdo gerado).
-- `admin.html`: Painel de administração para liberar/bloquear acessos de usuários no Supabase.
-- `calendario.html`: Interface de calendário editorial com recurso de drag-and-drop para agendamento de postagens do histórico.
-- `exportar.html`: Ferramenta para seleção de múltiplos conteúdos gerados e exportação para PDF formatado para impressão ou envio ao cliente.
-- `historico.html`: Exibe todos os conteúdos salvos pelo usuário, permitindo busca e filtro por formato/cliente.
-- `login.html`: Página de autenticação que se comunica com o Supabase.
-- `api/chat.js`: Endpoint serverless responsável por se comunicar com a LLM (Groq) e devolver a resposta formatada em JSON.
-- `theme.css` e `responsive.css`: Arquivos de estilos principais.
-- `vercel.json`: Configurações de rotas (rewrites).
+## Design System (Modernização 2026)
+- **Paleta de Cores**: 
+  - Teal (Principal): `#2ECFB3`
+  - Royal Blue: `#2B2FD9`
+  - Navy (Fundo): `#060608`
+- **Tipografia**: Outfit / Inter.
+- **Estética**: Glassmorphism, micro-animações, gradientes suaves e modo escuro nativo.
 
-## Pontos de Atenção & Possíveis Melhorias
-1. **Modularização do Código**: O código JavaScript está majoritariamente "hardcoded" dentro das tags `<script>` de cada página HTML. Isso gera duplicação (ex: lógica de autenticação do Supabase se repete em vários arquivos).
-2. **Separação de Preocupações (CSS)**: Há muito CSS inserido diretamente dentro do bloco `<style>` do `index.html` e outras páginas. Ideal seria unificar o design system.
-3. **Ambiente de Desenvolvimento**: O projeto não utiliza um bundler (como Vite ou Webpack), o que torna a gestão de dependências via npm manual ou dependente de CDNs.
-4. **Integração com Supabase**: As credenciais anon/URL do Supabase estão expostas no client-side (o que é padrão), mas o ideal é garantir que as Row Level Security (RLS) no Supabase estejam rígidas.
-5. **Configurações de Admin**: O usuário e senha do admin estão "hardcoded" em `admin.html`. Isso é um risco de segurança se o código fonte for exposto.
+## Funcionalidades de IA e Otimizações
+- **Engine**: Migrado de Groq para **Google Gemini**.
+- **Modelo Atual**: `gemini-2.5-flash-lite` (escolhido pela alta velocidade e estabilidade sob demanda).
+- **Load Balancing (Drible de RPM)**: O backend suporta rotação de chaves de API. Múltiplas chaves podem ser configuradas no `.env` (separadas por vírgula) para multiplicar o limite de 15 requisições por minuto do plano gratuito.
+- **Formato Reels (Talking Head)**: Roteiros gerados especificamente para influenciadores/criadores gravarem diretamente para a câmera (câmera frontal), sem necessidade de edições complexas ou b-rolls.
+- **Robustez de JSON**: Implementado sistema de extração de JSON via Regex no frontend para limpar respostas "sujas" da IA e evitar erros de parse.
+- **Tokens**: Limite de saída expandido para 8192 tokens para evitar truncamento em roteiros longos.
+
+## Estrutura de Arquivos
+- `index.html`: Fluxo principal (Wizard).
+- `admin.html`: Gestão de usuários.
+- `calendario.html`: Agendamento visual.
+- `exportar.html`: Gerador de PDF.
+- `historico.html`: Repositório de conteúdos salvos.
+- `api/chat.js`: Ponte para API do Gemini com suporte a múltiplas chaves.
+- `theme.css`: Design System centralizado.
+
+## Próximos Passos & Segurança
+1. **Segurança do Admin**: Substituir a senha hardcoded em `admin.html` por autenticação via flag `is_admin` no Supabase Auth.
+2. **Modularização**: Extrair a lógica de IA e Supabase para arquivos `.js` separados.
+3. **Plano Pago**: Quando o sistema for escalado para venda real, migrar de chaves gratuitas rotativas para o plano "Pay-as-you-go" da Google Cloud para garantir 100% de uptime e alta taxa de requisições.
