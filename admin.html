@@ -15,15 +15,20 @@
     }
 
     :root {
-      --bg: #060608;
-      --bg2: rgba(255, 255, 255, .03);
-      --bg3: rgba(255, 255, 255, .06);
-      --border: rgba(255, 255, 255, .08);
+      --bg: #07080F;
+      --bg2: rgba(255, 255, 255, .025);
+      --bg3: rgba(255, 255, 255, .07);
+      --border: rgba(255, 255, 255, .07);
       --border-h: rgba(255, 255, 255, .15);
-      --text: #f0ede8;
-      --muted: rgba(240, 237, 232, .45);
-      --dim: rgba(240, 237, 232, .22);
-      --g1: #b8f050;
+      --text: #FFFFFF;
+      --muted: rgba(255, 255, 255, .35);
+      --dim: rgba(255, 255, 255, .2);
+      --g1: #2ECFB3;
+      --g2: #3D42E8;
+      --royal: #2B2FD9;
+      --royal-light: #3D42E8;
+      --teal: #2ECFB3;
+      --navy: #0E0F2E;
       --r: 12px;
       --f: 'Plus Jakarta Sans', sans-serif;
     }
@@ -57,7 +62,7 @@
     }
 
     .header h1 span {
-      background: linear-gradient(90deg, var(--g1), #50d4f5);
+      background: linear-gradient(90deg, var(--teal), var(--royal-light));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -144,9 +149,9 @@
     }
 
     .filter-btn.active {
-      background: rgba(184, 240, 80, .1);
-      border-color: rgba(184, 240, 80, .3);
-      color: var(--g1);
+      background: rgba(46, 207, 179, .1);
+      border-color: rgba(46, 207, 179, .3);
+      color: var(--teal);
     }
 
     .search-wrap {
@@ -167,7 +172,7 @@
     }
 
     .search-wrap input:focus {
-      border-color: rgba(184, 240, 80, .35);
+      border-color: rgba(46, 207, 179, .35);
     }
 
     .search-wrap input::placeholder {
@@ -227,9 +232,9 @@
       font-weight: 700;
       padding: 3px 10px;
       border-radius: 100px;
-      background: rgba(184, 240, 80, .1);
-      color: var(--g1);
-      border: 1px solid rgba(184, 240, 80, .2);
+      background: rgba(46, 207, 179, .1);
+      color: var(--teal);
+      border: 1px solid rgba(46, 207, 179, .2);
     }
 
     .badge-ativo::before {
@@ -295,12 +300,12 @@
     }
 
     .btn-ativar {
-      background: rgba(184, 240, 80, .12);
-      color: var(--g1);
+      background: rgba(46, 207, 179, .12);
+      color: var(--teal);
     }
 
     .btn-ativar:hover {
-      background: rgba(184, 240, 80, .22);
+      background: rgba(46, 207, 179, .22);
     }
 
     .btn-desativar {
@@ -386,7 +391,7 @@
     }
 
     .login-wrap input:focus {
-      border-color: rgba(184, 240, 80, .35);
+      border-color: rgba(46, 207, 179, .35);
     }
 
     .login-wrap .btn-submit {
@@ -396,17 +401,19 @@
       font-family: var(--f);
       font-size: 14px;
       font-weight: 700;
-      background: var(--g1);
-      color: #060608;
+      background: var(--royal);
+      color: #FFF;
       border: none;
       border-radius: var(--r);
       padding: 13px;
       cursor: pointer;
-      transition: transform .15s;
+      transition: all .2s;
     }
 
     .login-wrap .btn-submit:hover {
       transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(43, 47, 217, .4);
+      background: var(--royal-light);
     }
 
     .err-msg {
