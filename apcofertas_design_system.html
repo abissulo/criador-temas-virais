@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppOfertas · Design System v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   RESET + ROOT
+════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+:root{
+  /* ── BRAND COLORS ── */
+  --royal:       #2B2FD9;
+  --royal-light: #3D42E8;
+  --royal-dark:  #1E22A8;
+  --teal:        #2ECFB3;
+  --teal-dim:    rgba(46,207,179,.15);
+  --lilac:       #9B7FD4;
+  --navy:        #0E0F2E;
+  --navy2:       #0A0B1E;
+  --bg:          #07080F;
+
+  /* ── SURFACES ── */
+  --surface-1:   rgba(255,255,255,.025);
+  --surface-2:   rgba(255,255,255,.045);
+  --surface-3:   rgba(255,255,255,.07);
+  --surface-royal:rgba(43,47,217,.12);
+
+  /* ── BORDERS ── */
+  --border:      rgba(255,255,255,.07);
+  --border-royal:rgba(43,47,217,.25);
+  --border-teal: rgba(46,207,179,.25);
+
+  /* ── TEXT ── */
+  --text-primary:   #FFFFFF;
+  --text-secondary: rgba(255,255,255,.65);
+  --text-muted:     rgba(255,255,255,.35);
+  --text-disabled:  rgba(255,255,255,.2);
+
+  /* ── SEMANTIC ── */
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error:   #EF4444;
+  --info:    #3B82F6;
+
+  /* ── TYPOGRAPHY ── */
+  --ff: 'Plus Jakarta Sans', sans-serif;
+  --ff-mono: 'JetBrains Mono', monospace;
+
+  /* ── RADIUS ── */
+  --r-xs:  8px;
+  --r-sm:  12px;
+  --r-md:  16px;
+  --r-lg:  20px;
+  --r-xl:  24px;
+  --r-2xl: 32px;
+  --r-full:9999px;
+
+  /* ── SHADOWS ── */
+  --shadow-royal: 0 8px 28px rgba(43,47,217,.35);
+  --shadow-teal:  0 8px 28px rgba(46,207,179,.2);
+  --shadow-card:  0 4px 24px rgba(0,0,0,.4);
+
+  /* ── TRANSITIONS ── */
+  --t-fast:   0.15s ease;
+  --t-normal: 0.25s ease;
+  --t-slow:   0.4s ease;
+}
+
+body{
+  font-family:var(--ff);
+  background:var(--bg);
+  color:var(--text-primary);
+  min-height:100vh;
+  line-height:1.6;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:3px}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════ */
+.page{max-width:1160px;margin:0 auto;padding:80px 48px 140px}
+
+.section{margin-bottom:80px}
+.section-eyebrow{
+  font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  color:var(--royal-light);margin-bottom:8px;
+}
+.section-title{
+  font-size:28px;font-weight:800;letter-spacing:-0.8px;
+  color:var(--text-primary);margin-bottom:8px;
+}
+.section-sub{
+  font-size:14px;color:var(--text-muted);margin-bottom:36px;
+}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+
+@media(max-width:768px){
+  .page{padding:40px 20px 80px}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+}
+
+/* ═══════════════════════════════════════
+   PAGE HEADER
+════════════════════════════════════════ */
+.page-header{
+  text-align:center;
+  padding:80px 0;
+  border-bottom:1px solid var(--border);
+  margin-bottom:80px;
+  position:relative;
+}
+.page-header::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 0%, rgba(43,47,217,.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 60%, rgba(46,207,179,.06) 0%, transparent 60%);
+  pointer-events:none;
+}
+.ph-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface-royal);
+  border:1px solid var(--border-royal);
+  border-radius:var(--r-full);
+  padding:6px 16px 6px 10px;
+  margin-bottom:32px;
+  font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.5px;
+}
+.ph-h1{
+  font-size:clamp(36px,5vw,64px);
+  font-weight:900;
+  letter-spacing:-2px;
+  line-height:1;
+  margin-bottom:16px;
+}
+.ph-h1 em{color:var(--teal);font-style:normal}
+.ph-sub{font-size:15px;color:var(--text-muted);font-weight:500;max-width:500px;margin:0 auto 40px}
+.ph-version{
+  display:inline-block;
+  background:var(--surface-1);border:1px solid var(--border);
+  border-radius:var(--r-xs);
+  padding:4px 12px;
+  font-size:11px;font-weight:600;letter-spacing:1px;
+  color:var(--text-muted);font-family:var(--ff-mono);
+}
+
+/* ── LOGO MARK ── */
+.logo-mark{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:24px}
+.bars-wrap{display:flex;align-items:flex-end;gap:3.5px;width:40px;height:40px}
+.bar{border-radius:3.5px;transform:rotate(-7deg);transform-origin:bottom center}
+.b1{width:9px;height:22px;background:var(--royal)}
+.b2{width:9px;height:30px;background:linear-gradient(to bottom,var(--royal),var(--teal))}
+.b3{width:8px;height:19px;background:var(--teal);opacity:.9}
+.wordmark-text{font-size:26px;font-weight:800;letter-spacing:-.6px;line-height:1}
+.wordmark-text span{color:var(--teal)}
+
+/* ═══════════════════════════════════════
+   NAV SIDEBAR (sticky)
+════════════════════════════════════════ */
+.doc-layout{display:flex;gap:48px;align-items:flex-start}
+.doc-nav{
+  position:sticky;top:32px;
+  width:200px;flex-shrink:0;
+  display:flex;flex-direction:column;gap:4px;
+}
+.doc-nav a{
+  font-size:12px;font-weight:600;color:var(--text-muted);
+  text-decoration:none;padding:6px 12px;border-radius:var(--r-xs);
+  transition:var(--t-fast);letter-spacing:.3px;
+}
+.doc-nav a:hover{color:var(--text-primary);background:var(--surface-1)}
+.doc-nav a.active{color:var(--teal);background:var(--teal-dim)}
+.doc-nav-label{
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--text-disabled);padding:12px 12px 4px;
+}
+.doc-content{flex:1;min-width:0}
+
+@media(max-width:900px){
+  .doc-layout{flex-direction:column}
+  .doc-nav{display:none}
+}
+
+/* ═══════════════════════════════════════
+   CARDS BASE
+════════════════════════════════════════ */
+.card{
+  background:var(--surface-1);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  overflow:hidden;
+}
+.card-body{padding:28px}
+.card-header{
+  padding:20px 28px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.card-header h3{font-size:13px;font-weight:700;letter-spacing:-.2px}
+
+/* ═══════════════════════════════════════
+   01 — COLORS
+════════════════════════════════════════ */
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.swatch{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border)}
+.swatch-block{height:88px;position:relative}
+.swatch-copy{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:var(--t-fast);cursor:pointer;
+  font-size:11px;font-weight:700;letter-spacing:1px;color:#fff;
+  background:rgba(0,0,0,.3);backdrop-filter:blur(4px);
+}
+.swatch:hover .swatch-copy{opacity:1}
+.swatch-info{background:#0D0E22;padding:14px 16px}
+.swatch-name{font-size:13px;font-weight:700;margin-bottom:3px}
+.swatch-hex{font-size:10px;color:var(--text-muted);letter-spacing:1.5px;font-family:var(--ff-mono)}
+.swatch-role{font-size:9px;color:var(--text-disabled);margin-top:3px;text-transform:uppercase;letter-spacing:.8px}
+
+.grad-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px}
+.grad-swatch{
+  height:72px;border-radius:var(--r-md);
+  display:flex;align-items:flex-end;padding:14px;
+  font-size:11px;font-weight:700;letter-spacing:.5px;
+}
+
+/* ═══════════════════════════════════════
+   02 — TYPOGRAPHY
+════════════════════════════════════════ */
+.type-scale{display:flex;flex-direction:column;gap:0}
+.type-row{
+  display:flex;align-items:center;gap:24px;
+  padding:20px 0;border-bottom:1px solid var(--border);
+}
+.type-row:last-child{border-bottom:none}
+.type-meta{
+  width:140px;flex-shrink:0;
+  font-size:10px;font-family:var(--ff-mono);color:var(--text-muted);
+  line-height:1.8;
+}
+.type-meta strong{color:var(--text-primary);font-size:11px;font-family:var(--ff);font-weight:700;display:block;letter-spacing:-.2px;margin-bottom:2px}
+.type-sample{flex:1;min-width:0}
+
+.ts-hero{font-size:56px;font-weight:900;letter-spacing:-2.5px;line-height:1}
+.ts-h1{font-size:36px;font-weight:800;letter-spacing:-1.2px;line-height:1.1}
+.ts-h2{font-size:24px;font-weight:800;letter-spacing:-.8px;line-height:1.2}
+.ts-h3{font-size:18px;font-weight:700;letter-spacing:-.4px}
+.ts-h4{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.ts-body-lg{font-size:16px;font-weight:400;line-height:1.7}
+.ts-body{font-size:14px;font-weight:400;line-height:1.7;color:var(--text-secondary)}
+.ts-small{font-size:12px;font-weight:500;color:var(--text-muted);line-height:1.6}
+.ts-eyebrow{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--royal-light)}
+.ts-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+.ts-mono{font-size:13px;font-family:var(--ff-mono);color:var(--teal)}
+
+/* ═══════════════════════════════════════
+   03 — BUTTONS
+════════════════════════════════════════ */
+.btn-showcase{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:28px;background:var(--surface-1);border-radius:var(--r-xl);border:1px solid var(--border);margin-bottom:12px}
+.btn-row-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-disabled);margin-bottom:12px;padding:0 4px}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;border-radius:var(--r-md);
+  font-family:var(--ff);font-weight:700;font-size:14px;
+  cursor:pointer;border:none;text-decoration:none;color:#fff;
+  transition:var(--t-normal);letter-spacing:-.1px;
+  position:relative;overflow:hidden;
+}
+.btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(rgba(255,255,255,.08),transparent);
+  opacity:0;transition:var(--t-fast);
+}
+.btn:hover::after{opacity:1}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+
+.btn-primary{background:var(--royal);box-shadow:var(--shadow-royal)}
+.btn-primary:hover{background:var(--royal-light)}
+.btn-teal{background:linear-gradient(135deg,var(--teal),#26B8A0);color:#07080F;box-shadow:var(--shadow-teal)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--royal);color:var(--text-primary)}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--surface-1);color:var(--text-primary)}
+.btn-danger{background:var(--error);box-shadow:0 8px 20px rgba(239,68,68,.25)}
+.btn-success{background:var(--success);box-shadow:0 8px 20px rgba(34,197,94,.2);color:#07080F}
+.btn-gradient{
+  background:linear-gradient(135deg,var(--royal),var(--teal));
+  box-shadow:0 8px 28px rgba(43,47,217,.3);
+}
+
+/* SIZES */
+.btn-xl{padding:16px 32px;font-size:16px;border-radius:var(--r-lg)}
+.btn-sm{padding:8px 14px;font-size:12px;border-radius:var(--r-sm);gap:5px}
+.btn-xs{padding:5px 10px;font-size:11px;border-radius:var(--r-xs);gap:4px}
+.btn-icon-only{padding:10px;border-radius:var(--r-md)}
+.btn-full{width:100%;justify-content:center}
+
+/* Loading state */
+.btn-loading{pointer-events:none;opacity:.7}
+.btn-loading .btn-label{opacity:0}
+.btn-loading::before{
+  content:'';position:absolute;
+  width:14px;height:14px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin .6s linear infinite;
+}
+
+/* ═══════════════════════════════════════
+   04 — INPUTS / FORMS
+════════════════════════════════════════ */
+.input-wrap{display:flex;flex-direction:column;gap:6px;width:100%}
+.input-label{font-size:12px;font-weight:600;color:var(--text-secondary);letter-spacing:.3px}
+.input-required{color:var(--error);margin-left:2px}
+
+.input{
+  width:100%;padding:12px 16px;
+  background:var(--surface-1);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-md);
+  font-family:var(--ff);font-size:14px;font-weight:500;
+  color:var(--text-primary);
+  transition:var(--t-fast);outline:none;
+}
+.input::placeholder{color:var(--text-disabled)}
+.input:hover{border-color:rgba(255,255,255,.15)}
+.input:focus{border-color:var(--royal);box-shadow:0 0 0 3px rgba(43,47,217,.15)}
+.input.error{border-color:var(--error);box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+.input.success{border-color:var(--success)}
+.input-helper{font-size:11px;color:var(--text-muted);margin-top:4px}
+.input-helper.error{color:var(--error)}
+
+.input-icon-wrap{position:relative}
+.input-icon-wrap .input{padding-left:40px}
+.input-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:15px}
+
+.select{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,.3)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:40px;cursor:pointer;
+}
+
+.textarea{min-height:100px;resize:vertical;line-height:1.6}
+.search-input{padding-left:40px}
+
+/* ═══════════════════════════════════════
+   05 — BADGES / TAGS / STATUS
+════════════════════════════════════════ */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:var(--r-full);
+  font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+}
+.badge-royal{background:rgba(43,47,217,.18);color:var(--royal-light);border:1px solid rgba(43,47,217,.3)}
+.badge-teal{background:rgba(46,207,179,.12);color:var(--teal);border:1px solid rgba(46,207,179,.25)}
+.badge-lilac{background:rgba(155,127,212,.15);color:var(--lilac);border:1px solid rgba(155,127,212,.25)}
+.badge-success{background:rgba(34,197,94,.12);color:#4ADE80;border:1px solid rgba(34,197,94,.2)}
+.badge-warning{background:rgba(245,158,11,.12);color:#FCD34D;border:1px solid rgba(245,158,11,.2)}
+.badge-error{background:rgba(239,68,68,.12);color:#F87171;border:1px solid rgba(239,68,68,.2)}
+.badge-neutral{background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)}
+
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.dot-pulse{animation:pulse 2s ease-in-out infinite}
+
+/* ═══════════════════════════════════════
+   06 — KPI CARDS
+════════════════════════════════════════ */
+.kpi-card{
+  background:var(--surface-1);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:24px;
+  position:relative;overflow:hidden;
+  transition:var(--t-normal);
+}
+.kpi-card:hover{border-color:rgba(43,47,217,.3);transform:translateY(-2px)}
+.kpi-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--royal),var(--teal));
+  opacity:0;transition:var(--t-normal);
+}
+.kpi-card:hover::before{opacity:1}
+
+.kpi-icon{
+  width:40px;height:40px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-bottom:16px;
+}
+.kpi-icon.royal{background:rgba(43,47,217,.15);color:var(--royal-light)}
+.kpi-icon.teal{background:rgba(46,207,179,.1);color:var(--teal)}
+.kpi-icon.lilac{background:rgba(155,127,212,.12);color:var(--lilac)}
+.kpi-icon.success{background:rgba(34,197,94,.1);color:#4ADE80}
+
+.kpi-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.kpi-value{font-size:32px;font-weight:900;letter-spacing:-1.5px;line-height:1;margin-bottom:8px}
+.kpi-delta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
+.kpi-delta.up{color:#4ADE80}
+.kpi-delta.down{color:#F87171}
+
+/* ═══════════════════════════════════════
+   07 — OFFER CARD (App Mobile)
+════════════════════════════════════════ */
+.offer-card{
+  background:var(--surface-1);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  overflow:hidden;
+  transition:var(--t-normal);
+  cursor:pointer;
+}
+.offer-card:hover{border-color:rgba(43,47,217,.3);transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.offer-img{
+  aspect-ratio:4/3;background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;position:relative;
+}
+.offer-badge-top{
+  position:absolute;top:10px;left:10px;
+  background:var(--error);
+  color:#fff;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:var(--r-xs);
+}
+.offer-body{padding:16px}
+.offer-name{font-size:14px;font-weight:700;margin-bottom:4px;line-height:1.3}
+.offer-unit{font-size:11px;color:var(--text-muted)}
+.offer-price-row{display:flex;align-items:baseline;gap:8px;margin:10px 0}
+.offer-price-old{font-size:12px;color:var(--text-muted);text-decoration:line-through}
+.offer-price-new{font-size:22px;font-weight:900;color:var(--teal);letter-spacing:-1px}
+.offer-btn{
+  width:100%;padding:10px;text-align:center;
+  background:linear-gradient(135deg,var(--royal),rgba(43,47,217,.8));
+  color:#fff;font-size:13px;font-weight:700;border-radius:var(--r-sm);
+  border:none;cursor:pointer;font-family:var(--ff);
+  transition:var(--t-fast);
+}
+.offer-btn:hover{background:var(--royal-light)}
+
+/* ── CÓDIGO DE ATIVAÇÃO ── */
+.activation-code{
+  background:var(--navy);
+  border:1.5px solid var(--border-royal);
+  border-radius:var(--r-lg);
+  padding:20px 24px;
+  text-align:center;
+}
+.act-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.act-code{font-size:28px;font-weight:900;letter-spacing:6px;color:var(--teal);font-family:var(--ff-mono)}
+.act-copy{font-size:11px;color:var(--text-muted);margin-top:8px}
+
+/* ═══════════════════════════════════════
+   08 — LIST ITEMS
+════════════════════════════════════════ */
+.list-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  border-radius:var(--r-md);
+  transition:var(--t-fast);
+  cursor:pointer;
+}
+.list-item:hover{background:var(--surface-2)}
+.list-item + .list-item{border-top:1px solid var(--border)}
+.list-avatar{
+  width:44px;height:44px;border-radius:var(--r-md);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.list-main{flex:1;min-width:0}
+.list-name{font-size:14px;font-weight:600;margin-bottom:2px;truncate:ellipsis;white-space:nowrap;overflow:hidden}
+.list-sub{font-size:12px;color:var(--text-muted)}
+.list-right{text-align:right;flex-shrink:0}
+.list-value{font-size:14px;font-weight:700;color:var(--text-primary)}
+.list-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+/* ═══════════════════════════════════════
+   09 — NAVIGATION (Admin Sidebar)
+════════════════════════════════════════ */
+.sidebar-demo{
+  width:220px;
+  background:var(--navy);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:20px 12px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px 20px;margin-bottom:4px;
+  border-bottom:1px solid var(--border);
+}
+.nav-brand-name{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.nav-brand-name span{color:var(--teal)}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--r-md);
+  font-size:13px;font-weight:600;color:var(--text-muted);
+  cursor:pointer;transition:var(--t-fast);text-decoration:none;
+}
+.nav-item:hover{background:var(--surface-2);color:var(--text-primary)}
+.nav-item.active{background:rgba(43,47,217,.15);color:var(--royal-light)}
+.nav-item.active .nav-icon{color:var(--royal-light)}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-section-label{
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--text-disabled);padding:12px 12px 4px;margin-top:4px;
+}
+
+/* ═══════════════════════════════════════
+   10 — NOTIFICATIONS
+════════════════════════════════════════ */
+.notif-item{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:16px 20px;
+  border-radius:var(--r-lg);
+  background:var(--surface-1);border:1px solid var(--border);
+  margin-bottom:8px;
+  position:relative;overflow:hidden;
+}
+.notif-item::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+}
+.notif-item.push::before{background:var(--royal)}
+.notif-item.promo::before{background:var(--teal)}
+.notif-item.alert::before{background:var(--warning)}
+.notif-icon-wrap{
+  width:40px;height:40px;border-radius:var(--r-md);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.notif-icon-wrap.push{background:rgba(43,47,217,.15)}
+.notif-icon-wrap.promo{background:rgba(46,207,179,.1)}
+.notif-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.notif-body{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.notif-time{font-size:11px;color:var(--text-muted);margin-top:6px}
+
+/* ═══════════════════════════════════════
+   11 — SPACING TOKENS
+════════════════════════════════════════ */
+.spacing-demo{display:flex;flex-direction:column;gap:12px}
+.spacing-row{display:flex;align-items:center;gap:16px}
+.spacing-bar{background:linear-gradient(90deg,var(--royal),var(--teal));height:8px;border-radius:var(--r-full)}
+.spacing-label{font-family:var(--ff-mono);font-size:11px;color:var(--text-muted);width:80px;flex-shrink:0}
+.spacing-value{font-size:11px;color:var(--text-disabled);width:40px}
+
+/* ═══════════════════════════════════════
+   12 — CODE SNIPPET
+════════════════════════════════════════ */
+.code-block{
+  background:var(--navy);border:1px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+  margin-top:12px;
+}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid var(--border);
+}
+.code-lang{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted)}
+.code-copy-btn{
+  font-size:10px;font-weight:600;color:var(--text-muted);
+  background:none;border:none;cursor:pointer;font-family:var(--ff);
+  transition:var(--t-fast);
+}
+.code-copy-btn:hover{color:var(--teal)}
+.code-body{padding:20px;overflow-x:auto}
+.code-body pre{font-family:var(--ff-mono);font-size:12px;line-height:1.8;white-space:pre}
+.tok-key{color:var(--royal-light)}
+.tok-val{color:var(--teal)}
+.tok-str{color:#E5C07B}
+.tok-comment{color:var(--text-disabled)}
+
+/* ═══════════════════════════════════════
+   13 — EMPTY / LOADING STATES
+════════════════════════════════════════ */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 24px;text-align:center;
+  background:var(--surface-1);border:1px solid var(--border);
+  border-radius:var(--r-xl);
+}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
+.empty-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--text-muted);max-width:280px;line-height:1.6}
+
+.skeleton{
+  background:linear-gradient(90deg,var(--surface-1) 25%,var(--surface-2) 50%,var(--surface-1) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:var(--r-sm);
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ═══════════════════════════════════════
+   14 — CHARTS / DATA VIZ
+════════════════════════════════════════ */
+.chart-card{
+  background:var(--surface-1);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:28px;
+}
+.chart-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--text-muted);margin-bottom:24px}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.chart-bar{
+  width:100%;border-radius:4px 4px 0 0;
+  background:linear-gradient(to top,var(--royal),rgba(43,47,217,.6));
+  transition:var(--t-normal);cursor:pointer;
+}
+.chart-bar:hover{background:linear-gradient(to top,var(--teal),rgba(46,207,179,.6))}
+.chart-bar-label{font-size:9px;color:var(--text-muted);font-weight:600}
+
+/* ═══════════════════════════════════════
+   DIVIDERS
+════════════════════════════════════════ */
+.divider{height:1px;background:var(--border);margin:32px 0}
+.divider-label{
+  display:flex;align-items:center;gap:12px;margin:28px 0;
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-disabled);
+}
+.divider-label::before,.divider-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ═══════════════════════════════════════
+   COPY TOAST
+════════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:32px;right:32px;
+  background:var(--navy);border:1px solid var(--border-teal);
+  border-radius:var(--r-md);padding:12px 20px;
+  font-size:13px;font-weight:600;color:var(--teal);
+  transform:translateY(80px);opacity:0;
+  transition:var(--t-normal);pointer-events:none;
+  z-index:1000;
+}
+.toast.show{transform:translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast">✓ Copiado para área de transferência</div>
+
+<div class="page">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="page-header">
+    <div class="logo-mark">
+      <div class="bars-wrap">
+        <span class="bar b1"></span>
+        <span class="bar b2"></span>
+        <span class="bar b3"></span>
+      </div>
+      <div class="wordmark-text">Merca<span>Mídia</span></div>
+    </div>
+    <div class="ph-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      AppOfertas · Design System
+    </div>
+    <div class="ph-h1">Tokens & <em>Componentes</em></div>
+    <div class="ph-sub">Sistema de design extraído do dashboard MercaMídia. Referência canônica para implementação no FlutterFlow.</div>
+    <span class="ph-version">v1.0 · 2025</span>
+  </div>
+
+  <div class="doc-layout">
+    <!-- NAV -->
+    <nav class="doc-nav">
+      <div class="doc-nav-label">Foundations</div>
+      <a href="#cores">Cores</a>
+      <a href="#tipografia">Tipografia</a>
+      <a href="#espacamento">Espaçamento</a>
+      <a href="#radius">Border Radius</a>
+      <div class="doc-nav-label">Components</div>
+      <a href="#botoes">Botões</a>
+      <a href="#inputs">Inputs</a>
+      <a href="#badges">Badges</a>
+      <a href="#cards-kpi">Cards KPI</a>
+      <a href="#cards-oferta">Cards Oferta</a>
+      <a href="#navegacao">Navegação</a>
+      <a href="#notificacoes">Notificações</a>
+      <div class="doc-nav-label">Patterns</div>
+      <a href="#estados">Empty/Loading</a>
+      <a href="#graficos">Gráficos</a>
+      <a href="#ativacao">Ativação</a>
+      <div class="doc-nav-label">Code</div>
+      <a href="#tokens-flutter">Flutter Tokens</a>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="doc-content">
+
+      <!-- ═══ 01 CORES ═══ -->
+      <div class="section" id="cores">
+        <div class="section-eyebrow">01 — Foundation</div>
+        <div class="section-title">Sistema de Cores</div>
+        <div class="section-sub">Clique em qualquer swatch para copiar o hex.</div>
+
+        <div class="divider-label">Brand Primárias</div>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyColor('#2B2FD9')">
+            <div class="swatch-block" style="background:#2B2FD9"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Royal</div><div class="swatch-hex">#2B2FD9</div><div class="swatch-role">Primary · CTA · Ícone barra 1</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#2ECFB3')">
+            <div class="swatch-block" style="background:#2ECFB3"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Teal</div><div class="swatch-hex">#2ECFB3</div><div class="swatch-role">Acento · Wordmark · Preço</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#9B7FD4')">
+            <div class="swatch-block" style="background:#9B7FD4"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Lilac</div><div class="swatch-hex">#9B7FD4</div><div class="swatch-role">Acento terciário · Gráficos</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#0E0F2E')">
+            <div class="swatch-block" style="background:#0E0F2E;border-bottom:1px solid rgba(255,255,255,.07)"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Navy</div><div class="swatch-hex">#0E0F2E</div><div class="swatch-role">Surface escura · Sidebar</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#07080F')">
+            <div class="swatch-block" style="background:#07080F;border-bottom:1px solid rgba(255,255,255,.07)"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Background</div><div class="swatch-hex">#07080F</div><div class="swatch-role">Background app · Dark base</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#3D42E8')">
+            <div class="swatch-block" style="background:#3D42E8"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Royal Light</div><div class="swatch-hex">#3D42E8</div><div class="swatch-role">Hover state do Royal</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#1E22A8')">
+            <div class="swatch-block" style="background:#1E22A8"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Royal Dark</div><div class="swatch-hex">#1E22A8</div><div class="swatch-role">Pressed · Gradiente bottom</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#0A0B1E')">
+            <div class="swatch-block" style="background:#0A0B1E;border-bottom:1px solid rgba(255,255,255,.07)"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Navy 2</div><div class="swatch-hex">#0A0B1E</div><div class="swatch-role">Superfície mais funda</div></div>
+          </div>
+        </div>
+
+        <div class="divider-label">Semânticas</div>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyColor('#22C55E')">
+            <div class="swatch-block" style="background:#22C55E"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#22C55E</div><div class="swatch-role">Confirmações · Ativo</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#F59E0B')">
+            <div class="swatch-block" style="background:#F59E0B"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Warning</div><div class="swatch-hex">#F59E0B</div><div class="swatch-role">Alertas · Expirando</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#EF4444')">
+            <div class="swatch-block" style="background:#EF4444"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Error / Sale</div><div class="swatch-hex">#EF4444</div><div class="swatch-role">Erros · Badge "Oferta"</div></div>
+          </div>
+          <div class="swatch" onclick="copyColor('#3B82F6')">
+            <div class="swatch-block" style="background:#3B82F6"><div class="swatch-copy">COPIAR</div></div>
+            <div class="swatch-info"><div class="swatch-name">Info</div><div class="swatch-hex">#3B82F6</div><div class="swatch-role">Informativo · Links</div></div>
+          </div>
+        </div>
+
+        <div class="divider-label">Gradientes Aprovados</div>
+        <div class="grad-grid">
+          <div class="grad-swatch" style="background:linear-gradient(135deg,#2B2FD9,#2ECFB3);color:rgba(255,255,255,.9)">Royal → Teal</div>
+          <div class="grad-swatch" style="background:linear-gradient(135deg,#2B2FD9,#1E22A8);color:rgba(255,255,255,.9)">Royal → Dark</div>
+          <div class="grad-swatch" style="background:linear-gradient(135deg,#0E0F2E,#07080F);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.07)">Navy → BG</div>
+          <div class="grad-swatch" style="background:linear-gradient(135deg,#9B7FD4,#2B2FD9);color:rgba(255,255,255,.9)">Lilac → Royal</div>
+        </div>
+
+        <div class="divider-label">Superfícies & Opacidades</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS Variables</span><button class="code-copy-btn" onclick="copyCode('cssVars')">Copiar</button></div>
+          <div class="code-body"><pre id="cssVars"><span class="tok-comment">/* Superfícies */</span>
+<span class="tok-key">--surface-1</span>: <span class="tok-val">rgba(255,255,255,.025)</span>;
+<span class="tok-key">--surface-2</span>: <span class="tok-val">rgba(255,255,255,.045)</span>;
+<span class="tok-key">--surface-3</span>: <span class="tok-val">rgba(255,255,255,.07)</span>;
+<span class="tok-key">--surface-royal</span>: <span class="tok-val">rgba(43,47,217,.12)</span>;
+
+<span class="tok-comment">/* Borders */</span>
+<span class="tok-key">--border</span>: <span class="tok-val">rgba(255,255,255,.07)</span>;
+<span class="tok-key">--border-royal</span>: <span class="tok-val">rgba(43,47,217,.25)</span>;
+<span class="tok-key">--border-teal</span>: <span class="tok-val">rgba(46,207,179,.25)</span>;
+
+<span class="tok-comment">/* Texto */</span>
+<span class="tok-key">--text-primary</span>: <span class="tok-val">#FFFFFF</span>;
+<span class="tok-key">--text-secondary</span>: <span class="tok-val">rgba(255,255,255,.65)</span>;
+<span class="tok-key">--text-muted</span>: <span class="tok-val">rgba(255,255,255,.35)</span>;
+<span class="tok-key">--text-disabled</span>: <span class="tok-val">rgba(255,255,255,.2)</span>;</pre></div>
+        </div>
+      </div>
+
+      <!-- ═══ 02 TIPOGRAFIA ═══ -->
+      <div class="section" id="tipografia">
+        <div class="section-eyebrow">02 — Foundation</div>
+        <div class="section-title">Tipografia</div>
+        <div class="section-sub">Fonte única: <strong>Plus Jakarta Sans</strong> — peso 900 para headlines, 700 para UI, 400 para corpo.</div>
+
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="type-scale">
+              <div class="type-row">
+                <div class="type-meta"><strong>Hero / Display</strong>56px · 900 · -2.5px</div>
+                <div class="type-sample ts-hero">Ofertas de<br>Hoje</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>H1 / Page Title</strong>36px · 800 · -1.2px</div>
+                <div class="type-sample ts-h1">Dashboard</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>H2 / Section</strong>24px · 800 · -0.8px</div>
+                <div class="type-sample ts-h2">Ofertas Ativas</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>H3 / Card Title</strong>18px · 700 · -0.4px</div>
+                <div class="type-sample ts-h3">Supermercado Independência</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>H4 / Label bold</strong>15px · 700 · -0.2px</div>
+                <div class="type-sample ts-h4">Ativações esta semana</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>Body Large</strong>16px · 400 · 1.7 lh</div>
+                <div class="type-sample ts-body-lg">Seu app de ofertas exclusivo para atrair clientes toda semana.</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>Body</strong>14px · 400 · 1.7 lh</div>
+                <div class="type-sample ts-body">Clique para ativar a oferta e receber seu código exclusivo na hora.</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>Small / Caption</strong>12px · 500</div>
+                <div class="type-sample ts-small">Válido até hoje • 1 ativação por CPF</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>Eyebrow</strong>9px · 700 · 4px tracking</div>
+                <div class="type-sample ts-eyebrow">Ofertas do dia</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>UI Label</strong>11px · 600 · 1.5px tracking</div>
+                <div class="type-sample ts-label">Código de Ativação</div>
+              </div>
+              <div class="type-row">
+                <div class="type-meta"><strong>Mono / Code</strong>13px · JetBrains Mono</div>
+                <div class="type-sample ts-mono">SUPER-AB12-CD34</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 03 ESPAÇAMENTO ═══ -->
+      <div class="section" id="espacamento">
+        <div class="section-eyebrow">03 — Foundation</div>
+        <div class="section-title">Espaçamento</div>
+        <div class="section-sub">Sistema de 8pt. Todos os valores são múltiplos de 4 ou 8.</div>
+        <div class="card"><div class="card-body">
+          <div class="spacing-demo">
+            <div class="spacing-row"><div class="spacing-label">4px — xs</div><div class="spacing-bar" style="width:4px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">8px — sm</div><div class="spacing-bar" style="width:8px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">12px — sm+</div><div class="spacing-bar" style="width:12px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">16px — md</div><div class="spacing-bar" style="width:16px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">20px — md+</div><div class="spacing-bar" style="width:20px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">24px — lg</div><div class="spacing-bar" style="width:24px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">28px — card</div><div class="spacing-bar" style="width:28px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">32px — xl</div><div class="spacing-bar" style="width:32px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">48px — 2xl</div><div class="spacing-bar" style="width:48px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">64px — 3xl</div><div class="spacing-bar" style="width:64px"></div></div>
+            <div class="spacing-row"><div class="spacing-label">80px — page</div><div class="spacing-bar" style="width:80px"></div></div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ═══ 04 BORDER RADIUS ═══ -->
+      <div class="section" id="radius">
+        <div class="section-eyebrow">04 — Foundation</div>
+        <div class="section-title">Border Radius</div>
+        <div class="grid-4">
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:8px;padding:24px;text-align:center"><div class="section-eyebrow">r-xs</div><div style="font-size:18px;font-weight:700">8px</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Badges, chips</div></div>
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center"><div class="section-eyebrow">r-sm</div><div style="font-size:18px;font-weight:700">12px</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Botões sm, inputs</div></div>
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center"><div class="section-eyebrow">r-md</div><div style="font-size:18px;font-weight:700">16px</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Botões, nav items</div></div>
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:20px;padding:24px;text-align:center"><div class="section-eyebrow">r-lg</div><div style="font-size:18px;font-weight:700">20px</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Notificações</div></div>
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:24px;padding:24px;text-align:center"><div class="section-eyebrow">r-xl</div><div style="font-size:18px;font-weight:700">24px</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Cards principais</div></div>
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:32px;padding:24px;text-align:center"><div class="section-eyebrow">r-2xl</div><div style="font-size:18px;font-weight:700">32px</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Modal, bottom sheet</div></div>
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:9999px;padding:24px;text-align:center"><div class="section-eyebrow">r-full</div><div style="font-size:18px;font-weight:700">9999px</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Pills, avatars</div></div>
+        </div>
+      </div>
+
+      <!-- ═══ 05 BOTÕES ═══ -->
+      <div class="section" id="botoes">
+        <div class="section-eyebrow">05 — Component</div>
+        <div class="section-title">Botões</div>
+
+        <div class="btn-row">
+          <div class="btn-row-label">Variantes primárias</div>
+          <div class="btn-showcase">
+            <button class="btn btn-primary">Ativar Oferta</button>
+            <button class="btn btn-teal">Gerar Código</button>
+            <button class="btn btn-gradient">Ver Encartes</button>
+            <button class="btn btn-outline">Cancelar</button>
+            <button class="btn btn-ghost">Voltar</button>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <div class="btn-row-label">Semânticos</div>
+          <div class="btn-showcase">
+            <button class="btn btn-success">✓ Confirmar</button>
+            <button class="btn btn-danger">Excluir Oferta</button>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <div class="btn-row-label">Tamanhos</div>
+          <div class="btn-showcase">
+            <button class="btn btn-primary btn-xl">Começar Agora</button>
+            <button class="btn btn-primary">Padrão</button>
+            <button class="btn btn-primary btn-sm">Pequeno</button>
+            <button class="btn btn-primary btn-xs">Mini</button>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <div class="btn-row-label">Full width (mobile)</div>
+          <div style="max-width:360px;width:100%">
+            <button class="btn btn-primary btn-xl btn-full" style="margin-bottom:10px">Ativar e Gerar Código 🎟️</button>
+            <button class="btn btn-outline btn-full">Ver Detalhes da Oferta</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 06 INPUTS ═══ -->
+      <div class="section" id="inputs">
+        <div class="section-eyebrow">06 — Component</div>
+        <div class="section-title">Inputs & Forms</div>
+
+        <div class="grid-2" style="gap:20px">
+          <div class="input-wrap">
+            <label class="input-label">Nome da Oferta <span class="input-required">*</span></label>
+            <input class="input" placeholder="Ex: Frango Inteiro Congelado">
+          </div>
+          <div class="input-wrap">
+            <label class="input-label">Preço Promocional</label>
+            <input class="input" placeholder="R$ 0,00">
+          </div>
+          <div class="input-wrap">
+            <label class="input-label">Validade</label>
+            <input class="input" type="date">
+          </div>
+          <div class="input-wrap">
+            <label class="input-label">Categoria</label>
+            <select class="input select">
+              <option>Hortifruti</option>
+              <option>Carnes</option>
+              <option>Mercearia</option>
+              <option>Bebidas</option>
+              <option>Laticínios</option>
+            </select>
+          </div>
+          <div class="input-wrap">
+            <label class="input-label">Buscar ofertas</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon">🔍</span>
+              <input class="input search-input" placeholder="Buscar por nome...">
+            </div>
+          </div>
+          <div class="input-wrap">
+            <label class="input-label">Campo com erro</label>
+            <input class="input error" value="Texto inválido">
+            <span class="input-helper error">⚠ Este campo é obrigatório</span>
+          </div>
+          <div class="input-wrap" style="grid-column:1/-1">
+            <label class="input-label">Descrição da oferta</label>
+            <textarea class="input textarea" placeholder="Descreva os detalhes da oferta para o cliente..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 07 BADGES ═══ -->
+      <div class="section" id="badges">
+        <div class="section-eyebrow">07 — Component</div>
+        <div class="section-title">Badges & Tags</div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;padding:28px;background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-xl)">
+          <span class="badge badge-royal"><span class="dot"></span>Ativo</span>
+          <span class="badge badge-teal"><span class="dot dot-pulse"></span>Ao Vivo</span>
+          <span class="badge badge-lilac">Premium</span>
+          <span class="badge badge-success"><span class="dot"></span>Ativado</span>
+          <span class="badge badge-warning">Expirando</span>
+          <span class="badge badge-error">Esgotado</span>
+          <span class="badge badge-neutral">Inativo</span>
+          <span class="badge badge-neutral">Pro Plan</span>
+          <span class="badge" style="background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.25)">🔥 Oferta</span>
+          <span class="badge badge-teal">📱 Push Enviado</span>
+          <span class="badge badge-royal">Novo</span>
+        </div>
+      </div>
+
+      <!-- ═══ 08 KPI CARDS ═══ -->
+      <div class="section" id="cards-kpi">
+        <div class="section-eyebrow">08 — Component</div>
+        <div class="section-title">Cards KPI (Dashboard Admin)</div>
+
+        <div class="grid-4">
+          <div class="kpi-card">
+            <div class="kpi-icon royal">📦</div>
+            <div class="kpi-label">Ofertas Ativas</div>
+            <div class="kpi-value">24</div>
+            <span class="kpi-delta up">↑ +6 essa semana</span>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon teal">⚡</div>
+            <div class="kpi-label">Ativações Hoje</div>
+            <div class="kpi-value" style="color:var(--teal)">312</div>
+            <span class="kpi-delta up">↑ +18% vs ontem</span>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon lilac">📲</div>
+            <div class="kpi-label">Push Enviados</div>
+            <div class="kpi-value" style="color:var(--lilac)">1.8k</div>
+            <span class="kpi-delta up">↑ 94% entregues</span>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon success">👥</div>
+            <div class="kpi-label">Usuários Únicos</div>
+            <div class="kpi-value" style="color:#4ADE80">847</div>
+            <span class="kpi-delta down">↓ −3% vs semana</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 09 OFFER CARDS ═══ -->
+      <div class="section" id="cards-oferta">
+        <div class="section-eyebrow">09 — Component</div>
+        <div class="section-title">Cards de Oferta (App Mobile)</div>
+
+        <div class="grid-3">
+          <!-- Card normal -->
+          <div class="offer-card">
+            <div class="offer-img" style="background:linear-gradient(135deg,#1a2a1a,#0d1a0d)">
+              🥩
+              <span class="offer-badge-top">OFERTA</span>
+            </div>
+            <div class="offer-body">
+              <div class="offer-name">Frango Inteiro Congelado</div>
+              <div class="offer-unit">Por kg · Promoção válida hoje</div>
+              <div class="offer-price-row">
+                <span class="offer-price-old">R$ 14,90</span>
+                <span class="offer-price-new">R$ 9,99</span>
+              </div>
+              <button class="offer-btn">🎟️ Ativar Oferta</button>
+            </div>
+          </div>
+
+          <!-- Card com código gerado -->
+          <div class="offer-card" style="border-color:rgba(46,207,179,.3)">
+            <div class="offer-img" style="background:linear-gradient(135deg,#1a1a2a,#0d0d1a)">
+              🍎
+              <span class="offer-badge-top" style="background:var(--teal);color:#07080F">ATIVO</span>
+            </div>
+            <div class="offer-body">
+              <div class="offer-name">Banana Nanica Prata</div>
+              <div class="offer-unit">Por dúzia</div>
+              <div class="offer-price-row">
+                <span class="offer-price-new">R$ 4,90</span>
+              </div>
+              <div class="activation-code">
+                <div class="act-label">Seu Código</div>
+                <div class="act-code">XK74</div>
+                <div class="act-copy">Mostre no caixa</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card encarte -->
+          <div class="offer-card">
+            <div class="offer-img" style="background:linear-gradient(135deg,#2a1a00,#1a0f00);aspect-ratio:3/4">
+              📰
+            </div>
+            <div class="offer-body">
+              <div class="offer-name">Encarte Semanal</div>
+              <div class="offer-unit">Supermercado Independência</div>
+              <div style="margin-top:10px">
+                <button class="offer-btn" style="background:linear-gradient(135deg,var(--lilac),var(--royal))">Ver Encarte Completo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 10 NAVEGAÇÃO ═══ -->
+      <div class="section" id="navegacao">
+        <div class="section-eyebrow">10 — Component</div>
+        <div class="section-title">Navegação</div>
+
+        <div class="grid-2">
+          <!-- Admin Sidebar -->
+          <div>
+            <div class="section-sub" style="margin-bottom:16px">Sidebar Admin (Desktop)</div>
+            <div class="sidebar-demo">
+              <div class="nav-brand">
+                <div class="bars-wrap" style="width:28px;height:28px">
+                  <span class="bar b1" style="width:6px;height:14px"></span>
+                  <span class="bar b2" style="width:6px;height:20px"></span>
+                  <span class="bar b3" style="width:5px;height:12px"></span>
+                </div>
+                <div class="nav-brand-name">Merca<span>Mídia</span></div>
+              </div>
+              <div class="nav-section-label">Principal</div>
+              <a class="nav-item active"><span class="nav-icon">📊</span>Dashboard</a>
+              <a class="nav-item"><span class="nav-icon">🏷️</span>Ofertas do Dia</a>
+              <a class="nav-item"><span class="nav-icon">📰</span>Encartes</a>
+              <a class="nav-item"><span class="nav-icon">🔔</span>Notificações</a>
+              <a class="nav-item"><span class="nav-icon">🖼️</span>Banners</a>
+              <div class="nav-section-label">Config</div>
+              <a class="nav-item"><span class="nav-icon">🏪</span>Lojas</a>
+              <a class="nav-item"><span class="nav-icon">⚙️</span>Configurações</a>
+            </div>
+          </div>
+
+          <!-- List Items -->
+          <div>
+            <div class="section-sub" style="margin-bottom:16px">Feed de Atividades</div>
+            <div class="card">
+              <div class="list-item">
+                <div class="list-avatar" style="background:rgba(43,47,217,.12)">⚡</div>
+                <div class="list-main">
+                  <div class="list-name">Oferta ativada</div>
+                  <div class="list-sub">Frango — cliente #a3b2...</div>
+                </div>
+                <div class="list-right">
+                  <div class="list-value"><span class="badge badge-success">+1</span></div>
+                  <div class="list-meta">há 2min</div>
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="list-avatar" style="background:rgba(46,207,179,.1)">📲</div>
+                <div class="list-main">
+                  <div class="list-name">Push enviado</div>
+                  <div class="list-sub">847 dispositivos</div>
+                </div>
+                <div class="list-right">
+                  <div class="list-value"><span class="badge badge-teal">Entregue</span></div>
+                  <div class="list-meta">há 15min</div>
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="list-avatar" style="background:rgba(155,127,212,.12)">📰</div>
+                <div class="list-main">
+                  <div class="list-name">Encarte publicado</div>
+                  <div class="list-sub">Semana 23 · 12 páginas</div>
+                </div>
+                <div class="list-right">
+                  <div class="list-value"><span class="badge badge-royal">Novo</span></div>
+                  <div class="list-meta">há 1h</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 11 NOTIFICAÇÕES ═══ -->
+      <div class="section" id="notificacoes">
+        <div class="section-eyebrow">11 — Component</div>
+        <div class="section-title">Notificações Push</div>
+
+        <div class="notif-item push">
+          <div class="notif-icon-wrap push">🔔</div>
+          <div style="flex:1">
+            <div class="notif-title">🔥 Frango a R$ 9,99/kg hoje!</div>
+            <div class="notif-body">Só até hoje no Supermercado Independência. Ative agora e mostre o código no caixa.</div>
+            <div class="notif-time">📍 Supermercado Independência · 09:30</div>
+          </div>
+          <span class="badge badge-royal" style="flex-shrink:0">Push</span>
+        </div>
+        <div class="notif-item promo">
+          <div class="notif-icon-wrap promo">📰</div>
+          <div style="flex:1">
+            <div class="notif-title">Novo encarte disponível!</div>
+            <div class="notif-body">Confira as ofertas da semana. Mais de 40 produtos com preços especiais.</div>
+            <div class="notif-time">Sexta-feira · 08:00</div>
+          </div>
+          <span class="badge badge-teal" style="flex-shrink:0">Promo</span>
+        </div>
+        <div class="notif-item alert">
+          <div class="notif-icon-wrap" style="background:rgba(245,158,11,.1)">⏰</div>
+          <div style="flex:1">
+            <div class="notif-title">Oferta expira em 2 horas</div>
+            <div class="notif-body">3 ofertas vencem hoje. Atualize o painel para renovar ou encerrar.</div>
+            <div class="notif-time">Admin · Alerta automático</div>
+          </div>
+          <span class="badge badge-warning" style="flex-shrink:0">Alerta</span>
+        </div>
+      </div>
+
+      <!-- ═══ 12 EMPTY/LOADING ═══ -->
+      <div class="section" id="estados">
+        <div class="section-eyebrow">12 — Pattern</div>
+        <div class="section-title">Estados: Empty & Loading</div>
+
+        <div class="grid-2">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">Nenhuma oferta ativa</div>
+            <div class="empty-sub">Crie sua primeira oferta do dia para começar a receber ativações.</div>
+            <div style="margin-top:20px"><button class="btn btn-primary btn-sm">+ Criar Oferta</button></div>
+          </div>
+
+          <div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div class="skeleton" style="height:13px;width:70%"></div>
+                <div class="skeleton" style="height:11px;width:45%"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div class="skeleton" style="height:13px;width:55%"></div>
+                <div class="skeleton" style="height:11px;width:35%"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div class="skeleton" style="height:13px;width:80%"></div>
+                <div class="skeleton" style="height:11px;width:50%"></div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- ═══ 13 GRÁFICOS ═══ -->
+      <div class="section" id="graficos">
+        <div class="section-eyebrow">13 — Pattern</div>
+        <div class="section-title">Data Viz (Chart.js)</div>
+
+        <div class="chart-card">
+          <div class="chart-title">Ativações nos últimos 7 dias</div>
+          <div class="chart-sub">Total por dia · Atualizado em tempo real</div>
+          <div class="chart-bars" id="chartBars">
+            <!-- Renderizado via JS -->
+          </div>
+          <div style="display:flex;gap:16px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted)">
+              <div style="width:10px;height:10px;background:var(--royal);border-radius:2px"></div> Ativações
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted)">
+              <div style="width:10px;height:10px;background:var(--teal);border-radius:2px"></div> Hover
+            </div>
+            <div style="margin-left:auto;font-size:12px;font-weight:700;color:var(--teal)">Total: 1.847</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Chart.js Config</span></div>
+            <div class="code-body"><pre><span class="tok-comment">// Paleta Chart.js — AppOfertas</span>
+<span class="tok-key">backgroundColor</span>: [<span class="tok-str">'rgba(43,47,217,.7)'</span>]
+<span class="tok-key">borderColor</span>: [<span class="tok-str">'#2B2FD9'</span>]
+<span class="tok-key">hoverBackgroundColor</span>: <span class="tok-str">'#2ECFB3'</span>
+<span class="tok-key">borderRadius</span>: <span class="tok-val">6</span>
+<span class="tok-comment">// Grid lines</span>
+<span class="tok-key">grid.color</span>: <span class="tok-str">'rgba(255,255,255,.05)'</span>
+<span class="tok-key">ticks.color</span>: <span class="tok-str">'rgba(255,255,255,.3)'</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 14 ATIVAÇÃO ═══ -->
+      <div class="section" id="ativacao">
+        <div class="section-eyebrow">14 — Pattern</div>
+        <div class="section-title">Fluxo de Ativação</div>
+        <div class="section-sub">O padrão mais crítico do app — da oferta ao código gerado.</div>
+
+        <div class="grid-3">
+          <div style="text-align:center">
+            <div class="badge badge-neutral" style="margin-bottom:12px">Estado 1</div>
+            <div class="offer-card">
+              <div class="offer-img">🛒</div>
+              <div class="offer-body">
+                <div class="offer-name">Arroz Branco 5kg</div>
+                <div class="offer-price-row"><span class="offer-price-new">R$ 18,90</span></div>
+                <button class="offer-btn">Ativar Oferta →</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center">
+            <div class="badge badge-warning" style="margin-bottom:12px">Estado 2 — Gerando</div>
+            <div class="offer-card" style="border-color:rgba(43,47,217,.4)">
+              <div class="offer-img">🛒</div>
+              <div class="offer-body">
+                <div class="offer-name">Arroz Branco 5kg</div>
+                <div class="offer-price-row"><span class="offer-price-new">R$ 18,90</span></div>
+                <button class="offer-btn btn-loading" style="opacity:.6">
+                  <span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>
+                  Gerando...
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center">
+            <div class="badge badge-success" style="margin-bottom:12px">Estado 3 — Ativado</div>
+            <div class="offer-card" style="border-color:rgba(46,207,179,.4)">
+              <div class="offer-img" style="background:linear-gradient(135deg,#0a1a0f,#051009)">🛒</div>
+              <div class="offer-body">
+                <div class="offer-name">Arroz Branco 5kg</div>
+                <div class="offer-price-row"><span class="offer-price-new">R$ 18,90</span></div>
+                <div class="activation-code">
+                  <div class="act-label">Código Gerado</div>
+                  <div class="act-code">MV47</div>
+                  <div class="act-copy">Mostre no caixa · Válido hoje</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ 15 FLUTTER TOKENS ═══ -->
+      <div class="section" id="tokens-flutter">
+        <div class="section-eyebrow">15 — Code Reference</div>
+        <div class="section-title">Tokens para FlutterFlow</div>
+        <div class="section-sub">Copie direto nos campos de Design Tokens ou Theme Colors do FlutterFlow.</div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Flutter / Dart Colors</span><button class="code-copy-btn" onclick="copyCode('flutterColors')">Copiar</button></div>
+          <div class="code-body"><pre id="flutterColors"><span class="tok-comment">// ── Brand Colors ──────────────────────────</span>
+<span class="tok-key">static const</span> Color royal       = Color(<span class="tok-val">0xFF2B2FD9</span>);
+<span class="tok-key">static const</span> Color royalLight   = Color(<span class="tok-val">0xFF3D42E8</span>);
+<span class="tok-key">static const</span> Color royalDark    = Color(<span class="tok-val">0xFF1E22A8</span>);
+<span class="tok-key">static const</span> Color teal         = Color(<span class="tok-val">0xFF2ECFB3</span>);
+<span class="tok-key">static const</span> Color lilac        = Color(<span class="tok-val">0xFF9B7FD4</span>);
+<span class="tok-key">static const</span> Color navy         = Color(<span class="tok-val">0xFF0E0F2E</span>);
+<span class="tok-key">static const</span> Color navy2        = Color(<span class="tok-val">0xFF0A0B1E</span>);
+<span class="tok-key">static const</span> Color background   = Color(<span class="tok-val">0xFF07080F</span>);
+
+<span class="tok-comment">// ── Surfaces ──────────────────────────────</span>
+<span class="tok-key">static const</span> Color surface1     = Color(<span class="tok-val">0x07FFFFFF</span>);  <span class="tok-comment">// opacity 2.5%</span>
+<span class="tok-key">static const</span> Color surface2     = Color(<span class="tok-val">0x0BFFFFFF</span>);  <span class="tok-comment">// opacity 4.5%</span>
+<span class="tok-key">static const</span> Color surfaceRoyal = Color(<span class="tok-val">0x1F2B2FD9</span>);  <span class="tok-comment">// opacity 12%</span>
+<span class="tok-key">static const</span> Color border       = Color(<span class="tok-val">0x12FFFFFF</span>);  <span class="tok-comment">// opacity 7%</span>
+
+<span class="tok-comment">// ── Text ──────────────────────────────────</span>
+<span class="tok-key">static const</span> Color textPrimary   = Color(<span class="tok-val">0xFFFFFFFF</span>);
+<span class="tok-key">static const</span> Color textSecondary = Color(<span class="tok-val">0xA6FFFFFF</span>);  <span class="tok-comment">// opacity 65%</span>
+<span class="tok-key">static const</span> Color textMuted     = Color(<span class="tok-val">0x59FFFFFF</span>);  <span class="tok-comment">// opacity 35%</span>
+<span class="tok-key">static const</span> Color textDisabled  = Color(<span class="tok-val">0x33FFFFFF</span>);  <span class="tok-comment">// opacity 20%</span>
+
+<span class="tok-comment">// ── Semantic ──────────────────────────────</span>
+<span class="tok-key">static const</span> Color success = Color(<span class="tok-val">0xFF22C55E</span>);
+<span class="tok-key">static const</span> Color warning = Color(<span class="tok-val">0xFFF59E0B</span>);
+<span class="tok-key">static const</span> Color error   = Color(<span class="tok-val">0xFFEF4444</span>);
+<span class="tok-key">static const</span> Color info    = Color(<span class="tok-val">0xFF3B82F6</span>);</pre></div>
+        </div>
+
+        <div class="code-block" style="margin-top:16px">
+          <div class="code-header"><span class="code-lang">TextStyle Tokens</span><button class="code-copy-btn" onclick="copyCode('textStyles')">Copiar</button></div>
+          <div class="code-body"><pre id="textStyles"><span class="tok-comment">// Font: Plus Jakarta Sans (Google Fonts)</span>
+<span class="tok-comment">// import 'package:google_fonts/google_fonts.dart';</span>
+
+<span class="tok-comment">// Hero / Display</span>
+GoogleFonts.plusJakartaSans(fontSize: 56, fontWeight: FontWeight.w900, letterSpacing: -2.5, color: Colors.white)
+
+<span class="tok-comment">// H1</span>
+GoogleFonts.plusJakartaSans(fontSize: 36, fontWeight: FontWeight.w800, letterSpacing: -1.2)
+
+<span class="tok-comment">// H2</span>
+GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.8)
+
+<span class="tok-comment">// H3</span>
+GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.4)
+
+<span class="tok-comment">// Body</span>
+GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w400, height: 1.7)
+
+<span class="tok-comment">// Price / Activation Code (destaque máximo)</span>
+GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 6, color: Color(0xFF2ECFB3))
+
+<span class="tok-comment">// Eyebrow label</span>
+GoogleFonts.plusJakartaSans(fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 4, textBaseline: TextBaseline.alphabetic)
+<span class="tok-comment">// + TextTransform via toUpperCase()</span></pre></div>
+        </div>
+
+        <div class="code-block" style="margin-top:16px">
+          <div class="code-header"><span class="code-lang">Border Radius & Spacing</span></div>
+          <div class="code-body"><pre><span class="tok-comment">// Border Radius</span>
+<span class="tok-key">const</span> rXs  = BorderRadius.circular(<span class="tok-val">8</span>);
+<span class="tok-key">const</span> rSm  = BorderRadius.circular(<span class="tok-val">12</span>);
+<span class="tok-key">const</span> rMd  = BorderRadius.circular(<span class="tok-val">16</span>);
+<span class="tok-key">const</span> rLg  = BorderRadius.circular(<span class="tok-val">20</span>);
+<span class="tok-key">const</span> rXl  = BorderRadius.circular(<span class="tok-val">24</span>);
+<span class="tok-key">const</span> r2xl = BorderRadius.circular(<span class="tok-val">32</span>);
+
+<span class="tok-comment">// Spacing Scale (8pt)</span>
+<span class="tok-key">const</span> sp4  = <span class="tok-val">4.0</span>;
+<span class="tok-key">const</span> sp8  = <span class="tok-val">8.0</span>;
+<span class="tok-key">const</span> sp12 = <span class="tok-val">12.0</span>;
+<span class="tok-key">const</span> sp16 = <span class="tok-val">16.0</span>;
+<span class="tok-key">const</span> sp20 = <span class="tok-val">20.0</span>;
+<span class="tok-key">const</span> sp24 = <span class="tok-val">24.0</span>;
+<span class="tok-key">const</span> sp28 = <span class="tok-val">28.0</span>;
+<span class="tok-key">const</span> sp32 = <span class="tok-val">32.0</span>;
+<span class="tok-key">const</span> sp48 = <span class="tok-val">48.0</span>;</pre></div>
+        </div>
+      </div>
+
+    </div><!-- /doc-content -->
+  </div><!-- /doc-layout -->
+
+</div><!-- /page -->
+
+<script>
+// ── CHART BARS ──
+const data = [87, 124, 203, 156, 312, 278, 231];
+const days = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const max = Math.max(...data);
+const container = document.getElementById('chartBars');
+if(container){
+  data.forEach((v, i) => {
+    const pct = (v / max) * 100;
+    container.innerHTML += `
+      <div class="chart-bar-wrap">
+        <div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:4px">${v}</div>
+        <div class="chart-bar" style="height:${pct}%" title="${v} ativações"></div>
+        <div class="chart-bar-label">${days[i]}</div>
+      </div>`;
+  });
+}
+
+// ── COPY COLOR ──
+function copyColor(hex){
+  navigator.clipboard.writeText(hex).then(()=>showToast(`Copiado: ${hex}`));
+}
+
+// ── COPY CODE ──
+function copyCode(id){
+  const el = document.getElementById(id);
+  if(el) navigator.clipboard.writeText(el.innerText).then(()=>showToast('Código copiado!'));
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+// ── ACTIVE NAV ──
+const navLinks = document.querySelectorAll('.doc-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.doc-nav a[href="#${e.target.id}"]`);
+      if(link) link.classList.add('active');
+    }
+  });
+}, {rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('.section[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
