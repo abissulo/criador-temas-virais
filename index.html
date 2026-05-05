@@ -896,7 +896,7 @@ async function sugerirDor(){
   sugsEl.style.display='none';
   var prompt='Para o nicho "'+nicho2+'"'+(pub?' publico "'+pub+'"':'')+(prod?' produto "'+prod+'"':'')+', liste as 3 principais dores dos clientes. Responda APENAS JSON: {"dores":["dor 1 max 12 palavras","dor 2","dor 3"]}';
   try{
-    var d=await callAPI(prompt,300);
+    var d=await callAPI(prompt,800);
     var dores=d.dores||[];
     sugsEl.innerHTML=dores.map(function(dor){
       return '<button onclick="selecionarDor(this)" style="font-family:var(--f);font-size:12px;text-align:left;background:rgba(80,212,245,.06);border:1px solid rgba(80,212,245,.18);border-radius:8px;padding:8px 12px;color:var(--text);cursor:pointer;width:100%;">+  '+dor+'</button>';

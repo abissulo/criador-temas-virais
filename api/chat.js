@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   const { prompt, max_tokens } = req.body || {};
   if (!prompt) return res.status(400).json({ error: true, message: "Prompt ausente." });
 
-  const safeTokens = Math.min(max_tokens || 1200, 2048);
+  const safeTokens = Math.min(max_tokens || 2048, 4096);
 
   const systemInstruction = `Você é um especialista sênior em marketing de conteúdo digital para Instagram e TikTok, com profundo conhecimento em copywriting, psicologia do consumidor, storytelling e criação de conteúdo viral. Sua missão é gerar conteúdos excepcionalmente detalhados, persuasivos e prontos para publicar.
 
@@ -39,8 +39,7 @@ REGRAS ABSOLUTAS:
         generationConfig: {
           temperature: 0.8,
           topP: 0.95,
-          maxOutputTokens: safeTokens,
-          responseMimeType: "application/json"
+          maxOutputTokens: safeTokens
         }
       }),
     });
