@@ -5,8 +5,12 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: true, message: "Método não permitido." });
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_API_KEY) return res.status(500).json({ error: true, message: "GEMINI_API_KEY não configurada." });
+  const GEMINI_API_KEY_ENV = process.env.GEMINI_API_KEY;
+  if (!GEMINI_API_KEY_ENV) return res.status(500).json({ error: true, message: "GEMINI_API_KEY não configurada." });
+  
+  // Rotação de Chaves (Load Balancing) para driblar o RPM
+  const keys = GEMINI_API_KEY_ENV.split(',').map(k => k.trim()).filter(k => k);
+  const GEMINI_API_KEY = keys[Math.floor(Math.random() * keys.length)];
 
   const { prompt, max_tokens } = req.body || {};
   if (!prompt) return res.status(400).json({ error: true, message: "Prompt ausente." });
