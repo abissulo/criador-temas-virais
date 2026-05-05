@@ -1421,10 +1421,10 @@ async function _doCallAPI(prompt,maxTokens){
         console.error('[API] Erro no parse JSON:', parseErr.message);
         console.error('[API] Texto completo:', clean);
         // Try to extract JSON from response
-        var jsonMatch=clean.match(/\{[\s\S]*\}/);
+        var jsonMatch=clean.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
         if(jsonMatch){
-          console.log('[API] Tentando extrair JSON do texto...');
-          return JSON.parse(jsonMatch[0]);
+          console.log('[API] Tentando extrair JSON do texto (fallback)...');
+          try { return JSON.parse(jsonMatch[0]); } catch(e) {}
         }
         throw new Error('JSON inválido: '+parseErr.message+' | Resposta: '+clean.substring(0,100));
       }

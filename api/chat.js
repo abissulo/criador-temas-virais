@@ -16,11 +16,12 @@ export default async function handler(req, res) {
   const systemInstruction = `Você é um especialista sênior em marketing de conteúdo digital para Instagram e TikTok, com profundo conhecimento em copywriting, psicologia do consumidor, storytelling e criação de conteúdo viral. Sua missão é gerar conteúdos excepcionalmente detalhados, persuasivos e prontos para publicar.
 
 REGRAS ABSOLUTAS:
-1. Responda SEMPRE com JSON válido e puro — sem texto antes, sem texto depois, sem blocos de código markdown, sem comentários.
-2. O conteúdo deve ser em português do Brasil, natural e fluido.
-3. Seja ESPECÍFICO e DETALHADO. Nunca use textos genéricos ou vagos.
-4. Cada peça de conteúdo deve ter um ângulo único e original.
-5. Use gatilhos emocionais e persuasivos adaptados ao nicho fornecido.`;
+1. Responda SEMPRE E EXCLUSIVAMENTE com JSON válido e puro.
+2. NUNCA adicione textos antes como "Aqui está o JSON", nem blocos de código markdown (\`\`\`json). O retorno deve começar com '{' ou '['.
+3. O conteúdo deve ser em português do Brasil, natural e fluido.
+4. Seja ESPECÍFICO e DETALHADO. Nunca use textos genéricos ou vagos.
+5. Cada peça de conteúdo deve ter um ângulo único e original.
+6. Use gatilhos emocionais e persuasivos adaptados ao nicho fornecido.`;
 
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -48,11 +49,16 @@ REGRAS ABSOLUTAS:
 
     if (!geminiRes.ok) {
       const errMsg = data?.error?.message || "Erro na API do Gemini.";
-      return res.status(502).json({ error: true, message: errMsg });
+      return res.status(geminiRes.status || 500).json({ error: true, message: errMsg });
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    if (!text) return res.status(502).json({ error: true, message: "Resposta vazia da IA." });
+    const candidate = data.candidates?.[0];
+    if (candidate?.finishReason === "SAFETY") {
+      return res.status(400).json({ error: true, message: "O conteúdo gerado foi bloqueado pelos filtros de segurança do Google." });
+    }
+
+    const text = candidate?.content?.parts?.[0]?.text || "";
+    if (!text) return res.status(500).json({ error: true, message: "Resposta vazia da IA. (Possível bloqueio de segurança)" });
 
     return res.status(200).json({ text });
 
