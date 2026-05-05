@@ -10,19 +10,23 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html.theme-dark {
-  --bg:#060608;
-  --bg2:rgba(255,255,255,0.03);
-  --bg3:rgba(255,255,255,0.06);
-  --glass:rgba(255,255,255,0.04);
-  --glass-border:rgba(255,255,255,0.08);
-  --glass-border-h:rgba(255,255,255,0.16);
-  --text:#f0ede8;
-  --muted:rgba(240,237,232,0.45);
-  --dim:rgba(240,237,232,0.22);
-  --g1:#b8f050;
-  --g2:#50d4f5;
+  --bg:#07080F;
+  --bg2:rgba(255,255,255,0.025);
+  --bg3:rgba(255,255,255,0.07);
+  --glass:rgba(255,255,255,0.025);
+  --glass-border:rgba(255,255,255,0.07);
+  --glass-border-h:rgba(255,255,255,0.15);
+  --text:#FFFFFF;
+  --muted:rgba(255,255,255,0.35);
+  --dim:rgba(255,255,255,0.2);
+  --g1:#2ECFB3;
+  --g2:#3D42E8;
   --g3:#f050a4;
-  --g4:#f0a050;
+  --g4:#F59E0B;
+  --royal:#2B2FD9;
+  --royal-light:#3D42E8;
+  --teal:#2ECFB3;
+  --navy:#0E0F2E;
   --r:14px;
   --f:'Plus Jakarta Sans',sans-serif;
 }
@@ -36,17 +40,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);min-height:100v
 .grid-overlay{
   position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:
-    linear-gradient(rgba(184,240,80,0.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(184,240,80,0.03) 1px,transparent 1px);
+    linear-gradient(rgba(43,47,217,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(43,47,217,0.04) 1px,transparent 1px);
   background-size:60px 60px;
   mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);
 }
 
 /* ── GLOW ORBS ── */
 .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
-.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(184,240,80,0.08),transparent 70%);top:-100px;left:-100px;}
-.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(80,212,245,0.06),transparent 70%);top:30%;right:-80px;}
-.orb3{width:350px;height:350px;background:radial-gradient(circle,rgba(240,80,164,0.05),transparent 70%);bottom:10%;left:20%;}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(43,47,217,0.10),transparent 70%);top:-120px;left:-120px;}
+.orb2{width:450px;height:450px;background:radial-gradient(circle,rgba(46,207,179,0.07),transparent 70%);top:30%;right:-100px;}
+.orb3{width:380px;height:380px;background:radial-gradient(circle,rgba(155,127,212,0.06),transparent 70%);bottom:10%;left:20%;}
 
 /* ── WRAP ── */
 .wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:88px 24px 120px;}
@@ -56,17 +60,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);min-height:100v
 .badge{
   display:inline-flex;align-items:center;gap:8px;
   font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--g1);border:1px solid rgba(184,240,80,.2);
-  background:rgba(184,240,80,.06);padding:5px 14px;border-radius:100px;
+  color:var(--teal,#2ECFB3);border:1px solid rgba(46,207,179,.25);
+  background:rgba(46,207,179,.08);padding:5px 14px;border-radius:100px;
   margin-bottom:24px;backdrop-filter:blur(8px);
 }
-.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--g1);animation:blink 2s ease infinite;display:inline-block;}
-@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 6px var(--g1)}50%{opacity:.3;box-shadow:none}}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal,#2ECFB3);animation:blink 2s ease infinite;display:inline-block;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 6px var(--teal,#2ECFB3)}50%{opacity:.3;box-shadow:none}}
 
 h1{
   font-size:clamp(38px,6vw,68px);font-weight:800;line-height:1.05;letter-spacing:-.03em;
   margin-bottom:16px;
-  background:linear-gradient(135deg,#f0ede8 0%,#b8f050 40%,#50d4f5 70%,#f0ede8 100%);
+  background:linear-gradient(135deg,#FFFFFF 0%,#2ECFB3 40%,#3D42E8 70%,#FFFFFF 100%);
   background-size:300% 300%;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   animation:gradShift 6s ease infinite;
@@ -85,8 +89,8 @@ h1{
   display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
   flex-shrink:0;transition:all .3s;backdrop-filter:blur(4px);
 }
-.step.active .step-num{background:var(--g1);color:#060608;border-color:var(--g1);box-shadow:0 0 16px rgba(184,240,80,.4);}
-.step.done .step-num{background:rgba(184,240,80,.15);color:var(--g1);border-color:rgba(184,240,80,.3);}
+.step.active .step-num{background:var(--royal,#2B2FD9);color:#fff;border-color:var(--royal,#2B2FD9);box-shadow:0 0 16px rgba(43,47,217,.45);}
+.step.done .step-num{background:rgba(46,207,179,.15);color:var(--teal,#2ECFB3);border-color:rgba(46,207,179,.3);}
 .step-line{width:36px;height:1px;background:rgba(255,255,255,.08);margin:0 4px;flex-shrink:0;}
 
 /* ── PANELS ── */
@@ -117,7 +121,7 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 .btn-primary{
   position:relative;overflow:hidden;
   font-family:var(--f);font-size:13px;font-weight:700;letter-spacing:.04em;
-  background:var(--g1);color:#060608;border:none;border-radius:var(--r);
+  background:var(--royal,#2B2FD9);color:#fff;border:none;border-radius:var(--r);
   padding:15px 26px;cursor:pointer;white-space:nowrap;
   transition:transform .15s,box-shadow .2s;
 }
@@ -127,7 +131,7 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
   transform:translateX(-100%);transition:transform .5s;
 }
 .btn-primary:hover::after{transform:translateX(100%);}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(184,240,80,.3),0 0 40px rgba(184,240,80,.1);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(43,47,217,.5);background:var(--royal-light,#3D42E8);}
 .btn-primary:active{transform:none;}
 .btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none;}
 .btn-primary:disabled::after{display:none;}
@@ -172,19 +176,19 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
 }
 .tema-card:hover{border-color:rgba(184,240,80,.25);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3);}
 .tema-card:hover::before{opacity:1;}
-.tema-card.selected{border-color:var(--g1);background:rgba(184,240,80,.06);box-shadow:0 0 20px rgba(184,240,80,.1);}
+.tema-card.selected{border-color:var(--teal,#2ECFB3);background:rgba(46,207,179,.06);box-shadow:0 0 20px rgba(46,207,179,.15);}
 .tema-card.selected::before{opacity:1;}
 .tc-check{
   position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;
   border:1.5px solid var(--glass-border);display:flex;align-items:center;justify-content:center;
   transition:all .2s;
 }
-.tema-card.selected .tc-check{background:var(--g1);border-color:var(--g1);box-shadow:0 0 8px rgba(184,240,80,.5);}
+.tema-card.selected .tc-check{background:var(--teal,#2ECFB3);border-color:var(--teal,#2ECFB3);box-shadow:0 0 8px rgba(46,207,179,.5);}
 .tc-check svg{opacity:0;transition:opacity .2s;}
 .tema-card.selected .tc-check svg{opacity:1;}
 .tc-viral{
   font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--g1);background:rgba(184,240,80,.1);border:1px solid rgba(184,240,80,.18);
+  color:var(--teal,#2ECFB3);background:rgba(46,207,179,.1);border:1px solid rgba(46,207,179,.2);
   padding:3px 8px;border-radius:100px;margin-bottom:10px;display:inline-block;
 }
 .tc-nome{font-size:14px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:5px;padding-right:22px;}
@@ -199,7 +203,7 @@ input:focus{border-color:rgba(184,240,80,.4);box-shadow:0 0 0 3px rgba(184,240,8
   padding:13px 14px;cursor:pointer;backdrop-filter:blur(8px);transition:all .2s;
 }
 .fw-card:hover{border-color:var(--glass-border-h);}
-.fw-card.selected{border-color:var(--g2);background:rgba(80,212,245,.06);box-shadow:0 0 16px rgba(80,212,245,.08);}
+.fw-card.selected{border-color:var(--royal,#2B2FD9);background:rgba(43,47,217,.1);box-shadow:0 0 16px rgba(43,47,217,.15);}
 .fw-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;transition:color .2s;}
 .fw-card.selected .fw-tag{color:var(--g2);}
 .fw-nome{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
@@ -1002,7 +1006,7 @@ async function analisarNicho(){
   startLoad('load-1',MSGS1);
   try{
     var ctxPrompt=getBriefingPrompt();
-    var d=await callAPI('Para o nicho "'+nicho+'".'+ctxPrompt+' Identifique 6 temas com alto potencial viral para redes sociais, MUITO específicos para este nicho e público. Responda APENAS JSON sem markdown: {"temas":[{"nome":"Nome 3-5 palavras","potencial":"Por que viral agora max 10 palavras"}]} Gere exatamente 6 temas variados e relevantes para o contexto.',800);
+    var d=await callAPI('Você é especialista em marketing viral para Instagram e TikTok.\nNicho: "'+nicho+'". '+ctxPrompt+'\nGere EXATAMENTE 6 temas com altíssimo potencial viral. Use ângulos incomuns: erros ocultos, bastidores, mitos, polêmicas, transformações.\nNome: específico e intrigante (4-7 palavras). Potencial: por que vai viralizar neste nicho (12-16 palavras).\nResponda APENAS JSON válido: {"temas":[{"nome":"Nome intrigante","potencial":"Por que vai viralizar aqui"}]}\nExatamente 6 temas distintos.',1100);
     temasDisp=d.temas; temasSel=[];
     renderStep2(); stopLoad('load-1');
     document.getElementById('btn-analisar').disabled=false;
@@ -1062,13 +1066,21 @@ async function gerarEstrutura(){
   document.getElementById('btn-gerar').disabled=true;
   document.getElementById('load-2').classList.add('on');
   startLoad('load-2',MSGS2);
-  var tStr=escolhidos.map(function(t,i){return 'Tema '+(i+1)+': "'+t.nome+'"';}).join(', ');
-  var prompt='Especialista em conteúdo viral. Responda APENAS JSON válido.\n'
-    +'Nicho: "'+nicho+'" | Temas: '+tStr+' | Framework: '+fw.nome+' ('+fw.steps.join(' -> ')+')\n'
-    +'Tom: '+getTomInstrucao()+'\n'
-    +'Para cada tema gere 3 conteúdos (erros, proc, anal) com titulo (6-10 palavras) e fw_steps ('+fw.steps.length+' objetos {"label":"etapa","texto":"conteudo 1-2 frases"} para as etapas: '+fw.steps.join(', ')+').\n'
-    +'{"temas":[{"nome":"nome","erros":{"titulo":"...","fw_steps":[{"label":"...","texto":"..."}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
-    +'Gere EXATAMENTE '+escolhidos.length+' tema(s).';
+  var tStr=escolhidos.map(function(t,i){return 'Tema '+(i+1)+': "'+t.nome+'" ('+t.potencial+')';}).join(' | ');
+  var ctxBriefing=getBriefingPrompt();
+  var prompt='Você é um estrategista de conteúdo digital sênior.\n\n'
+    +'CONTEXTO:\n'
+    +'- Nicho: "'+nicho+'"\n'
+    +(ctxBriefing?'- '+ctxBriefing+'\n':'')
+    +'- Temas: '+tStr+'\n'
+    +'- Framework: '+fw.nome+' ('+fw.steps.join(' → ')+') — '+fw.desc+'\n'
+    +'- Tom: '+getTomNome()+' — '+getTomInstrucao()+'\n\n'
+    +'TAREFA: Para cada tema, crie 3 ângulos (erros, proc, anal).\n'
+    +'Cada ângulo: titulo impactante (8-14 palavras) + fw_steps ricas e específicas para o nicho.\n'
+    +'NUNCA genérico. Extremamente específico para "'+nicho+'".\n\n'
+    +'Responda APENAS JSON válido:\n'
+    +'{"temas":[{"nome":"nome","erros":{"titulo":"título específico","fw_steps":[{"label":"'+fw.steps[0]+'","texto":"texto rico"}]},"proc":{"titulo":"...","fw_steps":[...]},"anal":{"titulo":"...","fw_steps":[...]}}]}\n'
+    +'Gere EXATAMENTE '+escolhidos.length+' tema(s) no array.';
   try{
     var d=await callAPI(prompt,escolhidos.length===1?1200:escolhidos.length===2?2000:2800);
     resultado={nicho:nicho,fw:fw,temas:d.temas,originais:escolhidos};
@@ -1145,20 +1157,27 @@ async function gerarFormato(cardKey,fmt,ti,ci){
   var prompt='';
   var ctxFmt=getBriefingPrompt();
   if(fmt==='reels'){
-    prompt='Crie roteiro de Reels/TikTok completo em português. Tom: '+tomInst+(ctxFmt?' '+ctxFmt:'')+' Responda APENAS JSON.\n'
-      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Framework: '+fw.nome+' | Tom: '+tomNome+'\n'
-      +'Conteudo base: "'+cd.titulo+'"\n'
-      +'JSON: {"hook":"frase abertura 3 segundos tom '+tomNome+'","cenas":[{"num":1,"texto":"cena 1"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"chamada acao tom '+tomNome+'","legenda":"legenda emojis 3-4 frases tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
+    prompt='Crie roteiro de Reels/TikTok profissional em português. Tom: '+tomInst+(ctxFmt?' Contexto: '+ctxFmt:'')+' Responda APENAS JSON.\n'
+      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Ângulo: "'+cd.titulo+'" | Tom: '+tomNome+'\n'
+      +'Hook: prende em 1-2s com número, contradiction ou afirmação ousada.\n'
+      +'Cenas: 4 cenas visuais e dinâmicas (máx 10s cada). CTA: urgente e específico.\n'
+      +'Responda APENAS JSON válido:\n'
+      +'{"hook":"frase abertura poderosa","cenas":[{"num":1,"texto":"cena 1"},{"num":2,"texto":"cena 2"},{"num":3,"texto":"cena 3"},{"num":4,"texto":"cena 4"}],"cta":"CTA urgente e específico","legenda":"legenda completa com emojis e CTA","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}';
   } else if(fmt==='carrossel'){
-    prompt='Crie carrossel Instagram completo em português. Tom: '+tomInst+(ctxFmt?' '+ctxFmt:'')+' Responda APENAS JSON.\n'
-      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
-      +'IMPORTANTE: slides deve ser array de STRINGS simples, nao objetos.\n'
-      +'JSON: {"capa":"texto impactante capa max 8 palavras","slides":["texto simples slide 2","texto simples slide 3","texto simples slide 4","texto simples slide 5"],"legenda":"legenda completa com emojis","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}\n'
-      +'CADA ITEM DE slides DEVE SER UMA STRING, NAO UM OBJETO.';
+    prompt='Crie carrossel de Instagram de alta performance em português. Tom: '+tomInst+(ctxFmt?' Contexto: '+ctxFmt:'')+' Responda APENAS JSON.\n'
+      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Ângulo: "'+cd.titulo+'" | Tom: '+tomNome+'\n'
+      +'Capa: frase que para o scroll (número, contradiction, promessa específica).\n'
+      +'Slides 2-5: progressão com valor real. CRÍTICO: slides = array de STRINGS, jamais objetos.\n'
+      +'Responda APENAS JSON válido:\n'
+      +'{"capa":"frase de impacto","slides":["valor slide 2","valor slide 3","valor slide 4","valor slide 5"],"legenda":"legenda completa com emojis e CTA","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}';
+
   } else {
-    prompt='Crie post Instagram completo em português. Tom: '+tomInst+(ctxFmt?' '+ctxFmt:'')+' Responda APENAS JSON.\n'
-      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Categoria: "'+cat.tag+'" | Tom: '+tomNome+'\n'
-      +'JSON: {"imagem":"texto imagem max 10 palavras","subtexto":"subtitulo max 6 palavras","legenda":"legenda emojis CTA tom '+tomNome+'","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5"}';
+    prompt='Crie post estático de Instagram profissional em português. Tom: '+tomInst+(ctxFmt?' Contexto: '+ctxFmt:'')+' Responda APENAS JSON.\n'
+      +'Nicho: "'+nicho+'" | Tema: "'+temaNome+'" | Ângulo: "'+cd.titulo+'" | Tom: '+tomNome+'\n'
+      +'Imagem: frase curta e poderosa que funciona sozinha (máx 8 palavras).\n'
+      +'Legenda: dado impactante ou mini-story + CTA claro + emojis estratégicos.\n'
+      +'Responda APENAS JSON válido:\n'
+      +'{"imagem":"frase principal poderosa","subtexto":"subtítulo complementar","legenda":"legenda com story/dado + emojis + CTA","hashtags":"#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5"}';
   }
   try{
     var d=await callAPI(prompt,1000);
